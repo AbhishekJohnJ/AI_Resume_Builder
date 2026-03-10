@@ -9,11 +9,24 @@ function Dashboard() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h1>Dashboard</h1>
-        <button onClick={handleLogout} className="btn-logout">Logout</button>
-      </header>
+    <div className="dashboard-page">
+      <nav className="top-bar">
+        <div className="top-bar-content">
+          <div className="logo">
+            <span className="logo-text">Portfolio</span>
+          </div>
+          <div className="nav-links">
+            <a href="/" className="nav-link">Home</a>
+            <a href="/about" className="nav-link">About</a>
+            <a href="/projects" className="nav-link">Projects</a>
+            <a href="/contact" className="nav-link">Contact</a>
+          </div>
+          <div className="auth-buttons">
+            <button onClick={handleLogout} className="btn-logout-nav">Logout</button>
+          </div>
+        </div>
+      </nav>
+      <div className="dashboard-container">
       <main className="dashboard-content">
         <div className="welcome-card">
           <h2>Welcome to your Dashboard!</h2>
@@ -38,6 +51,7 @@ function Dashboard() {
           </div>
         </div>
       </main>
+    </div>
     </div>
   );
 }

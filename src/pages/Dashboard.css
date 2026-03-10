@@ -1,34 +1,115 @@
-.dashboard-container {
+/* Dashboard Page */
+.dashboard-page {
   min-height: 100vh;
   background: #f5f7fa;
 }
 
-.dashboard-header {
-  background: white;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Top Bar Styles */
+.top-bar {
+  background: #1a1a1a;
+  border-bottom: 1px solid #2d2d2d;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.top-bar-content {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo-icon {
+  color: #ffa116;
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.logo-text {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
   align-items: center;
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  color: #333;
+.nav-link {
+  color: #b3b3b3;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  position: relative;
 }
 
-.btn-logout {
-  padding: 0.5rem 1.5rem;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ffa116;
+  transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-logout-nav {
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  color: #ffa116;
+  border: 1px solid #ffa116;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 1rem;
+  transition: all 0.2s;
 }
 
-.btn-logout:hover {
-  background: #c82333;
+.btn-logout-nav:hover {
+  background: #ffa116;
+  color: #1a1a1a;
+}
+
+.dashboard-container {
+  min-height: calc(100vh - 60px);
 }
 
 .dashboard-content {
@@ -81,4 +162,27 @@
   font-weight: bold;
   color: #667eea;
   margin: 0.5rem 0 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .top-bar-content {
+    padding: 0 1rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .logo-text {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
