@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../services/api';
 import './Signup.css';
 
 function Signup() {
@@ -8,50 +9,43 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setLoading(true);
 
     // Validate inputs
     if (!name || !email || !password) {
       setError('All fields are required');
+      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      setLoading(false);
       return;
     }
 
-    // Check if user already exists
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userExists = users.find(user => user.email === email);
-
-    if (userExists) {
-      setError('Email already registered. Please login.');
-      return;
+    try {
+      // Call API to register user
+      const response = await authAPI.register({ name, email, password });
+      
+      setSuccess('Account created successfully! Redirecting to login...');
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    // Create new user
-    const newUser = {
-      name,
-      email,
-      password,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    setSuccess('Account created successfully! Redirecting to login...');
-    
-    // Redirect to login after 2 seconds
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
   };
 
   return (
@@ -81,6 +75,7 @@ function Signup() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -92,6 +87,7 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -104,9 +100,12 @@ function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
+              disabled={loading}
             />
           </div>
-          <button type="submit" className="btn-primary">Sign Up</button>
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
         </form>
         <p className="login-link">
           Already have an account? <a href="/">Login</a>

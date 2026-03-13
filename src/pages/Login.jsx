@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaFileAlt, FaPalette, FaRocket, FaChartLine } from 'react-icons/fa';
+import { authAPI } from '../services/api';
 import './Login.css';
 
 function Login() {
@@ -9,30 +10,34 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     // Validate inputs
     if (!email || !password) {
       setError('Please enter both email and password');
+      setLoading(false);
       return;
     }
 
-    // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    // Find user with matching credentials
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (user) {
-      // Store logged in user
-      localStorage.setItem('currentUser', JSON.stringify(user));
+    try {
+      // Call API to login
+      const response = await authAPI.login({ email, password });
+      
+      // Store user data in localStorage
+      localStorage.setItem('currentUser', JSON.stringify(response.user));
+      
+      // Navigate to dashboard
       navigate('/dashboard');
-    } else {
-      setError('Invalid email or password. Please try again.');
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,6 +114,7 @@ function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -122,17 +128,21 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={loading}
                   >
                     {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
                   </button>
                 </div>
               </div>
-              <button type="submit" className="btn-primary">Sign In</button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? 'Signing In...' : 'Sign In'}
+              </button>
             </form>
             <p className="signup-link">
               Don't have an account? <a href="/signup">Create one</a>
