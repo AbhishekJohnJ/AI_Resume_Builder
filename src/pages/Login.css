@@ -243,22 +243,28 @@
 
 .input-icon {
   position: absolute;
-  left: 1rem;
+  left: 1.25rem;
   font-size: 1.25rem;
   color: #94a3b8;
   pointer-events: none;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 1rem 1.25rem 1rem 3rem;
+  padding: 1rem 3.5rem 1rem 1.25rem;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
   font-size: 1rem;
   box-sizing: border-box;
   transition: all 0.3s ease;
-  background: #f7fafc;
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 500;
 }
 
 .form-group input:focus {
@@ -275,7 +281,8 @@
 }
 
 .form-group input::placeholder {
-  color: #cbd5e0;
+  color: #94a3b8;
+  font-weight: 400;
 }
 
 .toggle-password {

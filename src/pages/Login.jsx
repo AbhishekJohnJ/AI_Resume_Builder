@@ -77,7 +77,6 @@ function Login() {
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <div className="input-wrapper">
-              <MdEmail className="input-icon" />
               <input
                 type="email"
                 id="email"
@@ -91,7 +90,6 @@ function Login() {
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
-              <MdLock className="input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
