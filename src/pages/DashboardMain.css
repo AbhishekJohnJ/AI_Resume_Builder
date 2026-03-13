@@ -1,12 +1,52 @@
-/* Dashboard Main Content Styles */
+/* Dashboard Main Content Styles - Black & Golden Theme */
+
+/* Dashboard Background */
+.dashboard-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  position: relative;
+}
+
+.dashboard-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-container {
+  position: relative;
+  z-index: 1;
+}
 
 /* Page Title */
 .dashboard-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
   margin-bottom: 2rem;
   letter-spacing: -0.02em;
+  text-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+  position: relative;
+  display: inline-block;
+}
+
+.dashboard-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #ffd700, #ffa500, transparent);
+  border-radius: 2px;
 }
 
 /* Summary Cards Grid */
@@ -23,9 +63,9 @@
   border-radius: 16px;
   padding: 2rem;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid #404040;
+  border: 2px solid rgba(255, 215, 0, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -37,21 +77,27 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #ffa116 0%, #ffb84d 100%);
+  background: linear-gradient(90deg, #ffd700 0%, #ffb84d 100%);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
 }
 
 .summary-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(255, 161, 22, 0.2);
-  border-color: #ffa116;
+  box-shadow: 0 12px 24px rgba(255, 215, 0, 0.15);
+  border-color: #ffd700;
+}
+
+.summary-card:hover::before {
+  height: 5px;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
 }
 
 .summary-card-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #b3b3b3;
+  color: rgba(255, 215, 0, 0.9);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   margin-bottom: 1rem;
 }
 
@@ -61,33 +107,29 @@
   color: #ffffff;
   line-height: 1;
   margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
 
 .summary-card-value .value-suffix {
   font-size: 1.5rem;
-  color: #ffa116;
+  color: #ffd700;
   font-weight: 600;
-}
-
-.summary-card-subtitle {
-  font-size: 0.875rem;
-  color: #808080;
-  margin-top: 0.5rem;
 }
 
 /* Daily Tasks Card */
 .tasks-card {
-  background: #ffffff;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
   margin-bottom: 2rem;
-  border: 1px solid #f0f0f0;
+  border: 2px solid rgba(255, 215, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 .tasks-card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 24px rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 .tasks-card-header {
@@ -96,23 +138,25 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #ffa116;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
 }
 
 .tasks-card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
   margin: 0;
+  text-shadow: 0 2px 6px rgba(255, 215, 0, 0.15);
 }
 
 .tasks-count {
-  background: #ffa116;
+  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
   color: #1a1a1a;
-  padding: 0.25rem 0.75rem;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
 .tasks-list {
@@ -126,26 +170,27 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem;
-  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid rgba(255, 215, 0, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .task-item:hover {
-  background: linear-gradient(135deg, #fff9e6 0%, #fff4d1 100%);
-  border-color: #ffa116;
-  transform: translateX(4px);
+  background: rgba(255, 215, 0, 0.05);
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateX(6px);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
 }
 
 .task-item.completed {
-  opacity: 0.6;
-  background: #f0f0f0;
+  opacity: 0.5;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .task-item.completed:hover {
-  background: #e8e8e8;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .task-left {
@@ -158,56 +203,61 @@
 .task-checkbox {
   width: 20px;
   height: 20px;
-  border: 2px solid #404040;
+  border: 2px solid rgba(255, 215, 0, 0.5);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  accent-color: #ffa116;
+  accent-color: #ffd700;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .task-checkbox:checked {
-  background: #ffa116;
-  border-color: #ffa116;
+  background: #ffd700;
+  border-color: #ffd700;
 }
 
 .task-checkbox:hover {
-  border-color: #ffa116;
+  border-color: #ffd700;
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.3);
 }
 
 .task-name {
   font-size: 1rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #ffffff;
   transition: all 0.2s ease;
 }
 
 .task-item.completed .task-name {
   text-decoration: line-through;
-  color: #808080;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .task-points {
-  background: #1a1a1a;
-  color: #ffa116;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffd700;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 700;
   white-space: nowrap;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
 
 /* Skill Progress Card */
 .skills-card {
-  background: #ffffff;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-  border: 1px solid #f0f0f0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 215, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 .skills-card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 24px rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 .skills-card-header {
@@ -216,14 +266,15 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #ffa116;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
 }
 
 .skills-card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
   margin: 0;
+  text-shadow: 0 2px 6px rgba(255, 215, 0, 0.15);
 }
 
 .skills-list {
@@ -246,32 +297,34 @@
 .skill-name {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
 }
 
 .skill-percentage {
   font-size: 1rem;
   font-weight: 700;
-  color: #ffa116;
+  color: #ffd700;
+  text-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
 }
 
 .skill-progress-bar {
   width: 100%;
   height: 12px;
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .skill-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1a1a1a 0%, #ffa116 100%);
+  background: linear-gradient(90deg, #ffd700 0%, #ffa500 50%, #ffd700 100%);
   border-radius: 10px;
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  box-shadow: 0 2px 4px rgba(255, 161, 22, 0.3);
+  box-shadow: 0 2px 6px rgba(255, 215, 0, 0.4);
 }
 
 .skill-progress-fill::after {
@@ -281,7 +334,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   animation: shimmer 2s infinite;
 }
 

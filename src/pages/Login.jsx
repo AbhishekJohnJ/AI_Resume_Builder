@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaFileAlt, FaPalette, FaRocket, FaChartLine } from 'react-icons/fa';
 import './Login.css';
 
@@ -8,13 +8,31 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Fake authentication - redirect to dashboard
-    if (email && password) {
+    setError('');
+
+    // Validate inputs
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
+    // Get users from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    
+    // Find user with matching credentials
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      // Store logged in user
+      localStorage.setItem('currentUser', JSON.stringify(user));
       navigate('/dashboard');
+    } else {
+      setError('Invalid email or password. Please try again.');
     }
   };
 
@@ -71,48 +89,55 @@ function Login() {
         </div>
         
         <div className="login-right">
-      <div className="login-card">
-        <h2>Welcome Back</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <div className="input-wrapper">
-              <input
-                type="email"
-                id="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+          <div className="login-card">
+            <h2>Welcome Back</h2>
+            
+            {error && (
+              <div className="alert alert-error">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <div className="input-wrapper">
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <div className="input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                  </button>
+                </div>
+              </div>
+              <button type="submit" className="btn-primary">Sign In</button>
+            </form>
+            <p className="signup-link">
+              Don't have an account? <a href="/signup">Create one</a>
+            </p>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="input-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-              </button>
-            </div>
-          </div>
-          <button type="submit" className="btn-primary">Sign In</button>
-        </form>
-        <p className="signup-link">
-          Don't have an account? <a href="/signup">Create one</a>
-        </p>
-      </div>
         </div>
       </div>
     </div>
