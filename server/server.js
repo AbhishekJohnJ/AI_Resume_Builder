@@ -41,6 +41,16 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Resume Schema
+const resumeSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  templateId: { type: Number, required: true },
+  data: { type: Object, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Resume = mongoose.model('Resume', resumeSchema);
+
 // Routes
 
 // Health check
@@ -141,6 +151,41 @@ app.get('/api/users/:id', async (req, res) => {
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Save resume
+app.post('/api/resumes', async (req, res) => {
+  try {
+    const { userId, templateId, data } = req.body;
+    if (!userId || !templateId || !data) return res.status(400).json({ error: 'Missing fields' });
+    const resume = new Resume({ userId, templateId, data });
+    await resume.save();
+    res.status(201).json(resume);
+  } catch (error) {
+    console.error('Save resume error:', error);
+    res.status(500).json({ error: 'Failed to save resume' });
+  }
+});
+
+// Get resumes by user
+app.get('/api/resumes/:userId', async (req, res) => {
+  try {
+    const resumes = await Resume.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.json(resumes);
+  } catch (error) {
+    console.error('Get resumes error:', error);
+    res.status(500).json({ error: 'Failed to fetch resumes' });
+  }
+});
+
+// Delete resume
+app.delete('/api/resumes/:id', async (req, res) => {
+  try {
+    await Resume.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete resume' });
   }
 });
 

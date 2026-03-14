@@ -21,8 +21,8 @@ function Sidebar() {
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { name: 'Resume Builder', icon: FileText, path: '/resume-builder' },
     { name: 'Portfolio', icon: Briefcase, path: '/portfolio' },
-    { name: 'Tasks', icon: CheckSquare, path: '/tasks' },
-    { name: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
+    { name: 'My Resumes', icon: CheckSquare, path: '/my-resumes' },
+    { name: 'My Portfolios', icon: Trophy, path: '/leaderboard' },
     { name: 'Settings', icon: Settings, path: '/settings' }
   ];
 

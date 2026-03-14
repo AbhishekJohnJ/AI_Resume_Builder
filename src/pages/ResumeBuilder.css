@@ -221,13 +221,15 @@
   padding: 6px 12px;
   min-width: 0;
   resize: none;
-  overflow: hidden;
   line-height: 1.5;
   min-height: 24px;
   max-height: 300px;
   overflow-y: auto;
   display: block;
+  scrollbar-width: none;
 }
+
+.rb-input::-webkit-scrollbar { display: none; }
 
 .rb-input::placeholder { color: #555; }
 

@@ -55,6 +55,17 @@ function ResumeBuilder() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
+
+      // Save to database
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (user?.id) {
+        await fetch('http://localhost:5000/api/resumes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData }),
+        });
+      }
+
       setTimeout(() => resumeRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message);
