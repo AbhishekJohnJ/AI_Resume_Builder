@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { User, Menu } from 'lucide-react';
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
-import ResumeStrengthCard from '../components/ResumeStrengthCard';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 
@@ -72,11 +71,6 @@ function ResumeBuilder() {
           </div>
 
           <div className="resume-builder-content">
-            <ResumeStrengthCard
-              score={78}
-              strengths={['React', 'Node.js', 'Git']}
-              weakAreas={['System Design', 'Testing']}
-            />
           </div>
         </main>
       </div>
