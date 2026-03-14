@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu } from 'lucide-react';
+import { User, Menu, Plus, Send, FileText, Image, X, Download, RefreshCw } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
+import GeneratedPortfolio from '../components/GeneratedPortfolio';
 import './Dashboard.css';
 import './Portfolio.css';
+import './ResumeBuilder.css';
 
 /* ── Sample portfolio data ── */
 const pd = {
@@ -415,6 +419,58 @@ function Portfolio() {
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
+  const [prompt, setPrompt] = useState('');
+  const [files, setFiles] = useState([]);
+  const [showUploadMenu, setShowUploadMenu] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [portfolioData, setPortfolioData] = useState(null);
+  const fileInputRef = useRef(null);
+  const docInputRef = useRef(null);
+  const outputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    setFiles(prev => [...prev, ...Array.from(e.target.files)]);
+    e.target.value = '';
+    setShowUploadMenu(false);
+  };
+  const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
+
+  const handleGenerate = async () => {
+    if (!prompt.trim() && files.length === 0) return;
+    if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+    setError('');
+    setLoading(true);
+    setPortfolioData(null);
+    try {
+      const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, templateId: selectedTemplate }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
+      setPortfolioData(data.portfolioData);
+      setTimeout(() => outputRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    const el = document.getElementById('gp-portfolio-paper');
+    if (!el) return;
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * ratio, canvas.height * ratio);
+    pdf.save(`${portfolioData?.name?.replace(/\s+/g, '_') || 'portfolio'}.pdf`);
+  };
 
   return (
     <div className="dashboard-page">
@@ -489,6 +545,103 @@ function Portfolio() {
               </div>
             ))}
           </div>
+
+          {/* ── Portfolio Prompt Section ── */}
+          <div className="rb-prompt-section">
+            <h3 className="rb-prompt-title">Describe your portfolio or upload your existing one</h3>
+            <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting — or upload a file to get started.</p>
+
+            <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
+            <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple style={{ display: 'none' }} onChange={handleFileChange} />
+
+            {files.length > 0 && (
+              <div className="rb-file-chips">
+                {files.map((f, i) => (
+                  <div key={i} className="rb-file-chip">
+                    {f.type.startsWith('image/') ? <Image size={13} /> : <FileText size={13} />}
+                    <span>{f.name}</span>
+                    <button onClick={() => removeFile(i)}><X size={11} /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!selectedTemplate && (
+              <p className="rb-no-template-warn">⚠ Please select a template above before generating.</p>
+            )}
+
+            <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
+              <div className="rb-plus-wrap">
+                <button className="rb-plus-btn" onClick={() => setShowUploadMenu(v => !v)}>
+                  <Plus size={18} />
+                </button>
+                {showUploadMenu && (
+                  <div className="rb-upload-menu">
+                    <button className="rb-upload-option" onClick={() => fileInputRef.current.click()}>
+                      <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
+                    </button>
+                    <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
+                      <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+              <textarea
+                className="rb-input"
+                placeholder="e.g. My name is Alex, I'm a Full Stack Developer with 3 years experience in React and Node.js..."
+                value={prompt}
+                rows={2}
+                onChange={e => {
+                  setPrompt(e.target.value);
+                  const el = e.target;
+                  el.style.height = 'auto';
+                  const maxH = 300;
+                  el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
+                  el.style.overflowY = el.scrollHeight > maxH ? 'auto' : 'hidden';
+                }}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
+              />
+              <button
+                className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
+                onClick={handleGenerate}
+                disabled={loading || (!prompt.trim() && files.length === 0)}
+              >
+                {loading ? <span className="rb-spinner" /> : <Send size={16} />}
+              </button>
+            </div>
+
+            {error && <p className="rb-no-template-warn">{error}</p>}
+          </div>
+
+          {/* ── Loading ── */}
+          {loading && (
+            <div className="gr-loading">
+              <div className="gr-spinner" />
+              <p className="gr-loading-text">Generating your portfolio with AI...</p>
+            </div>
+          )}
+
+          {/* ── Generated Portfolio Output ── */}
+          {portfolioData && !loading && (
+            <div className="gr-output" ref={outputRef}>
+              <div className="gr-output-header">
+                <h3 className="gr-output-title">Your Generated Portfolio</h3>
+                <div className="gr-actions">
+                  <button className="gr-btn gr-btn-regenerate" onClick={handleGenerate}>
+                    <RefreshCw size={14} /> Regenerate
+                  </button>
+                  <button className="gr-btn gr-btn-download" onClick={handleDownload}>
+                    <Download size={14} /> Download PDF
+                  </button>
+                </div>
+              </div>
+              <div className="gr-paper-wrap">
+                <div id="gp-portfolio-paper" className="gr-paper">
+                  <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} />
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
 

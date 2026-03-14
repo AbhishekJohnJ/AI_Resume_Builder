@@ -304,6 +304,73 @@ app.post('/api/ai/analyze-skills', async (req, res) => {
   }
 });
 
+// Generate portfolio data from prompt
+app.post('/api/ai/generate-portfolio', async (req, res) => {
+  try {
+    const { prompt, templateId } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
+
+    const apiKey = process.env.AI_API_KEY;
+    const url = 'https://openrouter.ai/api/v1/chat/completions';
+
+    const systemPrompt = `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "name": "Full Name",
+  "initials": "AB",
+  "title": "Job Title",
+  "tagline": "A short inspiring tagline",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "location": "City, Country",
+  "github": "github.com/username",
+  "linkedin": "linkedin.com/in/username",
+  "website": "www.website.com",
+  "about": "2-3 sentence personal bio",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
+  "projects": [
+    { "name": "Project Name", "desc": "Short description of the project.", "tech": ["Tech1", "Tech2", "Tech3"], "link": "#" },
+    { "name": "Project Name 2", "desc": "Short description.", "tech": ["Tech1", "Tech2"], "link": "#" },
+    { "name": "Project Name 3", "desc": "Short description.", "tech": ["Tech1", "Tech2"], "link": "#" }
+  ],
+  "experience": [
+    { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." },
+    { "role": "Job Title 2", "company": "Company 2", "period": "2019 – 2021", "desc": "Description." }
+  ]
+}
+If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek/deepseek-chat',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `User description: ${prompt}` }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'AI API error');
+
+    const raw = data.choices?.[0]?.message?.content || '';
+    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const portfolioData = JSON.parse(cleaned);
+
+    res.json({ portfolioData });
+  } catch (error) {
+    console.error('Generate portfolio error:', error);
+    res.status(500).json({ error: 'Failed to generate portfolio: ' + error.message });
+  }
+});
+
 // Generate resume data from prompt
 app.post('/api/ai/generate-resume', async (req, res) => {
   try {
