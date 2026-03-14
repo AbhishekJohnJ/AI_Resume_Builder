@@ -391,11 +391,6 @@ function TemplatePickerCard({ onSelect, selected }) {
 
   return (
     <div className="tpl-picker">
-      <div className="tpl-picker-header">
-        <h2 className="tpl-picker-title">Choose Your Resume Template</h2>
-        <p className="tpl-picker-sub">Pick a professionally designed template to build your resume</p>
-      </div>
-
       {preview && (
         <div className="tpl-modal-overlay" onClick={() => setPreview(null)}>
           <div className="tpl-modal" onClick={e => e.stopPropagation()}>

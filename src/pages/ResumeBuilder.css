@@ -132,19 +132,20 @@
   display: flex;
   align-items: flex-end;
   background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,215,0,0.2);
+  border: 1.5px solid rgba(255,215,0,0.5);
   border-radius: 24px;
   padding: 6px 8px 6px 6px;
   backdrop-filter: blur(10px);
   transition: border-color 0.2s, box-shadow 0.2s;
   max-width: 700px;
   margin: 0 auto;
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.08);
 }
 
 .rb-bar:focus-within,
 .rb-bar-active {
-  border-color: rgba(255,215,0,0.5);
-  box-shadow: 0 0 0 3px rgba(255,215,0,0.08);
+  border-color: rgba(255,215,0,0.8);
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.12);
 }
 
 /* + button */
@@ -231,7 +232,7 @@
 
 .rb-input::-webkit-scrollbar { display: none; }
 
-.rb-input::placeholder { color: #555; }
+.rb-input::placeholder { color: #666; }
 
 /* Send button */
 .rb-send-btn {
@@ -239,7 +240,7 @@
   border-radius: 50%;
   background: rgba(255,255,255,0.05);
   border: none;
-  color: #444;
+  color: rgba(255,215,0,0.35);
   display: flex; align-items: center; justify-content: center;
   cursor: not-allowed;
   flex-shrink: 0;

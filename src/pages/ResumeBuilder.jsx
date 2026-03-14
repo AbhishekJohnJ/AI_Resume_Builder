@@ -130,7 +130,7 @@ function ResumeBuilder() {
         <main className="dashboard-content">
           <div className="page-header">
             <h1 className="page-title">Resume Builder</h1>
-            <p className="page-subtitle">Build and optimize your professional resume</p>
+            <p className="page-subtitle">Pick a professionally designed template to build your resume</p>
           </div>
 
           <div className="resume-builder-content">
@@ -180,7 +180,7 @@ function ResumeBuilder() {
                   className="rb-input"
                   placeholder="e.g. My name is John, I'm a Full Stack Developer with 3 years experience in React and Node.js..."
                   value={prompt}
-                  rows={1}
+                  rows={2}
                   onChange={e => {
                     setPrompt(e.target.value);
                     const el = e.target;
