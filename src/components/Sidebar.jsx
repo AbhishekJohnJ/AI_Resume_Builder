@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
@@ -14,8 +14,8 @@ import './Sidebar.css';
 
 function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState('Dashboard');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -26,12 +26,9 @@ function Sidebar() {
     { name: 'Settings', icon: Settings, path: '/settings' }
   ];
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   const handleNavigation = (item) => {
-    setActiveItem(item.name);
     navigate(item.path);
   };
 
@@ -57,7 +54,7 @@ function Sidebar() {
             return (
               <button
                 key={item.name}
-                className={`sidebar-item ${activeItem === item.name ? 'active' : ''}`}
+                className={`sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
                 onClick={() => handleNavigation(item)}
               >
                 <Icon className="sidebar-icon" size={20} />
