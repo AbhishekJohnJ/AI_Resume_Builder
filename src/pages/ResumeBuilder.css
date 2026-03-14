@@ -1,38 +1,201 @@
-/* Resume Builder Page */
-.page-header {
-  margin-bottom: 2rem;
+/* ── Page background override ── */
+.dashboard-page {
+  background: #111111;
 }
+
+/* ── Page Header ── */
+.page-header { margin-bottom: 2rem; }
 
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffa116;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.02em;
 }
 
 .page-subtitle {
   font-size: 1rem;
-  color: #666666;
+  color: #888;
   margin: 0;
 }
 
 .resume-builder-content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  width: 100%;
   padding: 1rem 0;
 }
 
 @media (max-width: 768px) {
-  .page-title {
-    font-size: 1.5rem;
-  }
+  .page-title { font-size: 1.5rem; }
+  .page-subtitle { font-size: 0.875rem; }
+  .resume-builder-content { padding: 0.5rem 0; }
+}
 
-  .page-subtitle {
-    font-size: 0.875rem;
-  }
+/* ── AI Prompt Section ── */
+.rb-prompt-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid #2d2d2d;
+}
 
-  .resume-builder-content {
-    padding: 0.5rem 0;
-  }
+.rb-prompt-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.35rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.rb-prompt-sub {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0 0 1.25rem;
+}
+
+.rb-prompt-box {
+  background: #1a1a1a;
+  border: 2px solid #2d2d2d;
+  border-radius: 14px;
+  padding: 1rem 1.1rem 0.85rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.rb-prompt-box:focus-within {
+  border-color: #ffa116;
+  box-shadow: 0 0 0 3px rgba(255, 161, 22, 0.12);
+}
+
+/* File chips */
+.rb-file-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.rb-file-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 161, 22, 0.1);
+  border: 1px solid rgba(255, 161, 22, 0.35);
+  color: #ffa116;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 8px 4px 7px;
+  border-radius: 20px;
+  max-width: 200px;
+}
+
+.rb-file-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
+}
+
+.rb-file-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffa116;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+.rb-file-chip button:hover { color: #ff4444; }
+
+/* Textarea */
+.rb-textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 0.95rem;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  background: transparent;
+}
+
+.rb-textarea::placeholder { color: #555; }
+
+/* Bottom actions row */
+.rb-prompt-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d2d2d;
+}
+
+.rb-prompt-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rb-attach-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #2d2d2d;
+  border: 1px solid #3d3d3d;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #aaa;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.rb-attach-btn:hover {
+  background: #333;
+  border-color: #ffa116;
+  color: #ffa116;
+}
+
+.rb-file-hint {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.rb-send-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #2d2d2d;
+  color: #555;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.3rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: not-allowed;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.rb-send-btn.active {
+  background: #ffa116;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.rb-send-btn.active:hover {
+  background: #ffb340;
+  transform: scale(1.02);
+}
+
+@media (max-width: 600px) {
+  .rb-prompt-actions { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .rb-send-btn { width: 100%; justify-content: center; }
 }
