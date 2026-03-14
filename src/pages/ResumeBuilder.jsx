@@ -129,13 +129,20 @@ function ResumeBuilder() {
                     </div>
                   )}
                 </div>
-                <input
+                <textarea
                   className="rb-input"
-                  type="text"
                   placeholder="Describe your experience, skills, or the job you're targeting..."
                   value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
+                  rows={1}
+                  onChange={e => {
+                    setPrompt(e.target.value);
+                    const el = e.target;
+                    el.style.height = 'auto';
+                    const maxH = 300;
+                    el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
+                    el.style.overflowY = el.scrollHeight > maxH ? 'auto' : 'hidden';
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                 />
                 <button
                   className={`rb-send-btn${prompt.trim() || files.length ? ' rb-send-active' : ''}`}

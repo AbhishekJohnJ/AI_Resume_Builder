@@ -130,13 +130,15 @@
 /* Pill bar */
 .rb-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   background: rgba(255,255,255,0.05);
   border: 1.5px solid rgba(255,215,0,0.2);
-  border-radius: 999px;
+  border-radius: 24px;
   padding: 6px 8px 6px 6px;
   backdrop-filter: blur(10px);
   transition: border-color 0.2s, box-shadow 0.2s;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .rb-bar:focus-within,
@@ -146,7 +148,7 @@
 }
 
 /* + button */
-.rb-plus-wrap { position: relative; flex-shrink: 0; }
+.rb-plus-wrap { position: relative; flex-shrink: 0; align-self: flex-end; }
 
 .rb-plus-btn {
   width: 34px; height: 34px;
@@ -216,8 +218,15 @@
   color: #e5e5e5;
   font-size: 0.95rem;
   font-family: 'Inter', sans-serif;
-  padding: 0 12px;
+  padding: 6px 12px;
   min-width: 0;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.5;
+  min-height: 24px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: block;
 }
 
 .rb-input::placeholder { color: #555; }
@@ -232,6 +241,7 @@
   display: flex; align-items: center; justify-content: center;
   cursor: not-allowed;
   flex-shrink: 0;
+  align-self: flex-end;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
