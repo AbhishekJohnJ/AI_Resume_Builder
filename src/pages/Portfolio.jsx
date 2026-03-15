@@ -597,7 +597,7 @@ function Portfolio() {
               </div>
               <textarea
                 className="rb-input"
-                placeholder="e.g. My name is Alex, I'm a Full Stack Developer with 3 years experience in React and Node.js..."
+                placeholder="e.g. Designer, React, portfolio..."
                 value={prompt}
                 rows={2}
                 onChange={e => {
