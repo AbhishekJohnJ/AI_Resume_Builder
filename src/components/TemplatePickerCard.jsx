@@ -111,6 +111,12 @@ function Template1() {
             </div>
           </div>
         ))}
+        <div className="rv1-main-sec-title" style={{marginTop:18}}>Awards & Recognition</div>
+        {d.awards.map((a,i) => (
+          <div key={i} className="rv1-award-item">{a}</div>
+        ))}
+        <div className="rv1-main-sec-title" style={{marginTop:18}}>Profile</div>
+        <p className="rv1-text" style={{color:'#444'}}>{d.summary}</p>
       </div>
     </div>
   );
@@ -222,6 +228,19 @@ function Template3() {
         <p className="rv3-main-text">📞 {d.phone}</p>
         <p className="rv3-main-text">✉ {d.email}</p>
         <p className="rv3-main-text">📍 {d.location}</p>
+        <div className="rv3-sec-title-main">SKILLS</div>
+        {d.skills.map((s,i) => (
+          <div key={i} style={{display:'flex', alignItems:'center', gap:6, marginBottom:5}}>
+            <span className="rv3-main-text" style={{flex:1}}>{s}</span>
+            <div style={{width:60, height:3, background:'#e0e0e0', borderRadius:2}}>
+              <div style={{width:`${90-i*8}%`, height:'100%', background:'#5f8a8b', borderRadius:2}}/>
+            </div>
+          </div>
+        ))}
+        <div className="rv3-sec-title-main">AWARDS</div>
+        {d.awards.map((a,i) => (
+          <div key={i} className="rv3-award-item">{a}</div>
+        ))}
       </div>
     </div>
   );
