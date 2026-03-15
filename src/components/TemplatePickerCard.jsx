@@ -3,19 +3,34 @@ import './TemplatePickerCard.css';
 
 function ScaledPreview({ children, className }) {
   const wrapRef = useRef(null);
+  const innerRef = useRef(null);
   const [scale, setScale] = useState(0.38);
+  const [scaledHeight, setScaledHeight] = useState(null);
+
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const update = () => setScale(el.offsetWidth / 794);
-    update();
+    const wrap = wrapRef.current;
+    const inner = innerRef.current;
+    if (!wrap || !inner) return;
+
+    const update = () => {
+      const s = wrap.offsetWidth / 794;
+      setScale(s);
+      // After scale is applied, the rendered height of inner * scale = container height
+      const contentH = inner.scrollHeight;
+      setScaledHeight(contentH * s);
+    };
+
+    // Wait a tick for inner to render before measuring
+    const t = setTimeout(update, 0);
     const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+    ro.observe(wrap);
+    ro.observe(inner);
+    return () => { clearTimeout(t); ro.disconnect(); };
+  }, [children]);
+
   return (
-    <div ref={wrapRef} className={className}>
-      <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: 794, position: 'absolute', top: 0, left: 0, pointerEvents: 'none', userSelect: 'none' }}>
+    <div ref={wrapRef} className={className} style={scaledHeight ? { height: scaledHeight, position: 'relative' } : { position: 'relative' }}>
+      <div ref={innerRef} style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: 794, position: 'absolute', top: 0, left: 0, pointerEvents: 'none', userSelect: 'none' }}>
         {children}
       </div>
     </div>
