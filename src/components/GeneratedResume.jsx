@@ -1,28 +1,40 @@
 import './TemplatePickerCard.css';
 import './GeneratedResume.css';
 
-function GeneratedResume({ data, templateId }) {
+function GeneratedResume({ data, templateId, themeColor }) {
   const d = data;
   const initials = d.initials || d.name?.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || 'AB';
-  if (templateId === 1) return <T1 d={d} initials={initials} />;
-  if (templateId === 2) return <T2 d={d} initials={initials} />;
-  if (templateId === 3) return <T3 d={d} initials={initials} />;
-  if (templateId === 4) return <T4 d={d} initials={initials} />;
-  if (templateId === 5) return <T5 d={d} initials={initials} />;
-  if (templateId === 6) return <T6 d={d} initials={initials} />;
-  if (templateId === 7) return <T7 d={d} initials={initials} />;
-  if (templateId === 8) return <T8 d={d} initials={initials} />;
-  if (templateId === 9) return <T9 d={d} initials={initials} />;
-  if (templateId === 10) return <T10 d={d} initials={initials} />;
-  if (templateId === 11) return <T11 d={d} initials={initials} />;
-  if (templateId === 12) return <T12 d={d} initials={initials} />;
-  return <T1 d={d} initials={initials} />;
+  const props = { d, initials, themeColor };
+  if (templateId === 1) return <T1 {...props} />;
+  if (templateId === 2) return <T2 {...props} />;
+  if (templateId === 3) return <T3 {...props} />;
+  if (templateId === 4) return <T4 {...props} />;
+  if (templateId === 5) return <T5 {...props} />;
+  if (templateId === 6) return <T6 {...props} />;
+  if (templateId === 7) return <T7 {...props} />;
+  if (templateId === 8) return <T8 {...props} />;
+  if (templateId === 9) return <T9 {...props} />;
+  if (templateId === 10) return <T10 {...props} />;
+  if (templateId === 11) return <T11 {...props} />;
+  if (templateId === 12) return <T12 {...props} />;
+  return <T1 {...props} />;
+}
+
+/** Build CSS variable overrides from a themeColor palette */
+function themeVars(themeColor) {
+  if (!themeColor) return {};
+  return {
+    '--tc': themeColor.main,
+    '--tc-dark': themeColor.dark,
+    '--tc-light': themeColor.light,
+    '--tc-accent': themeColor.accent,
+  };
 }
 
 /* ── T1: Blue Sidebar ── */
-function T1({ d, initials }) {
+function T1({ d, initials, themeColor }) {
   return (
-    <div className="rv rv1">
+    <div className="rv rv1" style={themeVars(themeColor)}>
       <div className="rv1-sidebar">
         <div className="rv1-photo"><span>{initials}</span></div>
         <div className="rv1-name">{d.name}</div>
@@ -81,9 +93,9 @@ function T1({ d, initials }) {
 }
 
 /* ── T2: Dark Header, Two-Column ── */
-function T2({ d, initials }) {
+function T2({ d, initials, themeColor }) {
   return (
-    <div className="rv rv2">
+    <div className="rv rv2" style={themeVars(themeColor)}>
       <div className="rv2-header">
         <div className="rv2-photo"><span>{initials}</span></div>
         <div className="rv2-header-info">
@@ -152,9 +164,9 @@ function T2({ d, initials }) {
 }
 
 /* ── T3: Teal Sidebar ── */
-function T3({ d, initials }) {
+function T3({ d, initials, themeColor }) {
   return (
-    <div className="rv rv3">
+    <div className="rv rv3" style={themeVars(themeColor)}>
       <div className="rv3-sidebar">
         <div className="rv3-photo"><span>{initials}</span></div>
         <div className="rv3-name">{d.name?.toUpperCase()}</div>
@@ -204,9 +216,9 @@ function T3({ d, initials }) {
 }
 
 /* ── T4: Orange Header ── */
-function T4({ d, initials }) {
+function T4({ d, initials, themeColor }) {
   return (
-    <div className="rv rv4">
+    <div className="rv rv4" style={themeVars(themeColor)}>
       <div className="rv4-header">
         <div className="rv4-header-left">
           <div className="rv4-photo"><span>{initials}</span></div>
@@ -261,9 +273,9 @@ function T4({ d, initials }) {
 }
 
 /* ── T5: Grey Header, Two-Column ── */
-function T5({ d, initials }) {
+function T5({ d, initials, themeColor }) {
   return (
-    <div className="rv rv5">
+    <div className="rv rv5" style={themeVars(themeColor)}>
       <div className="rv5-header">
         <div className="rv5-photo"><span>{initials}</span></div>
         <div>
@@ -319,9 +331,9 @@ function T5({ d, initials }) {
 }
 
 /* ── T6: Teal Header ── */
-function T6({ d, initials }) {
+function T6({ d, initials, themeColor }) {
   return (
-    <div className="rv rv6">
+    <div className="rv rv6" style={themeVars(themeColor)}>
       <div className="rv6-header">
         <div className="rv6-photo"><span>{initials}</span></div>
         <div className="rv6-header-text">
@@ -374,9 +386,9 @@ function T6({ d, initials }) {
 }
 
 /* ── T7: Dark Executive ── */
-function T7({ d, initials }) {
+function T7({ d, initials, themeColor }) {
   return (
-    <div className="rv rv7">
+    <div className="rv rv7" style={themeVars(themeColor)}>
       <div className="rv7-header">
         <div className="rv7-photo"><span>{initials}</span></div>
         <div>
@@ -422,7 +434,7 @@ function T7({ d, initials }) {
               <div key={i} style={{ marginBottom: 5 }}>
                 <span className="rv7-text">{s}</span>
                 <div style={{ height: 3, background: '#333', borderRadius: 2, marginTop: 2 }}>
-                  <div style={{ width: `${90 - i * 8}%`, height: '100%', background: '#c9a84c', borderRadius: 2 }} />
+                  <div style={{ width: `${90 - i * 8}%`, height: '100%', background: 'var(--tc, #c9a84c)', borderRadius: 2 }} />
                 </div>
               </div>
             ))}
@@ -438,9 +450,9 @@ function T7({ d, initials }) {
 }
 
 /* ── T8: Purple Creative ── */
-function T8({ d, initials }) {
+function T8({ d, initials, themeColor }) {
   return (
-    <div className="rv rv8">
+    <div className="rv rv8" style={themeVars(themeColor)}>
       <div className="rv8-sidebar">
         <div className="rv8-photo"><span>{initials}</span></div>
         <div className="rv8-name">{d.name}</div>
@@ -487,9 +499,9 @@ function T8({ d, initials }) {
 }
 
 /* ── T9: Minimal White ── */
-function T9({ d, initials }) {
+function T9({ d, initials, themeColor }) {
   return (
-    <div className="rv rv9">
+    <div className="rv rv9" style={themeVars(themeColor)}>
       <div className="rv9-header">
         <div className="rv9-name">{d.name}</div>
         <div className="rv9-title">{d.title}</div>
@@ -543,9 +555,9 @@ function T9({ d, initials }) {
 }
 
 /* ── T10: Red Accent ── */
-function T10({ d, initials }) {
+function T10({ d, initials, themeColor }) {
   return (
-    <div className="rv rv10">
+    <div className="rv rv10" style={themeVars(themeColor)}>
       <div className="rv10-sidebar">
         <div className="rv10-photo"><span>{initials}</span></div>
         <div className="rv10-name">{d.name}</div>
@@ -560,7 +572,7 @@ function T10({ d, initials }) {
           <div key={i} style={{ marginBottom: 5 }}>
             <span className="rv10-text">{s}</span>
             <div style={{ height: 3, background: 'rgba(255,255,255,0.2)', borderRadius: 2, marginTop: 2 }}>
-              <div style={{ width: `${90 - i * 8}%`, height: '100%', background: '#e53e3e', borderRadius: 2 }} />
+              <div style={{ width: `${90 - i * 8}%`, height: '100%', background: 'var(--tc, #e53e3e)', borderRadius: 2 }} />
             </div>
           </div>
         ))}
@@ -598,9 +610,9 @@ function T10({ d, initials }) {
 }
 
 /* ── T11: Green Nature ── */
-function T11({ d, initials }) {
+function T11({ d, initials, themeColor }) {
   return (
-    <div className="rv rv11">
+    <div className="rv rv11" style={themeVars(themeColor)}>
       <div className="rv11-header">
         <div className="rv11-photo"><span>{initials}</span></div>
         <div className="rv11-header-text">
@@ -653,9 +665,9 @@ function T11({ d, initials }) {
 }
 
 /* ── T12: Navy Classic ── */
-function T12({ d, initials }) {
+function T12({ d, initials, themeColor }) {
   return (
-    <div className="rv rv12">
+    <div className="rv rv12" style={themeVars(themeColor)}>
       <div className="rv12-top">
         <div className="rv12-photo"><span>{initials}</span></div>
         <div className="rv12-top-text">

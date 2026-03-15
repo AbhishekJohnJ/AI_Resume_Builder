@@ -7,6 +7,7 @@ import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
+import { parseThemeColor } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -21,6 +22,7 @@ function ResumeBuilder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
+  const [themeColor, setThemeColor] = useState(null);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
@@ -44,6 +46,16 @@ function ResumeBuilder() {
       return;
     }
     setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    if (detectedColor) setThemeColor(detectedColor);
+
+    // If it's only a color-change request and we already have a resume, skip AI call
+    const isColorOnlyRequest = detectedColor && files.length === 0 &&
+      /^(change|set|make|use|switch|update)?\s*(the\s*)?(theme\s*)?(colou?r|color)\s*(to|as|:)?\s*\w+\.?$/i.test(prompt.trim());
+    if (isColorOnlyRequest && resumeData) return;
+
     setLoading(true);
     setResumeData(null);
     try {
@@ -229,7 +241,7 @@ function ResumeBuilder() {
                 </div>
                 <div className="gr-paper-wrap">
                   <div id="gr-resume-paper" className="gr-paper">
-                    <GeneratedResume data={resumeData} templateId={selectedTemplate} />
+                    <GeneratedResume data={resumeData} templateId={selectedTemplate} themeColor={themeColor} />
                   </div>
                 </div>
               </div>
