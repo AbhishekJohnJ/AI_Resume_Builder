@@ -5,6 +5,7 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
+import { parseThemeColor } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -530,6 +531,7 @@ function Portfolio() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
+  const [themeColor, setThemeColor] = useState(null);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const outputRef = useRef(null);
@@ -545,6 +547,16 @@ function Portfolio() {
     if (!prompt.trim() && files.length === 0) return;
     if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
     setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    if (detectedColor) setThemeColor(detectedColor);
+
+    // If it's only a color-change request and we already have a portfolio, skip AI call
+    const isColorOnlyRequest = detectedColor && files.length === 0 &&
+      /^(change|set|make|use|switch|update)?\s*(the\s*)?(theme\s*)?(colou?r|color)\s*(to|as|:)?\s*\w+\.?$/i.test(prompt.trim());
+    if (isColorOnlyRequest && portfolioData) return;
+
     setLoading(true);
     setPortfolioData(null);
     try {
@@ -833,7 +845,7 @@ ${markup}
               </div>
               <div className="gr-paper-wrap">
                 <div id="gp-portfolio-paper" className="gr-paper">
-                  <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} />
+                  <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} themeColor={themeColor} />
                 </div>
               </div>
             </div>
