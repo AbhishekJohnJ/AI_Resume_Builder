@@ -509,8 +509,16 @@ If any field is not mentioned, make a reasonable professional inference. Always 
     if (!response.ok) throw new Error(data.error?.message || 'AI API error');
 
     const raw = data.choices?.[0]?.message?.content || '';
-    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const portfolioData = JSON.parse(cleaned);
+
+    // Robust JSON extraction
+    let jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    if (!jsonStr.startsWith('{')) {
+      const match = jsonStr.match(/\{[\s\S]*\}/);
+      if (match) jsonStr = match[0];
+      else throw new Error('AI did not return valid JSON. Try rephrasing your prompt.');
+    }
+
+    const portfolioData = JSON.parse(jsonStr);
 
     res.json({ portfolioData });
   } catch (error) {
@@ -606,8 +614,14 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
     "experience": "default"
   }
 }`
-      : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object. 
-Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+      : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object.
+
+The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer with 3 years experience... in work experience, make every point very detailed and defined").
+You MUST follow ALL such instructions when generating the resume — apply them to the relevant sections.
+
+For experience descriptions: if the user asks for detailed/defined points, write 3-5 specific, achievement-focused bullet-style sentences in the "desc" field, or populate the "bullets" array with detailed points.
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
 {
   "name": "Full Name",
   "initials": "AB",
@@ -620,15 +634,19 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   "summary": "2-3 sentence professional summary",
   "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
   "experience": [
-    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description." }
+    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description.", "bullets": ["Point 1", "Point 2"] }
   ],
   "education": [
     { "degree": "Degree Name", "school": "University Name", "year": "2020" }
   ],
   "languages": ["English – Native", "Spanish – Intermediate"],
-  "awards": ["Award 1", "Award 2"]
+  "awards": ["Award 1", "Award 2"],
+  "sectionStyle": {
+    "skills": "bars",
+    "experience": "default"
+  }
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
+If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
 
     // Build user message
     let userMessage = '';
@@ -661,8 +679,21 @@ If any field is not mentioned, make a reasonable professional inference. Always 
     if (!response.ok) throw new Error(data.error?.message || 'AI API error');
 
     const raw = data.choices?.[0]?.message?.content || '';
-    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const resumeData = JSON.parse(cleaned);
+
+    // Try to extract JSON robustly — handles markdown fences and mixed text responses
+    let jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    // If the response isn't pure JSON, extract the first {...} block
+    if (!jsonStr.startsWith('{')) {
+      const match = jsonStr.match(/\{[\s\S]*\}/);
+      if (match) {
+        jsonStr = match[0];
+      } else {
+        throw new Error('AI did not return valid JSON. Try rephrasing your prompt.');
+      }
+    }
+
+    const resumeData = JSON.parse(jsonStr);
 
     res.json({ resumeData, filesProcessed: uploadedFiles.length });
   } catch (error) {
