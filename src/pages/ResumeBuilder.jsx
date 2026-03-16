@@ -58,11 +58,12 @@ function ResumeBuilder() {
     }
 
     setLoading(true);
-    setResumeData(null);
+    if (!resumeData) setResumeData(null); // only clear on fresh generation
     try {
       const formData = new FormData();
       formData.append('prompt', prompt);
       formData.append('templateId', selectedTemplate);
+      if (resumeData) formData.append('existingData', JSON.stringify(resumeData));
       files.forEach(f => formData.append('files', f));
 
       const res = await fetch('http://localhost:5000/api/ai/generate-resume', {
@@ -193,7 +194,7 @@ function ResumeBuilder() {
                 </div>
                 <textarea
                   className="rb-input"
-                  placeholder="e.g. Full Stack Developer, React..."
+                  placeholder={resumeData ? 'e.g. Make my summary more impactful, add Docker to skills, improve job descriptions...' : 'e.g. Full Stack Developer, React...'}
                   value={prompt}
                   rows={2}
                   onChange={e => {
@@ -222,7 +223,7 @@ function ResumeBuilder() {
             {loading && (
               <div className="gr-loading">
                 <div className="gr-spinner" />
-                <p className="gr-loading-text">Generating your resume with AI...</p>
+                <p className="gr-loading-text">{resumeData ? 'Enhancing your resume...' : 'Generating your resume with AI...'}</p>
               </div>
             )}
 

@@ -564,12 +564,16 @@ function Portfolio() {
     }
 
     setLoading(true);
-    setPortfolioData(null);
+    if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
       const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, templateId: selectedTemplate }),
+        body: JSON.stringify({
+          prompt,
+          templateId: selectedTemplate,
+          existingData: portfolioData || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
@@ -816,7 +820,7 @@ ${markup}
               </div>
               <textarea
                 className="rb-input"
-                placeholder="e.g. Designer, React, portfolio..."
+                placeholder={portfolioData ? 'e.g. Make the about section more bold, add a new project, improve my tagline...' : 'e.g. Designer, React, portfolio...'}
                 value={prompt}
                 rows={2}
                 onChange={e => {
@@ -845,7 +849,7 @@ ${markup}
           {loading && (
             <div className="gr-loading">
               <div className="gr-spinner" />
-              <p className="gr-loading-text">Generating your portfolio with AI...</p>
+              <p className="gr-loading-text">{portfolioData ? 'Enhancing your portfolio...' : 'Generating your portfolio with AI...'}</p>
             </div>
           )}
 

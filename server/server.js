@@ -414,13 +414,50 @@ app.post('/api/ai/analyze-skills', async (req, res) => {
 // Generate portfolio data from prompt
 app.post('/api/ai/generate-portfolio', async (req, res) => {
   try {
-    const { prompt, templateId } = req.body;
+    const { prompt, templateId, existingData } = req.body;
     if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
 
     const apiKey = process.env.AI_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
-    const systemPrompt = `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
+    const isEnhancement = !!existingData;
+
+    const systemPrompt = isEnhancement
+      ? `You are an expert portfolio designer and content writer. The user already has a generated portfolio and wants to enhance or modify it.
+
+Your job is to apply the user's requested changes to the existing portfolio data and return the FULL updated portfolio JSON.
+
+You can:
+- Rewrite or improve any text field (name, title, tagline, about, project descriptions, experience descriptions)
+- Add, remove, or reorder projects or experience entries
+- Update skills list
+- Change contact details if requested
+- Make the content more professional, bold, creative, minimal, etc. based on user's style request
+- Expand or shorten sections as requested
+
+IMPORTANT: Return the COMPLETE updated portfolio JSON — not just the changed parts.
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "name": "Full Name",
+  "initials": "AB",
+  "title": "Job Title",
+  "tagline": "A short inspiring tagline",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "location": "City, Country",
+  "github": "github.com/username",
+  "linkedin": "linkedin.com/in/username",
+  "website": "www.website.com",
+  "about": "2-3 sentence personal bio",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
+  "projects": [
+    { "name": "Project Name", "desc": "Short description.", "tech": ["Tech1", "Tech2", "Tech3"], "link": "#" }
+  ],
+  "experience": [
+    { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." }
+  ]
+}`
+      : `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
@@ -447,6 +484,10 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 }
 If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
 
+    const userMessage = isEnhancement
+      ? `Here is my current portfolio data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`
+      : `User description: ${prompt}`;
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -457,7 +498,7 @@ If any field is not mentioned, make a reasonable professional inference. Always 
         model: 'deepseek/deepseek-chat',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `User description: ${prompt}` }
+          { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
         max_tokens: 2048
@@ -482,6 +523,7 @@ If any field is not mentioned, make a reasonable professional inference. Always 
 app.post('/api/ai/generate-resume', upload.array('files', 5), async (req, res) => {
   try {
     const { prompt, templateId } = req.body;
+    const existingData = req.body.existingData ? JSON.parse(req.body.existingData) : null;
     const uploadedFiles = req.files || [];
 
     if (!prompt && uploadedFiles.length === 0) {
@@ -495,16 +537,47 @@ app.post('/api/ai/generate-resume', upload.array('files', 5), async (req, res) =
       extractedContent = extractions.filter(Boolean).join('\n\n');
     }
 
-    // Build the user message combining prompt + extracted file content
-    let userMessage = '';
-    if (prompt) userMessage += `User description: ${prompt}\n\n`;
-    if (extractedContent) userMessage += `Extracted content from uploaded file(s):\n${extractedContent}`;
-    userMessage = userMessage.trim();
+    const isEnhancement = !!existingData && !extractedContent;
 
     const apiKey = process.env.AI_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
-    const systemPrompt = `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object. 
+    const systemPrompt = isEnhancement
+      ? `You are an expert resume writer and career coach. The user already has a generated resume and wants to enhance or modify it.
+
+Your job is to apply the user's requested changes to the existing resume data and return the FULL updated resume JSON.
+
+You can:
+- Rewrite or improve any text field (summary, job descriptions, education details)
+- Add, remove, or reorder experience, education, skills, awards, languages
+- Make content more professional, concise, impactful, or creative based on user's request
+- Add quantifiable achievements, action verbs, or industry keywords
+- Expand or shorten any section as requested
+- Update contact details if requested
+
+IMPORTANT: Return the COMPLETE updated resume JSON — not just the changed parts.
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "name": "Full Name",
+  "initials": "AB",
+  "title": "Job Title",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "location": "City, Country",
+  "linkedin": "linkedin.com/in/username",
+  "website": "www.website.com",
+  "summary": "2-3 sentence professional summary",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
+  "experience": [
+    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description." }
+  ],
+  "education": [
+    { "degree": "Degree Name", "school": "University Name", "year": "2020" }
+  ],
+  "languages": ["English – Native", "Spanish – Intermediate"],
+  "awards": ["Award 1", "Award 2"]
+}`
+      : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object. 
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
@@ -528,6 +601,16 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 }
 If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
 
+    // Build user message
+    let userMessage = '';
+    if (isEnhancement) {
+      userMessage = `Here is my current resume data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`;
+    } else {
+      if (prompt) userMessage += `User description: ${prompt}\n\n`;
+      if (extractedContent) userMessage += `Extracted content from uploaded file(s):\n${extractedContent}`;
+      userMessage = userMessage.trim();
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -549,7 +632,6 @@ If any field is not mentioned, make a reasonable professional inference. Always 
     if (!response.ok) throw new Error(data.error?.message || 'AI API error');
 
     const raw = data.choices?.[0]?.message?.content || '';
-    // Strip markdown code fences if present
     const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const resumeData = JSON.parse(cleaned);
 
