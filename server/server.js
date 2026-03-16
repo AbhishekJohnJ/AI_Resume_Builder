@@ -106,6 +106,7 @@ const resumeSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   templateId: { type: Number, required: true },
   data: { type: Object, required: true },
+  themeColor: { type: Object, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -116,6 +117,7 @@ const portfolioSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   templateId: { type: Number, required: true },
   data: { type: Object, required: true },
+  themeColor: { type: Object, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -227,9 +229,9 @@ app.get('/api/users/:id', async (req, res) => {
 // Save resume
 app.post('/api/resumes', async (req, res) => {
   try {
-    const { userId, templateId, data } = req.body;
+    const { userId, templateId, data, themeColor } = req.body;
     if (!userId || !templateId || !data) return res.status(400).json({ error: 'Missing fields' });
-    const resume = new Resume({ userId, templateId, data });
+    const resume = new Resume({ userId, templateId, data, themeColor: themeColor || null });
     await resume.save();
     res.status(201).json(resume);
   } catch (error) {
@@ -262,9 +264,9 @@ app.delete('/api/resumes/:id', async (req, res) => {
 // Save portfolio
 app.post('/api/portfolios', async (req, res) => {
   try {
-    const { userId, templateId, data } = req.body;
+    const { userId, templateId, data, themeColor } = req.body;
     if (!userId || !templateId || !data) return res.status(400).json({ error: 'Missing fields' });
-    const portfolio = new Portfolio({ userId, templateId, data });
+    const portfolio = new Portfolio({ userId, templateId, data, themeColor: themeColor || null });
     await portfolio.save();
     res.status(201).json(portfolio);
   } catch (error) {

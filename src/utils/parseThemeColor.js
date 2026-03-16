@@ -43,6 +43,26 @@ const COLOR_MAP = {
   cyan:        { main: '#0891b2', dark: '#164e63', light: '#cffafe', accent: '#22d3ee' },
 };
 
+// Keywords that strongly indicate a color-change intent (not just mentioning a color)
+const COLOR_INTENT_KEYWORDS = [
+  'change', 'switch', 'set', 'make', 'use', 'apply', 'update',
+  'colour', 'color', 'theme', 'colou'
+];
+
+/**
+ * Detects if the prompt is purely a color-change command (no resume content).
+ * @param {string} prompt
+ * @returns {boolean}
+ */
+export function isColorChangeOnly(prompt) {
+  if (!prompt) return false;
+  const lower = prompt.trim().toLowerCase();
+  const hasColorIntent = COLOR_INTENT_KEYWORDS.some(kw => lower.includes(kw));
+  const hasColorWord = Object.keys(COLOR_MAP).some(c => new RegExp(`\\b${c}\\b`).test(lower));
+  // Short prompt (< 80 chars) with color intent + color word = color-only command
+  return hasColorIntent && hasColorWord && lower.length < 80;
+}
+
 /**
  * @param {string} prompt
  * @returns {{ main: string, dark: string, light: string, accent: string } | null}
@@ -51,21 +71,11 @@ export function parseThemeColor(prompt) {
   if (!prompt) return null;
   const lower = prompt.toLowerCase();
 
-  // Match patterns like:
-  // "change theme colour to green", "make it blue", "use red theme",
-  // "theme color: purple", "set color to orange"
-  const colorPattern = new RegExp(
-    `(?:theme|color|colour|change|make|set|use|switch).*?\\b(${Object.keys(COLOR_MAP).join('|')})\\b|\\b(${Object.keys(COLOR_MAP).join('|')})\\b.*?(?:theme|color|colour)`,
-    'i'
-  );
+  // Only detect color if there's a clear color-change intent keyword nearby
+  const hasIntent = COLOR_INTENT_KEYWORDS.some(kw => lower.includes(kw));
+  if (!hasIntent) return null;
 
-  const match = lower.match(colorPattern);
-  if (match) {
-    const colorName = (match[1] || match[2])?.toLowerCase();
-    if (colorName && COLOR_MAP[colorName]) return COLOR_MAP[colorName];
-  }
-
-  // Fallback: just check if any color word appears anywhere in the prompt
+  // Find which color word appears
   for (const [name, palette] of Object.entries(COLOR_MAP)) {
     const wordBoundary = new RegExp(`\\b${name}\\b`, 'i');
     if (wordBoundary.test(lower)) return palette;

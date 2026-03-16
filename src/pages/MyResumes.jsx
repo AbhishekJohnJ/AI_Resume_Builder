@@ -139,7 +139,7 @@ function MyResumes() {
                 <div key={r._id} className="mr-card">
                   <div className="mr-card-preview">
                     <div className="mr-card-inner">
-                      <GeneratedResume data={r.data} templateId={r.templateId} />
+                      <GeneratedResume data={r.data} templateId={r.templateId} themeColor={r.themeColor || null} />
                     </div>
                   </div>
                   <div className="mr-card-footer">
@@ -182,7 +182,7 @@ function MyResumes() {
               </div>
             ) : (
               <div className="mr-modal-body" ref={previewRef}>
-                <GeneratedResume data={preview.data} templateId={preview.templateId} />
+                <GeneratedResume data={preview.data} templateId={preview.templateId} themeColor={preview.themeColor || null} />
               </div>
             )}
           </div>

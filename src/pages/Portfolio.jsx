@@ -5,7 +5,7 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
-import { parseThemeColor } from '../utils/parseThemeColor';
+import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -552,10 +552,11 @@ function Portfolio() {
     const detectedColor = parseThemeColor(prompt);
     if (detectedColor) setThemeColor(detectedColor);
 
-    // If it's only a color-change request and we already have a portfolio, skip AI call
-    const isColorOnlyRequest = detectedColor && files.length === 0 &&
-      /^(change|set|make|use|switch|update)?\s*(the\s*)?(theme\s*)?(colou?r|color)\s*(to|as|:)?\s*\w+\.?$/i.test(prompt.trim());
-    if (isColorOnlyRequest && portfolioData) return;
+    // If it's only a color-change request, just recolor — no AI call needed
+    if (isColorChangeOnly(prompt)) {
+      if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
+      return;
+    }
 
     setLoading(true);
     setPortfolioData(null);
@@ -575,7 +576,7 @@ function Portfolio() {
         await fetch('http://localhost:5000/api/portfolios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData }),
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: detectedColor || null }),
         });
       }
 

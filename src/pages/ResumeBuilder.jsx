@@ -7,7 +7,7 @@ import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
-import { parseThemeColor } from '../utils/parseThemeColor';
+import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -51,10 +51,11 @@ function ResumeBuilder() {
     const detectedColor = parseThemeColor(prompt);
     if (detectedColor) setThemeColor(detectedColor);
 
-    // If it's only a color-change request and we already have a resume, skip AI call
-    const isColorOnlyRequest = detectedColor && files.length === 0 &&
-      /^(change|set|make|use|switch|update)?\s*(the\s*)?(theme\s*)?(colou?r|color)\s*(to|as|:)?\s*\w+\.?$/i.test(prompt.trim());
-    if (isColorOnlyRequest && resumeData) return;
+    // If it's only a color-change request, just recolor — no AI call needed
+    if (isColorChangeOnly(prompt)) {
+      if (!resumeData) setError('Generate a resume first, then change the colour.');
+      return;
+    }
 
     setLoading(true);
     setResumeData(null);
@@ -78,7 +79,7 @@ function ResumeBuilder() {
         await fetch('http://localhost:5000/api/resumes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData }),
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData, themeColor: detectedColor || null }),
         });
       }
 

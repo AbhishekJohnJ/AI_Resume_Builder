@@ -137,7 +137,7 @@ function MyPortfolios() {
                 <div key={p._id} className="mr-card">
                   <div className="mr-card-preview">
                     <div className="mr-card-inner">
-                      <GeneratedPortfolio data={p.data} templateId={p.templateId} />
+                      <GeneratedPortfolio data={p.data} templateId={p.templateId} themeColor={p.themeColor || null} />
                     </div>
                   </div>
                   <div className="mr-card-footer">
@@ -180,7 +180,7 @@ function MyPortfolios() {
               </div>
             ) : (
               <div className="mr-modal-body" ref={previewRef}>
-                <GeneratedPortfolio data={preview.data} templateId={preview.templateId} />
+                <GeneratedPortfolio data={preview.data} templateId={preview.templateId} themeColor={preview.themeColor || null} />
               </div>
             )}
           </div>
