@@ -5,7 +5,7 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
-import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
+import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -550,7 +550,12 @@ function Portfolio() {
 
     // Parse theme color from prompt
     const detectedColor = parseThemeColor(prompt);
-    if (detectedColor) setThemeColor(detectedColor);
+    const replaceColor = parseColorReplace(prompt, selectedTemplate);
+    // Merge: replace-mode overrides take priority over single/multi-target
+    const mergedColor = (detectedColor || replaceColor)
+      ? { ...(detectedColor || {}), ...(replaceColor || {}) }
+      : null;
+    if (mergedColor) setThemeColor(mergedColor);
 
     // If it's only a color-change request, just recolor — no AI call needed
     if (isColorChangeOnly(prompt)) {
@@ -576,7 +581,7 @@ function Portfolio() {
         await fetch('http://localhost:5000/api/portfolios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: detectedColor || null }),
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: mergedColor || null }),
         });
       }
 

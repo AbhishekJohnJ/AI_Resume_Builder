@@ -97,6 +97,82 @@ const TARGET_MAP = [
 
 const COLOR_NAMES = Object.keys(COLOR_HEX);
 
+// ── Template default color roles ──────────────────────────────────────────────
+// Maps template ID → color family → which CSS vars use that color by default
+const TEMPLATE_COLOR_ROLES = {
+  1: { // Dark Hacker: green accent, black/dark bg, light text
+    green:   ['--tc', '--tc-accent', '--tc-light'],
+    black:   ['--bg', '--bg-2'],
+    white:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  2: { // Clean Minimal Light: indigo/purple accent, white bg, dark text
+    indigo:  ['--tc', '--tc-accent', '--tc-light'],
+    purple:  ['--tc', '--tc-accent', '--tc-light'],
+    white:   ['--bg', '--bg-2'],
+    black:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  3: { // Vibrant Gradient Creative: purple/blue gradient, white bg
+    purple:  ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    blue:    ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    white:   ['--bg'],
+    black:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  4: { // Navy Executive: blue accent, dark navy bg
+    blue:    ['--tc', '--tc-accent'],
+    navy:    ['--bg', '--bg-2'],
+    white:   ['--text'],
+    gray:    ['--text-muted'],
+    black:   ['--bg', '--bg-2'],
+  },
+  5: { // Sunset Bold: orange/red gradient, white bg
+    orange:  ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    red:     ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    white:   ['--bg'],
+    black:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  6: { // Glass Dark: purple accent, near-black bg
+    purple:  ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    violet:  ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    black:   ['--bg'],
+    white:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  7: { // Rose Minimal: rose/pink accent, white bg
+    rose:    ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    pink:    ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    red:     ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    white:   ['--bg', '--bg-2'],
+    black:   ['--text'],
+    gray:    ['--text-muted'],
+  },
+  8: { // Emerald Split: emerald/teal accent, dark sidebar
+    emerald: ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    green:   ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    teal:    ['--tc', '--tc-dark', '--tc-accent', '--tc-light'],
+    black:   ['--bg-2'],
+    white:   ['--bg', '--text'],
+    gray:    ['--text-muted'],
+  },
+};
+
+// Color family aliases — maps any color name to a "family" key used in TEMPLATE_COLOR_ROLES
+const COLOR_FAMILY = {
+  green: 'green', lime: 'green', emerald: 'emerald', teal: 'teal',
+  blue: 'blue', sky: 'blue', navy: 'navy', indigo: 'indigo',
+  purple: 'purple', violet: 'violet',
+  red: 'red', crimson: 'red', maroon: 'red',
+  rose: 'rose', pink: 'pink',
+  orange: 'orange', amber: 'orange',
+  yellow: 'yellow', gold: 'yellow',
+  gray: 'gray', grey: 'gray', slate: 'gray',
+  black: 'black', white: 'white',
+  brown: 'brown', cyan: 'cyan',
+};
+
 const INTENT_KEYWORDS = [
   'change', 'switch', 'set', 'make', 'use', 'apply', 'update',
   'colour', 'color', 'theme', 'instead', 'replace', 'turn', 'convert',
@@ -211,6 +287,63 @@ export function isColorChangeOnly(prompt) {
   const hasIntent = INTENT_KEYWORDS.some(kw => lower.includes(kw));
   const hasColor = COLOR_NAMES.some(c => new RegExp(`\\b${c}\\b`).test(lower));
   return hasIntent && hasColor && lower.length < 160;
+}
+
+/**
+ * Parses "replace all X with Y" / "replace X colour with Y" patterns.
+ * Returns a themeColor-compatible object with CSS var overrides, or null.
+ *
+ * @param {string} prompt
+ * @param {number} templateId  — 1-8, used to look up which vars map to which color family
+ */
+export function parseColorReplace(prompt, templateId) {
+  if (!prompt) return null;
+  const lower = prompt.toLowerCase();
+
+  // Must contain "replace" to use this parser
+  if (!lower.includes('replace')) return null;
+
+  const roles = TEMPLATE_COLOR_ROLES[templateId] || {};
+  const overrides = {};
+
+  // Match patterns like:
+  //   "replace all green with red"
+  //   "replace green colour with red"
+  //   "replace all black color with white"
+  //   "replace the green with red"
+  //   "replace green colour by red"
+  //   "replace green to red"
+  const replaceRe = /replace\s+(?:all\s+|the\s+)?(\w+)(?:\s+colou?r)?\s+(?:with|by|to)\s+(\w+)/gi;
+  let match;
+  while ((match = replaceRe.exec(lower)) !== null) {
+    const fromName = match[1].trim();
+    const toName   = match[2].trim();
+    const toHex    = COLOR_HEX[toName];
+    if (!toHex) continue;
+
+    // Find which CSS vars the "from" color controls in this template
+    const family = COLOR_FAMILY[fromName] || fromName;
+    const vars = roles[family] || roles[fromName];
+    if (!vars) continue;
+
+    vars.forEach(v => { overrides[v] = toHex; });
+  }
+
+  if (Object.keys(overrides).length === 0) return null;
+
+  // Build a full palette object compatible with themeColor
+  const tcHex = overrides['--tc'];
+  const base = tcHex
+    ? { main: tcHex, dark: darken(tcHex), light: lighten(tcHex), accent: lighten(tcHex, 0.4) }
+    : { main: '#667eea', dark: '#4c1d95', light: '#ede9fe', accent: '#a78bfa' };
+
+  return {
+    main:   overrides['--tc']        || base.main,
+    dark:   overrides['--tc-dark']   || base.dark,
+    light:  overrides['--tc-light']  || base.light,
+    accent: overrides['--tc-accent'] || base.accent,
+    ...overrides,
+  };
 }
 
 /**
