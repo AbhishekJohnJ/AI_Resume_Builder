@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './TemplatePickerCard.css';
 
-function ScaledPreview({ children, className }) {
+function ScaledPreview({ children, className, scaleDivisor = 794 }) {
   const wrapRef = useRef(null);
   const innerRef = useRef(null);
   const [scale, setScale] = useState(0);
@@ -14,7 +14,7 @@ function ScaledPreview({ children, className }) {
     if (!wrap || !inner) return;
 
     const update = () => {
-      const s = wrap.offsetWidth / 794;
+      const s = wrap.offsetWidth / scaleDivisor;
       const contentH = inner.scrollHeight;
       setScale(s);
       setScaledHeight(contentH * s);
@@ -807,7 +807,7 @@ function TemplatePickerCard({ onSelect, selected }) {
               onClick={() => setPreview(tpl)}
             >
               {tpl.recommended && <div className="tpl-recommended">Recommended</div>}
-              <ScaledPreview className="tpl-preview-wrap">{tpl.component}</ScaledPreview>
+              <ScaledPreview className="tpl-preview-wrap" scaleDivisor={580}>{tpl.component}</ScaledPreview>
               <div className="tpl-card-footer">
                 <span className="tpl-card-name">{tpl.name}</span>
                 <button className="tpl-choose-btn" onClick={e => { e.stopPropagation(); onSelect(tpl.id); }}>
