@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
-import { Plus, X, Send, FileText, Image, Download, RefreshCw } from 'lucide-react';
+import { Plus, X, Send, FileText, Image, Download, RefreshCw, HelpCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
@@ -184,6 +184,13 @@ function ResumeBuilder() {
               </div>
 
               {error && <div className="gr-error">{error}</div>}
+
+              <div className="rb-help-row">
+                <button className="rb-help-btn" onClick={() => navigate('/about')}>
+                  <HelpCircle size={15} />
+                  Need any help?
+                </button>
+              </div>
             </div>
 
             {/* ── Loading ── */}

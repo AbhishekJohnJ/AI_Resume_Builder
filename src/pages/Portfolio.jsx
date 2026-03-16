@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check } from 'lucide-react';
+import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
@@ -815,6 +815,13 @@ ${markup}
             </div>
 
             {error && <div className="gr-error">{error}</div>}
+
+            <div className="rb-help-row">
+              <button className="rb-help-btn" onClick={() => navigate('/about')}>
+                <HelpCircle size={15} />
+                Need any help?
+              </button>
+            </div>
           </div>
 
           {/* ── Loading ── */}
