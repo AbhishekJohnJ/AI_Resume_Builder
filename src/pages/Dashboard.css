@@ -1,26 +1,27 @@
 /* Dashboard Page */
 .dashboard-page {
-  min-height: 100vh;
-  background: #0d0d0d;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   display: flex;
   flex-direction: column;
-}
-
-.dashboard-page::before {
-  content: '';
+  overflow: hidden;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: auto;
 }
 
 /* 3-panel body below top bar */
 .dashboard-body {
   display: flex;
   flex: 1;
+  margin-top: 60px;
   height: calc(100vh - 60px);
   overflow: hidden;
   position: relative;
@@ -34,6 +35,12 @@
   min-width: 0;
   margin-left: 260px;
   border-right: 1px solid #2d2d2d;
+}
+
+/* When dashboard-container is used standalone (not inside dashboard-body), offset for fixed top bar */
+.dashboard-page > .dashboard-container {
+  margin-top: 60px;
+  height: calc(100vh - 60px);
 }
 
 .dashboard-content {
@@ -131,10 +138,14 @@
   background: #1a1a1a;
   border-bottom: 1px solid #2d2d2d;
   padding: 0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
   z-index: 1001;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 }
 
 .top-bar-content {
@@ -306,10 +317,6 @@
 .btn-logout-nav:hover {
   background: #ffa116;
   color: #1a1a1a;
-}
-
-.dashboard-container {
-  min-height: calc(100vh - 60px);
 }
 
 .dashboard-content {
@@ -499,7 +506,6 @@
 /* Dashboard Container with Sidebar */
 .dashboard-container {
   margin-left: 260px;
-  min-height: calc(100vh - 60px);
   transition: margin-left 0.3s ease;
 }
 
