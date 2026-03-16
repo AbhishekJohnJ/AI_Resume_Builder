@@ -31,8 +31,144 @@ function themeVars(themeColor) {
   };
 }
 
+/**
+ * Renders skills list in different styles based on sectionStyle.skills:
+ *   'bars' (default) | 'badges' | 'dots' | 'numbered'
+ */
+function SkillsSection({ skills, style = 'bars', barClass, barFillClass, nameClass, textClass }) {
+  if (!skills?.length) return null;
+  if (style === 'badges') {
+    return (
+      <div className="rv-skills-tags">
+        {skills.map((s, i) => <span key={i} className="rv-skill-badge">{s}</span>)}
+      </div>
+    );
+  }
+  if (style === 'dots') {
+    return (
+      <div>
+        {skills.map((s, i) => (
+          <div key={i} className="rv-skill-dot-row">
+            <div className="rv-skill-dot" />
+            <span className={textClass || 'rv1-text'}>{s}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (style === 'numbered') {
+    return (
+      <div>
+        {skills.map((s, i) => (
+          <div key={i} className="rv-skill-numbered">
+            <span className="rv-skill-num">{String(i + 1).padStart(2, '0')}.</span>
+            <span className={textClass || 'rv1-text'}>{s}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  // default: bars
+  return (
+    <div>
+      {skills.map((s, i) => (
+        <div key={i} className={barClass || 'rv1-skill-row'}>
+          <span className={nameClass || 'rv1-skill-name'}>{s}</span>
+          <div className={barClass ? barClass.replace('row', 'bar') : 'rv1-skill-bar'}>
+            <div className={barFillClass || 'rv1-skill-fill'} style={{ width: `${90 - i * 8}%` }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Renders experience entries in different styles based on sectionStyle.experience:
+ *   'default' | 'timeline' | 'card' | 'compact'
+ * All styles support bullet points if exp.bullets array exists.
+ */
+function ExperienceSection({ experience, style = 'default', periodClass, roleClass, companyClass, textClass }) {
+  if (!experience?.length) return null;
+
+  const renderDesc = (e) => {
+    if (e.bullets?.length) {
+      return (
+        <ul className="rv-exp-bullets">
+          {e.bullets.map((b, i) => <li key={i}>{b}</li>)}
+        </ul>
+      );
+    }
+    return <p className={textClass || 'rv1-text'}>{e.desc}</p>;
+  };
+
+  if (style === 'timeline') {
+    return (
+      <div>
+        {experience.map((e, i) => (
+          <div key={i} className="rv-exp-timeline">
+            <div className="rv-exp-timeline-dot" />
+            <div className={periodClass || 'rv1-exp-period'}>{e.period}</div>
+            <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a' }}>{e.role}</strong>
+            <div className={companyClass || 'rv1-company'}>{e.company}</div>
+            {renderDesc(e)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (style === 'card') {
+    return (
+      <div>
+        {experience.map((e, i) => (
+          <div key={i} className="rv-exp-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3 }}>
+              <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a' }}>{e.role}</strong>
+              <span className={periodClass || 'rv1-exp-period'}>{e.period}</span>
+            </div>
+            <div className={companyClass || 'rv1-company'}>{e.company}</div>
+            {renderDesc(e)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (style === 'compact') {
+    return (
+      <div>
+        {experience.map((e, i) => (
+          <div key={i} className="rv-exp-compact">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a', fontSize: 10 }}>{e.role} · {e.company}</strong>
+              <span className={periodClass || 'rv1-exp-period'}>{e.period}</span>
+            </div>
+            {renderDesc(e)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  // default
+  return (
+    <div>
+      {experience.map((e, i) => (
+        <div key={i} className="rv1-exp-item">
+          <div className="rv1-exp-dot" />
+          <div>
+            <div className={periodClass || 'rv1-exp-period'}>{e.period}</div>
+            <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a' }}>{e.role}</strong>
+            <div className={companyClass || 'rv1-company'}>{e.company}</div>
+            {renderDesc(e)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ── T1: Blue Sidebar ── */
 function T1({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv1" style={themeVars(themeColor)}>
       <div className="rv1-sidebar">
@@ -47,12 +183,14 @@ function T1({ d, initials, themeColor }) {
         {d.linkedin && <p className="rv1-text">🔗 {d.linkedin}</p>}
         {d.website && <p className="rv1-text">🌐 {d.website}</p>}
         <div className="rv1-sec-title">Skills</div>
-        {d.skills?.map((s, i) => (
-          <div key={i} className="rv1-skill-row">
-            <span className="rv1-skill-name">{s}</span>
-            <div className="rv1-skill-bar"><div className="rv1-skill-fill" style={{ width: `${90 - i * 8}%` }} /></div>
-          </div>
-        ))}
+        <SkillsSection
+          skills={d.skills}
+          style={ss.skills || 'bars'}
+          barClass="rv1-skill-row"
+          barFillClass="rv1-skill-fill"
+          nameClass="rv1-skill-name"
+          textClass="rv1-text"
+        />
         {d.languages?.length > 0 && <>
           <div className="rv1-sec-title">Languages</div>
           {d.languages.map((l, i) => <p key={i} className="rv1-text">{l}</p>)}
@@ -76,17 +214,14 @@ function T1({ d, initials, themeColor }) {
           </div>
         ))}
         <div className="rv1-main-sec-title" style={{ marginTop: 16 }}>Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv1-exp-item">
-            <div className="rv1-exp-dot" />
-            <div>
-              <div className="rv1-exp-period">{e.period}</div>
-              <strong className="rv1-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-              <div className="rv1-company">{e.company}</div>
-              <p className="rv1-text">{e.desc}</p>
-            </div>
-          </div>
-        ))}
+        <ExperienceSection
+          experience={d.experience}
+          style={ss.experience || 'default'}
+          periodClass="rv1-exp-period"
+          roleClass="rv1-text"
+          companyClass="rv1-company"
+          textClass="rv1-text"
+        />
       </div>
     </div>
   );
@@ -94,6 +229,7 @@ function T1({ d, initials, themeColor }) {
 
 /* ── T2: Dark Header, Two-Column ── */
 function T2({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv2" style={themeVars(themeColor)}>
       <div className="rv2-header">
@@ -115,37 +251,15 @@ function T2({ d, initials, themeColor }) {
           </div>
           <div className="rv2-sec">
             <div className="rv2-sec-title">Skills</div>
-            {d.skills?.map((s, i) => (
-              <div key={i} className="rv2-skill-row">
-                <span className="rv2-skill-name">{s}</span>
-                <div className="rv2-skill-bar"><div className="rv2-skill-fill" style={{ width: `${88 - i * 7}%` }} /></div>
-              </div>
-            ))}
+            <SkillsSection skills={d.skills} style={ss.skills || 'bars'} barClass="rv2-skill-row" barFillClass="rv2-skill-fill" nameClass="rv2-skill-name" textClass="rv2-text" />
           </div>
-          {d.languages?.length > 0 && (
-            <div className="rv2-sec">
-              <div className="rv2-sec-title">Languages</div>
-              {d.languages.map((l, i) => <p key={i} className="rv2-text">{l}</p>)}
-            </div>
-          )}
-          {d.awards?.length > 0 && (
-            <div className="rv2-sec">
-              <div className="rv2-sec-title">Awards</div>
-              {d.awards.map((a, i) => <p key={i} className="rv2-award-item">{a}</p>)}
-            </div>
-          )}
+          {d.languages?.length > 0 && <div className="rv2-sec"><div className="rv2-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv2-text">{l}</p>)}</div>}
+          {d.awards?.length > 0 && <div className="rv2-sec"><div className="rv2-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv2-award-item">{a}</p>)}</div>}
         </div>
         <div className="rv2-right">
           <div className="rv2-sec">
             <div className="rv2-sec-title">Experience</div>
-            {d.experience?.map((e, i) => (
-              <div key={i} className="rv2-exp">
-                <div className="rv2-exp-period">{e.period}</div>
-                <strong className="rv2-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-                <div className="rv2-company">{e.company}</div>
-                <p className="rv2-text">{e.desc}</p>
-              </div>
-            ))}
+            <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv2-exp-period" roleClass="rv2-text" companyClass="rv2-company" textClass="rv2-text" />
           </div>
           <div className="rv2-sec">
             <div className="rv2-sec-title">Education</div>
@@ -165,6 +279,7 @@ function T2({ d, initials, themeColor }) {
 
 /* ── T3: Teal Sidebar ── */
 function T3({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv3" style={themeVars(themeColor)}>
       <div className="rv3-sidebar">
@@ -185,15 +300,9 @@ function T3({ d, initials, themeColor }) {
           </div>
         ))}
         <div className="rv3-sec-title">Skills</div>
-        {d.skills?.map((s, i) => <p key={i} className="rv3-text">• {s}</p>)}
-        {d.languages?.length > 0 && <>
-          <div className="rv3-sec-title">Languages</div>
-          {d.languages.map((l, i) => <p key={i} className="rv3-text">{l}</p>)}
-        </>}
-        {d.awards?.length > 0 && <>
-          <div className="rv3-sec-title">Awards</div>
-          {d.awards.map((a, i) => <p key={i} className="rv3-text">• {a}</p>)}
-        </>}
+        <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv3-text" />
+        {d.languages?.length > 0 && <><div className="rv3-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv3-text">{l}</p>)}</>}
+        {d.awards?.length > 0 && <><div className="rv3-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv3-text">• {a}</p>)}</>}
       </div>
       <div className="rv3-main">
         <div className="rv3-main-header">
@@ -203,13 +312,7 @@ function T3({ d, initials, themeColor }) {
         <div className="rv3-sec-title-main">Profile</div>
         <p className="rv3-main-text">{d.summary}</p>
         <div className="rv3-sec-title-main">Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv3-exp">
-            <strong className="rv3-main-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-            <div className="rv3-company">{e.company} · {e.period}</div>
-            <p className="rv3-main-text">{e.desc}</p>
-          </div>
-        ))}
+        <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv3-company" roleClass="rv3-main-text" companyClass="rv3-company" textClass="rv3-main-text" />
       </div>
     </div>
   );
@@ -217,6 +320,7 @@ function T3({ d, initials, themeColor }) {
 
 /* ── T4: Orange Header ── */
 function T4({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv4" style={themeVars(themeColor)}>
       <div className="rv4-header">
@@ -239,22 +343,12 @@ function T4({ d, initials, themeColor }) {
           <div className="rv4-sec-title">Profile</div>
           <p className="rv4-text">{d.summary}</p>
           <div className="rv4-sec-title">Work Experience</div>
-          {d.experience?.map((e, i) => (
-            <div key={i} className="rv4-exp">
-              <div className="rv4-exp-period">{e.period}</div>
-              <strong className="rv4-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-              <div className="rv4-company">{e.company}</div>
-              <p className="rv4-text">{e.desc}</p>
-            </div>
-          ))}
-          {d.awards?.length > 0 && <>
-            <div className="rv4-sec-title">Awards</div>
-            {d.awards.map((a, i) => <p key={i} className="rv4-award-item">{a}</p>)}
-          </>}
+          <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv4-exp-period" roleClass="rv4-text" companyClass="rv4-company" textClass="rv4-text" />
+          {d.awards?.length > 0 && <><div className="rv4-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv4-award-item">{a}</p>)}</>}
         </div>
         <div className="rv4-right">
           <div className="rv4-sec-title">Skills</div>
-          {d.skills?.map((s, i) => <p key={i} className="rv4-text">• {s}</p>)}
+          <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv4-text" />
           <div className="rv4-sec-title">Education</div>
           {d.education?.map((e, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
@@ -262,10 +356,7 @@ function T4({ d, initials, themeColor }) {
               <div className="rv4-company">{e.school} · {e.year}</div>
             </div>
           ))}
-          {d.languages?.length > 0 && <>
-            <div className="rv4-sec-title">Languages</div>
-            {d.languages.map((l, i) => <p key={i} className="rv4-text">{l}</p>)}
-          </>}
+          {d.languages?.length > 0 && <><div className="rv4-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv4-text">{l}</p>)}</>}
         </div>
       </div>
     </div>
@@ -274,6 +365,7 @@ function T4({ d, initials, themeColor }) {
 
 /* ── T5: Grey Header, Two-Column ── */
 function T5({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv5" style={themeVars(themeColor)}>
       <div className="rv5-header">
@@ -281,9 +373,7 @@ function T5({ d, initials, themeColor }) {
         <div>
           <div className="rv5-name">{d.name?.toUpperCase()}</div>
           <div className="rv5-title">{d.title}</div>
-          <div className="rv5-contacts">
-            <span>{d.phone}</span><span>{d.email}</span><span>{d.location}</span>
-          </div>
+          <div className="rv5-contacts"><span>{d.phone}</span><span>{d.email}</span><span>{d.location}</span></div>
         </div>
       </div>
       <div className="rv5-body">
@@ -291,18 +381,8 @@ function T5({ d, initials, themeColor }) {
           <div className="rv5-sec-title">Profile</div>
           <p className="rv5-text">{d.summary}</p>
           <div className="rv5-sec-title">Work Experience</div>
-          {d.experience?.map((e, i) => (
-            <div key={i} className="rv5-exp">
-              <div className="rv5-exp-period">{e.period}</div>
-              <strong className="rv5-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-              <div className="rv5-company">{e.company}</div>
-              <p className="rv5-text">{e.desc}</p>
-            </div>
-          ))}
-          {d.awards?.length > 0 && <>
-            <div className="rv5-sec-title">Awards</div>
-            {d.awards.map((a, i) => <p key={i} className="rv5-award-item">{a}</p>)}
-          </>}
+          <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv5-exp-period" roleClass="rv5-text" companyClass="rv5-company" textClass="rv5-text" />
+          {d.awards?.length > 0 && <><div className="rv5-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv5-award-item">{a}</p>)}</>}
         </div>
         <div className="rv5-right">
           <div className="rv5-sec-title">Education</div>
@@ -314,16 +394,8 @@ function T5({ d, initials, themeColor }) {
             </div>
           ))}
           <div className="rv5-sec-title">Skills</div>
-          {d.skills?.map((s, i) => (
-            <div key={i} className="rv5-skill-row">
-              <span className="rv5-skill-name">{s}</span>
-              <div className="rv5-skill-bar"><div className="rv5-skill-fill" style={{ width: `${85 - i * 7}%` }} /></div>
-            </div>
-          ))}
-          {d.languages?.length > 0 && <>
-            <div className="rv5-sec-title">Languages</div>
-            {d.languages.map((l, i) => <p key={i} className="rv5-text">{l}</p>)}
-          </>}
+          <SkillsSection skills={d.skills} style={ss.skills || 'bars'} barClass="rv5-skill-row" barFillClass="rv5-skill-fill" nameClass="rv5-skill-name" textClass="rv5-text" />
+          {d.languages?.length > 0 && <><div className="rv5-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv5-text">{l}</p>)}</>}
         </div>
       </div>
     </div>
@@ -332,6 +404,7 @@ function T5({ d, initials, themeColor }) {
 
 /* ── T6: Teal Header ── */
 function T6({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv6" style={themeVars(themeColor)}>
       <div className="rv6-header">
@@ -352,15 +425,9 @@ function T6({ d, initials, themeColor }) {
           <div className="rv6-sec-title">Profile</div>
           <p className="rv6-text">{d.summary}</p>
           <div className="rv6-sec-title">Skills</div>
-          {d.skills?.map((s, i) => <p key={i} className="rv6-text">• {s}</p>)}
-          {d.languages?.length > 0 && <>
-            <div className="rv6-sec-title">Languages</div>
-            {d.languages.map((l, i) => <p key={i} className="rv6-text">{l}</p>)}
-          </>}
-          {d.awards?.length > 0 && <>
-            <div className="rv6-sec-title">Awards</div>
-            {d.awards.map((a, i) => <p key={i} className="rv6-award-item">{a}</p>)}
-          </>}
+          <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv6-text" />
+          {d.languages?.length > 0 && <><div className="rv6-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv6-text">{l}</p>)}</>}
+          {d.awards?.length > 0 && <><div className="rv6-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv6-award-item">{a}</p>)}</>}
         </div>
         <div className="rv6-right">
           <div className="rv6-sec-title">Education</div>
@@ -372,13 +439,7 @@ function T6({ d, initials, themeColor }) {
             </div>
           ))}
           <div className="rv6-sec-title">Experience</div>
-          {d.experience?.map((e, i) => (
-            <div key={i} className="rv6-exp">
-              <strong className="rv6-text" style={{ color: '#1a1a1a' }}>{e.role}</strong>
-              <div className="rv6-company">{e.company} · {e.period}</div>
-              <p className="rv6-text">{e.desc}</p>
-            </div>
-          ))}
+          <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv6-company" roleClass="rv6-text" companyClass="rv6-company" textClass="rv6-text" />
         </div>
       </div>
     </div>
@@ -387,6 +448,7 @@ function T6({ d, initials, themeColor }) {
 
 /* ── T7: Dark Executive ── */
 function T7({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv7" style={themeVars(themeColor)}>
       <div className="rv7-header">
@@ -404,16 +466,7 @@ function T7({ d, initials, themeColor }) {
         <div className="rv7-sec-title">Professional Summary</div>
         <p className="rv7-text">{d.summary}</p>
         <div className="rv7-sec-title">Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv7-exp">
-            <div className="rv7-exp-header">
-              <strong className="rv7-text">{e.role}</strong>
-              <span className="rv7-period">{e.period}</span>
-            </div>
-            <div className="rv7-company">{e.company}</div>
-            <p className="rv7-text">{e.desc}</p>
-          </div>
-        ))}
+        <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv7-period" roleClass="rv7-text" companyClass="rv7-company" textClass="rv7-text" />
         <div className="rv7-two-col">
           <div>
             <div className="rv7-sec-title">Education</div>
@@ -423,25 +476,12 @@ function T7({ d, initials, themeColor }) {
                 <div className="rv7-company">{e.school} · {e.year}</div>
               </div>
             ))}
-            {d.awards?.length > 0 && <>
-              <div className="rv7-sec-title">Awards</div>
-              {d.awards.map((a, i) => <p key={i} className="rv7-text">• {a}</p>)}
-            </>}
+            {d.awards?.length > 0 && <><div className="rv7-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv7-text">• {a}</p>)}</>}
           </div>
           <div>
             <div className="rv7-sec-title">Skills</div>
-            {d.skills?.map((s, i) => (
-              <div key={i} style={{ marginBottom: 5 }}>
-                <span className="rv7-text">{s}</span>
-                <div style={{ height: 3, background: '#333', borderRadius: 2, marginTop: 2 }}>
-                  <div style={{ width: `${90 - i * 8}%`, height: '100%', background: 'var(--tc, #c9a84c)', borderRadius: 2 }} />
-                </div>
-              </div>
-            ))}
-            {d.languages?.length > 0 && <>
-              <div className="rv7-sec-title">Languages</div>
-              {d.languages.map((l, i) => <p key={i} className="rv7-text">{l}</p>)}
-            </>}
+            <SkillsSection skills={d.skills} style={ss.skills || 'bars'} barClass="rv7-skill-row" barFillClass="rv7-skill-fill" nameClass="rv7-text" textClass="rv7-text" />
+            {d.languages?.length > 0 && <><div className="rv7-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv7-text">{l}</p>)}</>}
           </div>
         </div>
       </div>
@@ -451,6 +491,7 @@ function T7({ d, initials, themeColor }) {
 
 /* ── T8: Purple Creative ── */
 function T8({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv8" style={themeVars(themeColor)}>
       <div className="rv8-sidebar">
@@ -464,28 +505,15 @@ function T8({ d, initials, themeColor }) {
         <p className="rv8-text">📍 {d.location}</p>
         {d.linkedin && <p className="rv8-text">🔗 {d.linkedin}</p>}
         <div className="rv8-sec-title">Skills</div>
-        {d.skills?.map((s, i) => <p key={i} className="rv8-text">▸ {s}</p>)}
-        {d.languages?.length > 0 && <>
-          <div className="rv8-sec-title">Languages</div>
-          {d.languages.map((l, i) => <p key={i} className="rv8-text">{l}</p>)}
-        </>}
-        {d.awards?.length > 0 && <>
-          <div className="rv8-sec-title">Awards</div>
-          {d.awards.map((a, i) => <p key={i} className="rv8-text">★ {a}</p>)}
-        </>}
+        <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv8-text" />
+        {d.languages?.length > 0 && <><div className="rv8-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv8-text">{l}</p>)}</>}
+        {d.awards?.length > 0 && <><div className="rv8-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv8-text">★ {a}</p>)}</>}
       </div>
       <div className="rv8-main">
         <div className="rv8-sec-title-main">About Me</div>
         <p className="rv8-main-text">{d.summary}</p>
         <div className="rv8-sec-title-main">Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv8-exp">
-            <div className="rv8-exp-period">{e.period}</div>
-            <strong className="rv8-main-text">{e.role}</strong>
-            <div className="rv8-company">{e.company}</div>
-            <p className="rv8-main-text">{e.desc}</p>
-          </div>
-        ))}
+        <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv8-exp-period" roleClass="rv8-main-text" companyClass="rv8-company" textClass="rv8-main-text" />
         <div className="rv8-sec-title-main">Education</div>
         {d.education?.map((e, i) => (
           <div key={i} style={{ marginBottom: 8 }}>
@@ -500,6 +528,7 @@ function T8({ d, initials, themeColor }) {
 
 /* ── T9: Minimal White ── */
 function T9({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv9" style={themeVars(themeColor)}>
       <div className="rv9-header">
@@ -515,15 +544,7 @@ function T9({ d, initials, themeColor }) {
         <div className="rv9-sec-title">Summary</div>
         <p className="rv9-text">{d.summary}</p>
         <div className="rv9-sec-title">Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv9-exp">
-            <div className="rv9-exp-header">
-              <strong className="rv9-text">{e.role} — {e.company}</strong>
-              <span className="rv9-period">{e.period}</span>
-            </div>
-            <p className="rv9-text">{e.desc}</p>
-          </div>
-        ))}
+        <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv9-period" roleClass="rv9-text" companyClass="rv9-muted" textClass="rv9-text" />
         <div className="rv9-two-col">
           <div>
             <div className="rv9-sec-title">Education</div>
@@ -533,20 +554,12 @@ function T9({ d, initials, themeColor }) {
                 <div className="rv9-muted">{e.school} · {e.year}</div>
               </div>
             ))}
-            {d.awards?.length > 0 && <>
-              <div className="rv9-sec-title">Awards</div>
-              {d.awards.map((a, i) => <p key={i} className="rv9-text">• {a}</p>)}
-            </>}
+            {d.awards?.length > 0 && <><div className="rv9-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv9-text">• {a}</p>)}</>}
           </div>
           <div>
             <div className="rv9-sec-title">Skills</div>
-            <div className="rv9-skills-wrap">
-              {d.skills?.map((s, i) => <span key={i} className="rv9-skill-tag">{s}</span>)}
-            </div>
-            {d.languages?.length > 0 && <>
-              <div className="rv9-sec-title">Languages</div>
-              {d.languages.map((l, i) => <p key={i} className="rv9-text">{l}</p>)}
-            </>}
+            <SkillsSection skills={d.skills} style={ss.skills || 'badges'} textClass="rv9-text" />
+            {d.languages?.length > 0 && <><div className="rv9-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv9-text">{l}</p>)}</>}
           </div>
         </div>
       </div>
@@ -556,6 +569,7 @@ function T9({ d, initials, themeColor }) {
 
 /* ── T10: Red Accent ── */
 function T10({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv10" style={themeVars(themeColor)}>
       <div className="rv10-sidebar">
@@ -568,31 +582,14 @@ function T10({ d, initials, themeColor }) {
         <p className="rv10-text">📍 {d.location}</p>
         {d.linkedin && <p className="rv10-text">🔗 {d.linkedin}</p>}
         <div className="rv10-sec-title">Skills</div>
-        {d.skills?.map((s, i) => (
-          <div key={i} style={{ marginBottom: 5 }}>
-            <span className="rv10-text">{s}</span>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.2)', borderRadius: 2, marginTop: 2 }}>
-              <div style={{ width: `${90 - i * 8}%`, height: '100%', background: 'var(--tc, #e53e3e)', borderRadius: 2 }} />
-            </div>
-          </div>
-        ))}
-        {d.languages?.length > 0 && <>
-          <div className="rv10-sec-title">Languages</div>
-          {d.languages.map((l, i) => <p key={i} className="rv10-text">{l}</p>)}
-        </>}
+        <SkillsSection skills={d.skills} style={ss.skills || 'bars'} barClass="rv10-skill-row" barFillClass="rv10-skill-fill" nameClass="rv10-text" textClass="rv10-text" />
+        {d.languages?.length > 0 && <><div className="rv10-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv10-text">{l}</p>)}</>}
       </div>
       <div className="rv10-main">
         <div className="rv10-sec-title-main">Profile</div>
         <p className="rv10-main-text">{d.summary}</p>
         <div className="rv10-sec-title-main">Experience</div>
-        {d.experience?.map((e, i) => (
-          <div key={i} className="rv10-exp">
-            <div className="rv10-exp-period">{e.period}</div>
-            <strong className="rv10-main-text">{e.role}</strong>
-            <div className="rv10-company">{e.company}</div>
-            <p className="rv10-main-text">{e.desc}</p>
-          </div>
-        ))}
+        <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv10-exp-period" roleClass="rv10-main-text" companyClass="rv10-company" textClass="rv10-main-text" />
         <div className="rv10-sec-title-main">Education</div>
         {d.education?.map((e, i) => (
           <div key={i} style={{ marginBottom: 8 }}>
@@ -600,10 +597,7 @@ function T10({ d, initials, themeColor }) {
             <div className="rv10-company">{e.school} · {e.year}</div>
           </div>
         ))}
-        {d.awards?.length > 0 && <>
-          <div className="rv10-sec-title-main">Awards</div>
-          {d.awards.map((a, i) => <p key={i} className="rv10-main-text">• {a}</p>)}
-        </>}
+        {d.awards?.length > 0 && <><div className="rv10-sec-title-main">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv10-main-text">• {a}</p>)}</>}
       </div>
     </div>
   );
@@ -611,6 +605,7 @@ function T10({ d, initials, themeColor }) {
 
 /* ── T11: Green Nature ── */
 function T11({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv11" style={themeVars(themeColor)}>
       <div className="rv11-header">
@@ -631,26 +626,13 @@ function T11({ d, initials, themeColor }) {
           <div className="rv11-sec-title">About</div>
           <p className="rv11-text">{d.summary}</p>
           <div className="rv11-sec-title">Skills</div>
-          {d.skills?.map((s, i) => <span key={i} className="rv11-skill-tag">{s}</span>)}
-          {d.languages?.length > 0 && <>
-            <div className="rv11-sec-title">Languages</div>
-            {d.languages.map((l, i) => <p key={i} className="rv11-text">{l}</p>)}
-          </>}
-          {d.awards?.length > 0 && <>
-            <div className="rv11-sec-title">Awards</div>
-            {d.awards.map((a, i) => <p key={i} className="rv11-text">🏆 {a}</p>)}
-          </>}
+          <SkillsSection skills={d.skills} style={ss.skills || 'badges'} textClass="rv11-text" />
+          {d.languages?.length > 0 && <><div className="rv11-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv11-text">{l}</p>)}</>}
+          {d.awards?.length > 0 && <><div className="rv11-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv11-text">🏆 {a}</p>)}</>}
         </div>
         <div className="rv11-right">
           <div className="rv11-sec-title">Experience</div>
-          {d.experience?.map((e, i) => (
-            <div key={i} className="rv11-exp">
-              <div className="rv11-exp-period">{e.period}</div>
-              <strong className="rv11-text">{e.role}</strong>
-              <div className="rv11-company">{e.company}</div>
-              <p className="rv11-text">{e.desc}</p>
-            </div>
-          ))}
+          <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv11-exp-period" roleClass="rv11-text" companyClass="rv11-company" textClass="rv11-text" />
           <div className="rv11-sec-title">Education</div>
           {d.education?.map((e, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
@@ -666,6 +648,7 @@ function T11({ d, initials, themeColor }) {
 
 /* ── T12: Navy Classic ── */
 function T12({ d, initials, themeColor }) {
+  const ss = d.sectionStyle || {};
   return (
     <div className="rv rv12" style={themeVars(themeColor)}>
       <div className="rv12-top">
@@ -690,29 +673,14 @@ function T12({ d, initials, themeColor }) {
               <div className="rv12-muted">{e.school} · {e.year}</div>
             </div>
           ))}
-          {d.languages?.length > 0 && <>
-            <div className="rv12-sec-title">Languages</div>
-            {d.languages.map((l, i) => <p key={i} className="rv12-text">{l}</p>)}
-          </>}
-          {d.awards?.length > 0 && <>
-            <div className="rv12-sec-title">Awards</div>
-            {d.awards.map((a, i) => <p key={i} className="rv12-text">• {a}</p>)}
-          </>}
+          {d.languages?.length > 0 && <><div className="rv12-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv12-text">{l}</p>)}</>}
+          {d.awards?.length > 0 && <><div className="rv12-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv12-text">• {a}</p>)}</>}
         </div>
         <div className="rv12-right">
           <div className="rv12-sec-title">Experience</div>
-          {d.experience?.map((e, i) => (
-            <div key={i} className="rv12-exp">
-              <div className="rv12-exp-period">{e.period}</div>
-              <strong className="rv12-text">{e.role}</strong>
-              <div className="rv12-company">{e.company}</div>
-              <p className="rv12-text">{e.desc}</p>
-            </div>
-          ))}
+          <ExperienceSection experience={d.experience} style={ss.experience || 'default'} periodClass="rv12-exp-period" roleClass="rv12-text" companyClass="rv12-company" textClass="rv12-text" />
           <div className="rv12-sec-title">Skills</div>
-          <div className="rv12-skills-wrap">
-            {d.skills?.map((s, i) => <span key={i} className="rv12-skill-tag">{s}</span>)}
-          </div>
+          <SkillsSection skills={d.skills} style={ss.skills || 'badges'} textClass="rv12-text" />
         </div>
       </div>
     </div>

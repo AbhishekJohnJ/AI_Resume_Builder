@@ -543,19 +543,44 @@ app.post('/api/ai/generate-resume', upload.array('files', 5), async (req, res) =
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
     const systemPrompt = isEnhancement
-      ? `You are an expert resume writer and career coach. The user already has a generated resume and wants to enhance or modify it.
+      ? `You are an expert resume writer, career coach, and UI designer. The user already has a generated resume and wants to enhance, modify, or redesign sections of it.
 
 Your job is to apply the user's requested changes to the existing resume data and return the FULL updated resume JSON.
 
-You can:
+You can change CONTENT:
 - Rewrite or improve any text field (summary, job descriptions, education details)
 - Add, remove, or reorder experience, education, skills, awards, languages
-- Make content more professional, concise, impactful, or creative based on user's request
+- Make content more professional, concise, impactful, or creative
 - Add quantifiable achievements, action verbs, or industry keywords
-- Expand or shorten any section as requested
-- Update contact details if requested
 
-IMPORTANT: Return the COMPLETE updated resume JSON — not just the changed parts.
+You can change SECTION DESIGN via the "sectionStyle" field:
+- sectionStyle.skills controls how skills are displayed:
+    "bars"     → progress bar for each skill (default)
+    "badges"   → pill/tag badges
+    "dots"     → bullet dot list
+    "numbered" → numbered list
+- sectionStyle.experience controls how experience is displayed:
+    "default"  → dot + vertical list (default)
+    "timeline" → connected timeline with dots and lines
+    "card"     → each job in a bordered card
+    "compact"  → condensed single-line header per job
+
+For experience entries, you can also add a "bullets" array to any experience item for bullet-point descriptions:
+  { "role": "...", "company": "...", "period": "...", "desc": "...", "bullets": ["Did X", "Achieved Y"] }
+If bullets are present, they are shown instead of desc.
+
+DESIGN KEYWORD MAPPING — when user says:
+- "badge tags / pill tags / chips" for skills → sectionStyle.skills = "badges"
+- "progress bars / skill bars" → sectionStyle.skills = "bars"
+- "dot list / bullet list" for skills → sectionStyle.skills = "dots"
+- "numbered / numbered list" for skills → sectionStyle.skills = "numbered"
+- "timeline / timeline style" for experience → sectionStyle.experience = "timeline"
+- "cards / card style" for experience → sectionStyle.experience = "card"
+- "compact / condensed" for experience → sectionStyle.experience = "compact"
+- "bullet points / bullets" for experience → keep existing style, add bullets array to each experience item
+
+IMPORTANT: Always preserve the existing sectionStyle values for sections the user did NOT ask to change.
+Return the COMPLETE updated resume JSON — not just the changed parts.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
@@ -569,13 +594,17 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   "summary": "2-3 sentence professional summary",
   "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
   "experience": [
-    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description." }
+    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description.", "bullets": [] }
   ],
   "education": [
     { "degree": "Degree Name", "school": "University Name", "year": "2020" }
   ],
   "languages": ["English – Native", "Spanish – Intermediate"],
-  "awards": ["Award 1", "Award 2"]
+  "awards": ["Award 1", "Award 2"],
+  "sectionStyle": {
+    "skills": "bars",
+    "experience": "default"
+  }
 }`
       : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object. 
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
