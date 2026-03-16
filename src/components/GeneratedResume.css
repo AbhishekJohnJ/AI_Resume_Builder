@@ -73,7 +73,6 @@
 
 .gr-paper {
   width: 794px;
-  min-height: 1123px;
   background: #fff;
   margin: 0 auto;
   transform-origin: top left;
@@ -111,11 +110,153 @@
 /* Error state */
 .gr-error {
   padding: 1.5rem;
-  background: rgba(220,38,38,0.08);
-  border: 1px solid rgba(220,38,38,0.25);
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   border-radius: 10px;
-  color: #ff6b6b;
+  color: #ffd700;
   font-size: 0.9rem;
   font-family: 'Inter', sans-serif;
   margin-top: 1rem;
+}
+
+/* ── Section style variants ── */
+
+/* Skills: badge tags */
+.rv-skills-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.rv-skill-badge {
+  background: var(--tc-light, #dbeafe);
+  color: var(--tc, #2563eb);
+  border: 1px solid var(--tc, #2563eb);
+  font-size: 10px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px;
+}
+/* Skills: dots */
+.rv-skill-dot-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.rv-skill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--tc, #2563eb); flex-shrink: 0; }
+/* Skills: numbered */
+.rv-skill-numbered { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
+.rv-skill-num { font-weight: 700; color: var(--tc, #2563eb); min-width: 16px; }
+
+/* Experience: timeline */
+.rv-exp-timeline { position: relative; padding-left: 16px; margin-bottom: 12px; }
+.rv-exp-timeline::before {
+  content: ''; position: absolute; left: 4px; top: 6px; bottom: -6px;
+  width: 1px; background: var(--tc-light, #bfdbfe);
+}
+.rv-exp-timeline:last-child::before { display: none; }
+.rv-exp-timeline-dot {
+  position: absolute; left: 0; top: 5px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--tc, #2563eb); border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--tc, #2563eb);
+}
+/* Experience: card */
+.rv-exp-card {
+  background: #f8faff; border: 1px solid #e0e7ff;
+  border-left: 3px solid var(--tc, #2563eb);
+  border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+}
+/* Experience: compact */
+.rv-exp-compact { border-bottom: 1px dashed #e5e7eb; padding-bottom: 8px; margin-bottom: 8px; }
+.rv-exp-compact:last-child { border-bottom: none; }
+
+/* Experience bullets */
+.rv-exp-bullets { list-style: none; padding: 0; margin: 4px 0 0; }
+.rv-exp-bullets li { font-size: 10px; color: #555; line-height: 1.5; padding-left: 12px; position: relative; margin-bottom: 2px; }
+.rv-exp-bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--tc, #2563eb); }
+
+/* ── Design Style: Button variants ── */
+.rv [class*="-btn"], .rv button {
+  transition: all 0.2s;
+}
+/* pill */
+.rv.ds-btn-pill [class*="-btn"], .rv.ds-btn-pill button { border-radius: 999px !important; }
+/* outline */
+.rv.ds-btn-outline [class*="-btn"], .rv.ds-btn-outline button {
+  background: transparent !important;
+  border: 2px solid var(--tc, #2563eb) !important;
+  color: var(--tc, #2563eb) !important;
+}
+/* gradient */
+.rv.ds-btn-gradient [class*="-btn"], .rv.ds-btn-gradient button {
+  background: linear-gradient(135deg, var(--tc, #2563eb), var(--tc-accent, #60a5fa)) !important;
+  border: none !important;
+  color: #fff !important;
+}
+/* ghost */
+.rv.ds-btn-ghost [class*="-btn"], .rv.ds-btn-ghost button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--tc, #2563eb) !important;
+  text-decoration: underline;
+}
+/* sharp */
+.rv.ds-btn-sharp [class*="-btn"], .rv.ds-btn-sharp button { border-radius: 2px !important; }
+
+/* ── Design Style: Card variants ── */
+/* bordered */
+.rv.ds-card-bordered .rv-exp-card,
+.rv.ds-card-bordered [class*="-project"],
+.rv.ds-card-bordered [class*="-exp-item"],
+.rv.ds-card-bordered [class*="-edu-item"] {
+  border: 1.5px solid var(--tc-light, #dbeafe) !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  margin-bottom: 10px !important;
+}
+/* shadowed */
+.rv.ds-card-shadowed .rv-exp-card,
+.rv.ds-card-shadowed [class*="-project"],
+.rv.ds-card-shadowed [class*="-exp-item"],
+.rv.ds-card-shadowed [class*="-edu-item"] {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10) !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  margin-bottom: 10px !important;
+  background: #fff !important;
+}
+/* glass */
+.rv.ds-card-glass .rv-exp-card,
+.rv.ds-card-glass [class*="-project"],
+.rv.ds-card-glass [class*="-exp-item"],
+.rv.ds-card-glass [class*="-edu-item"] {
+  background: rgba(255,255,255,0.55) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255,255,255,0.4) !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  margin-bottom: 10px !important;
+}
+/* elevated */
+.rv.ds-card-elevated .rv-exp-card,
+.rv.ds-card-elevated [class*="-project"],
+.rv.ds-card-elevated [class*="-exp-item"],
+.rv.ds-card-elevated [class*="-edu-item"] {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.16) !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  margin-bottom: 12px !important;
+  background: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* ── Design Style: Background variants ── */
+.rv.ds-bg-gradient { background: linear-gradient(135deg, var(--tc-light, #dbeafe) 0%, #fff 60%) !important; }
+.rv.ds-bg-mesh {
+  background-color: #fff;
+  background-image:
+    radial-gradient(at 20% 30%, var(--tc-light, #dbeafe) 0px, transparent 50%),
+    radial-gradient(at 80% 70%, var(--tc-accent, #60a5fa) 0px, transparent 50%) !important;
+}
+.rv.ds-bg-dots {
+  background-color: #fff;
+  background-image: radial-gradient(var(--tc-light, #dbeafe) 1.5px, transparent 1.5px) !important;
+  background-size: 18px 18px !important;
+}
+.rv.ds-bg-lines {
+  background-color: #fff;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 22px,
+    var(--tc-light, #dbeafe) 22px, var(--tc-light, #dbeafe) 23px
+  ) !important;
 }

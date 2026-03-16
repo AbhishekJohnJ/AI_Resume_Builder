@@ -2,18 +2,18 @@ import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, X, Send, FileText, Image, Download, RefreshCw } from 'lucide-react';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import { Plus, X, Send, FileText, Image, Download, RefreshCw, HelpCircle } from 'lucide-react';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
+import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
 
 function ResumeBuilder() {
   const navigate = useNavigate();
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState([]);
@@ -21,12 +21,12 @@ function ResumeBuilder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
+  const [themeColor, setThemeColor] = useState(null);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
 
   const handleLogout = () => navigate('/');
-  const toggleProfileCard = () => setShowProfileCard(!showProfileCard);
 
   const handleFileChange = (e) => {
     const picked = Array.from(e.target.files);
@@ -44,13 +44,29 @@ function ResumeBuilder() {
       return;
     }
     setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    if (detectedColor) setThemeColor(detectedColor);
+
+    // If it's only a color-change request, just recolor — no AI call needed
+    if (isColorChangeOnly(prompt)) {
+      if (!resumeData) setError('Generate a resume first, then change the colour.');
+      return;
+    }
+
     setLoading(true);
-    setResumeData(null);
+    if (!resumeData) setResumeData(null); // only clear on fresh generation
     try {
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      formData.append('templateId', selectedTemplate);
+      if (resumeData) formData.append('existingData', JSON.stringify(resumeData));
+      files.forEach(f => formData.append('files', f));
+
       const res = await fetch('http://localhost:5000/api/ai/generate-resume', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, templateId: selectedTemplate }),
+        body: formData,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
@@ -62,7 +78,7 @@ function ResumeBuilder() {
         await fetch('http://localhost:5000/api/resumes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData }),
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData, themeColor: detectedColor || null }),
         });
       }
 
@@ -91,38 +107,7 @@ function ResumeBuilder() {
 
   return (
     <div className="dashboard-page resume-builder-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-            <a href="/about" className="nav-link">About</a>
-            <a href="/projects" className="nav-link">Projects</a>
-            <a href="/contact" className="nav-link">Contact</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={toggleProfileCard} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={handleLogout} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={toggleProfileCard}></div>
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John"
-              role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78} leaderboardRank={24} totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
+      <TopBar />
 
       <Sidebar />
 
@@ -142,7 +127,7 @@ function ResumeBuilder() {
               <p className="rb-prompt-sub">Tell the AI about your experience, skills, and the job you're targeting — or upload a file to get started.</p>
 
               <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
-              <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple style={{ display: 'none' }} onChange={handleFileChange} />
+              <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xlsx,.xls,.csv" multiple style={{ display: 'none' }} onChange={handleFileChange} />
 
               {files.length > 0 && (
                 <div className="rb-file-chips">
@@ -156,9 +141,7 @@ function ResumeBuilder() {
                 </div>
               )}
 
-              {!selectedTemplate && (
-                <p className="rb-no-template-warn">⚠ Please select a template above before generating.</p>
-              )}
+
 
               <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
                 <div className="rb-plus-wrap">
@@ -171,14 +154,14 @@ function ResumeBuilder() {
                         <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
                       </button>
                       <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
-                        <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX</span>
+                        <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX, Excel</span>
                       </button>
                     </div>
                   )}
                 </div>
                 <textarea
                   className="rb-input"
-                  placeholder="e.g. My name is John, I'm a Full Stack Developer with 3 years experience in React and Node.js..."
+                  placeholder={resumeData ? 'e.g. Make my summary more impactful, add Docker to skills, improve job descriptions...' : 'e.g. Full Stack Developer, React...'}
                   value={prompt}
                   rows={2}
                   onChange={e => {
@@ -201,13 +184,20 @@ function ResumeBuilder() {
               </div>
 
               {error && <div className="gr-error">{error}</div>}
+
+              <div className="rb-help-row">
+                <button className="rb-help-btn" onClick={() => navigate('/about')}>
+                  <HelpCircle size={15} />
+                  Need any help?
+                </button>
+              </div>
             </div>
 
             {/* ── Loading ── */}
             {loading && (
               <div className="gr-loading">
                 <div className="gr-spinner" />
-                <p className="gr-loading-text">Generating your resume with AI...</p>
+                <p className="gr-loading-text">{resumeData ? 'Enhancing your resume...' : 'Generating your resume with AI...'}</p>
               </div>
             )}
 
@@ -227,7 +217,7 @@ function ResumeBuilder() {
                 </div>
                 <div className="gr-paper-wrap">
                   <div id="gr-resume-paper" className="gr-paper">
-                    <GeneratedResume data={resumeData} templateId={selectedTemplate} />
+                    <GeneratedResume data={resumeData} templateId={selectedTemplate} themeColor={themeColor} />
                   </div>
                 </div>
               </div>

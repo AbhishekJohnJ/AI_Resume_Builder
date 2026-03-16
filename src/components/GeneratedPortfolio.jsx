@@ -2,9 +2,34 @@ import '../pages/Portfolio.css';
 
 /* ── Template renderers using AI-generated data ── */
 
-function T1({ d }) {
+/** Build CSS variable overrides from a themeColor palette */
+function themeVars(themeColor) {
+  if (!themeColor) return {};
+  const vars = {
+    '--tc': themeColor.main,
+    '--tc-dark': themeColor.dark,
+    '--tc-light': themeColor.light,
+    '--tc-accent': themeColor.accent,
+  };
+  // Pass through any extra targeted overrides (--bg, --text, --bg-2, --text-muted)
+  const extras = ['--bg', '--bg-2', '--text', '--text-muted'];
+  extras.forEach(k => { if (themeColor[k]) vars[k] = themeColor[k]; });
+  return vars;
+}
+
+/** Build design style class names from designStyle object */
+function designClasses(ds) {
+  if (!ds) return '';
+  const parts = [];
+  if (ds.button && ds.button !== 'default') parts.push(`ds-btn-${ds.button}`);
+  if (ds.card && ds.card !== 'default') parts.push(`ds-card-${ds.card}`);
+  if (ds.background && ds.background !== 'solid') parts.push(`ds-bg-${ds.background}`);
+  return parts.join(' ');
+}
+
+function T1({ d, themeColor }) {
   return (
-    <div className="pt pt1">
+    <div className={`pt pt1 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt1-nav">
         <span className="pt1-logo">&lt;{d.name.split(' ')[0]} /&gt;</span>
         <div className="pt1-nav-links"><span>About</span><span>Projects</span><span>Contact</span></div>
@@ -43,9 +68,9 @@ function T1({ d }) {
   );
 }
 
-function T2({ d }) {
+function T2({ d, themeColor }) {
   return (
-    <div className="pt pt2">
+    <div className={`pt pt2 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt2-sidebar">
         <div className="pt2-avatar">{d.initials}</div>
         <h2 className="pt2-name">{d.name}</h2>
@@ -95,9 +120,9 @@ function T2({ d }) {
   );
 }
 
-function T3({ d }) {
+function T3({ d, themeColor }) {
   return (
-    <div className="pt pt3">
+    <div className={`pt pt3 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt3-hero">
         <div className="pt3-hero-content">
           <p className="pt3-greeting">Hello, I'm</p>
@@ -143,9 +168,9 @@ function T3({ d }) {
   );
 }
 
-function T4({ d }) {
+function T4({ d, themeColor }) {
   return (
-    <div className="pt pt4">
+    <div className={`pt pt4 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt4-header">
         <div className="pt4-header-left">
           <div className="pt4-avatar">{d.initials}</div>
@@ -197,9 +222,9 @@ function T4({ d }) {
   );
 }
 
-function T5({ d }) {
+function T5({ d, themeColor }) {
   return (
-    <div className="pt pt5">
+    <div className={`pt pt5 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt5-hero">
         <div className="pt5-hero-tag">Portfolio</div>
         <h1 className="pt5-name">{d.name}</h1>
@@ -236,9 +261,9 @@ function T5({ d }) {
   );
 }
 
-function T6({ d }) {
+function T6({ d, themeColor }) {
   return (
-    <div className="pt pt6">
+    <div className={`pt pt6 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt6-bg" />
       <div className="pt6-content">
         <div className="pt6-hero">
@@ -279,9 +304,101 @@ function T6({ d }) {
   );
 }
 
-const templates = { 1: T1, 2: T2, 3: T3, 4: T4, 5: T5, 6: T6 };
+function T7({ d, themeColor }) {
+  return (
+    <div className={`pt pt7 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
+      <div className="pt7-header">
+        <div className="pt7-header-left">
+          <div className="pt7-avatar">{d.initials || d.name?.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+          <div>
+            <div className="pt7-name">{d.name}</div>
+            <div className="pt7-title">{d.title}</div>
+          </div>
+        </div>
+        <div className="pt7-contacts">
+          <span>{d.email}</span><span>·</span><span>{d.location}</span>
+        </div>
+      </div>
+      <div className="pt7-body">
+        <div className="pt7-left">
+          <div className="pt7-block">
+            <div className="pt7-sec-title">About</div>
+            <p className="pt7-text">{d.about}</p>
+          </div>
+          <div className="pt7-block">
+            <div className="pt7-sec-title">Skills</div>
+            {d.skills?.map((s, i) => <span key={i} className="pt7-skill-tag">{s}</span>)}
+          </div>
+          <div className="pt7-block">
+            <div className="pt7-sec-title">Experience</div>
+            {d.experience?.map((e, i) => (
+              <div key={i} className="pt7-exp">
+                <div className="pt7-exp-period">{e.period}</div>
+                <span className="pt7-exp-role">{e.role}</span>
+                <div className="pt7-exp-company">{e.company}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="pt7-right">
+          <div className="pt7-sec-title">Projects</div>
+          {d.projects?.map((p, i) => (
+            <div key={i} className="pt7-project">
+              <div className="pt7-project-name">{p.name}</div>
+              <p className="pt7-project-desc">{p.desc}</p>
+              <div className="pt7-techs">{p.tech?.map((t, j) => <span key={j} className="pt7-tech">{t}</span>)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-export default function GeneratedPortfolio({ data, templateId }) {
+function T8({ d, themeColor }) {
+  return (
+    <div className={`pt pt8 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
+      <div className="pt8-sidebar">
+        <div className="pt8-avatar">{d.initials || d.name?.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div className="pt8-name">{d.name}</div>
+        <div className="pt8-title">{d.title}</div>
+        <div className="pt8-divider" />
+        <div className="pt8-sec-title">Contact</div>
+        <p className="pt8-text">✉ {d.email}</p>
+        {d.phone && <p className="pt8-text">📞 {d.phone}</p>}
+        {d.location && <p className="pt8-text">📍 {d.location}</p>}
+        {d.github && <p className="pt8-text">🔗 {d.github}</p>}
+        <div className="pt8-sec-title">Skills</div>
+        {d.skills?.map((s, i) => <span key={i} className="pt8-skill-tag">{s}</span>)}
+      </div>
+      <div className="pt8-main">
+        <div className="pt8-main-sec-title">About Me</div>
+        <p className="pt8-about">{d.about}</p>
+        <div className="pt8-main-sec-title">Experience</div>
+        {d.experience?.map((e, i) => (
+          <div key={i} className="pt8-exp">
+            <div className="pt8-exp-period">{e.period}</div>
+            <span className="pt8-exp-role">{e.role}</span>
+            <div className="pt8-exp-company">{e.company}</div>
+            <p className="pt8-exp-desc">{e.desc}</p>
+          </div>
+        ))}
+        <div className="pt8-main-sec-title">Projects</div>
+        {d.projects?.map((p, i) => (
+          <div key={i} className="pt8-project">
+            <div className="pt8-project-name">{p.name}</div>
+            <p className="pt8-project-desc">{p.desc}</p>
+            <div className="pt8-techs">{p.tech?.map((t, j) => <span key={j} className="pt8-tech">{t}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const templates = { 1: T1, 2: T2, 3: T3, 4: T4, 5: T5, 6: T6, 7: T7, 8: T8 };
+
+export default function GeneratedPortfolio({ data, templateId, themeColor }) {
   const Component = templates[templateId] || T1;
-  return <Component d={data} />;
+  return <Component d={data} themeColor={themeColor} />;
 }

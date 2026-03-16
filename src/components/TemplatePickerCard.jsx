@@ -1,21 +1,53 @@
 import { useState, useEffect, useRef } from 'react';
 import './TemplatePickerCard.css';
 
-function ScaledPreview({ children, className }) {
+function ScaledPreview({ children, className, scaleDivisor = 794 }) {
   const wrapRef = useRef(null);
-  const [scale, setScale] = useState(0.38);
+  const innerRef = useRef(null);
+  const [scale, setScale] = useState(0);
+  const [scaledHeight, setScaledHeight] = useState(null);
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const update = () => setScale(el.offsetWidth / 794);
-    update();
+    const wrap = wrapRef.current;
+    const inner = innerRef.current;
+    if (!wrap || !inner) return;
+
+    const update = () => {
+      const s = wrap.offsetWidth / scaleDivisor;
+      const contentH = inner.scrollHeight;
+      setScale(s);
+      setScaledHeight(contentH * s);
+      setReady(true);
+    };
+
+    const t = setTimeout(update, 0);
     const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+    ro.observe(wrap);
+    ro.observe(inner);
+    return () => { clearTimeout(t); ro.disconnect(); };
+  }, [children]);
+
   return (
-    <div ref={wrapRef} className={className}>
-      <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: 794, position: 'absolute', top: 0, left: 0, pointerEvents: 'none', userSelect: 'none' }}>
+    <div
+      ref={wrapRef}
+      className={className}
+      style={scaledHeight ? { height: scaledHeight, position: 'relative' } : { position: 'relative' }}
+    >
+      <div
+        ref={innerRef}
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: 794,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          pointerEvents: 'none',
+          userSelect: 'none',
+          visibility: ready ? 'visible' : 'hidden',
+        }}
+      >
         {children}
       </div>
     </div>
@@ -96,6 +128,12 @@ function Template1() {
             </div>
           </div>
         ))}
+        <div className="rv1-main-sec-title" style={{marginTop:18}}>Awards & Recognition</div>
+        {d.awards.map((a,i) => (
+          <div key={i} className="rv1-award-item">{a}</div>
+        ))}
+        <div className="rv1-main-sec-title" style={{marginTop:18}}>Profile</div>
+        <p className="rv1-text" style={{color:'#444'}}>{d.summary}</p>
       </div>
     </div>
   );
@@ -207,6 +245,19 @@ function Template3() {
         <p className="rv3-main-text">📞 {d.phone}</p>
         <p className="rv3-main-text">✉ {d.email}</p>
         <p className="rv3-main-text">📍 {d.location}</p>
+        <div className="rv3-sec-title-main">SKILLS</div>
+        {d.skills.map((s,i) => (
+          <div key={i} style={{display:'flex', alignItems:'center', gap:6, marginBottom:5}}>
+            <span className="rv3-main-text" style={{flex:1}}>{s}</span>
+            <div style={{width:60, height:3, background:'#e0e0e0', borderRadius:2}}>
+              <div style={{width:`${90-i*8}%`, height:'100%', background:'#5f8a8b', borderRadius:2}}/>
+            </div>
+          </div>
+        ))}
+        <div className="rv3-sec-title-main">AWARDS</div>
+        {d.awards.map((a,i) => (
+          <div key={i} className="rv3-award-item">{a}</div>
+        ))}
       </div>
     </div>
   );
@@ -377,6 +428,322 @@ function Template6() {
   );
 }
 
+/* ══════════════════════════════════════
+   T7 — Dark Executive
+══════════════════════════════════════ */
+function Template7() {
+  return (
+    <div className="rv rv7">
+      <div className="rv7-header">
+        <div className="rv7-photo"><span>AP</span></div>
+        <div>
+          <div className="rv7-name">{d.name}</div>
+          <div className="rv7-title">{d.title}</div>
+          <div className="rv7-contacts">
+            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
+          </div>
+        </div>
+      </div>
+      <div className="rv7-body">
+        <div className="rv7-sec-title">PROFESSIONAL SUMMARY</div>
+        <p className="rv7-text">{d.summary}</p>
+        <div className="rv7-sec-title">EXPERIENCE</div>
+        {d.experience.map((e,i) => (
+          <div key={i} className="rv7-exp">
+            <div className="rv7-exp-header">
+              <strong className="rv7-text">{e.role}</strong>
+              <span className="rv7-period">{e.period}</span>
+            </div>
+            <div className="rv7-company">{e.company}</div>
+            <p className="rv7-text">{e.desc}</p>
+          </div>
+        ))}
+        <div className="rv7-two-col">
+          <div>
+            <div className="rv7-sec-title">EDUCATION</div>
+            {d.education.map((e,i) => (
+              <div key={i} style={{marginBottom:8}}>
+                <strong className="rv7-text">{e.degree}</strong>
+                <div className="rv7-company">{e.school} · {e.year}</div>
+              </div>
+            ))}
+            <div className="rv7-sec-title">AWARDS</div>
+            {d.awards.map((a,i) => <p key={i} className="rv7-text">• {a}</p>)}
+          </div>
+          <div>
+            <div className="rv7-sec-title">SKILLS</div>
+            {d.skills.map((s,i) => (
+              <div key={i} style={{marginBottom:5}}>
+                <span className="rv7-text">{s}</span>
+                <div style={{height:3,background:'#333',borderRadius:2,marginTop:2}}>
+                  <div style={{width:`${90-i*8}%`,height:'100%',background:'#c9a84c',borderRadius:2}}/>
+                </div>
+              </div>
+            ))}
+            <div className="rv7-sec-title">LANGUAGES</div>
+            {d.languages.map((l,i) => <p key={i} className="rv7-text">{l}</p>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T8 — Purple Creative
+══════════════════════════════════════ */
+function Template8() {
+  return (
+    <div className="rv rv8">
+      <div className="rv8-sidebar">
+        <div className="rv8-photo"><span>AP</span></div>
+        <div className="rv8-name">{d.name}</div>
+        <div className="rv8-title">{d.title}</div>
+        <div className="rv8-divider"/>
+        <div className="rv8-sec-title">Contact</div>
+        <p className="rv8-text">✉ {d.email}</p>
+        <p className="rv8-text">📞 {d.phone}</p>
+        <p className="rv8-text">📍 {d.location}</p>
+        <div className="rv8-sec-title">Skills</div>
+        {d.skills.map((s,i) => <p key={i} className="rv8-text">▸ {s}</p>)}
+        <div className="rv8-sec-title">Languages</div>
+        {d.languages.map((l,i) => <p key={i} className="rv8-text">{l}</p>)}
+        <div className="rv8-sec-title">Awards</div>
+        {d.awards.map((a,i) => <p key={i} className="rv8-text">★ {a}</p>)}
+      </div>
+      <div className="rv8-main">
+        <div className="rv8-sec-title-main">About Me</div>
+        <p className="rv8-main-text">{d.summary}</p>
+        <div className="rv8-sec-title-main">Experience</div>
+        {d.experience.map((e,i) => (
+          <div key={i} className="rv8-exp">
+            <div className="rv8-exp-period">{e.period}</div>
+            <strong className="rv8-main-text">{e.role}</strong>
+            <div className="rv8-company">{e.company}</div>
+            <p className="rv8-main-text">{e.desc}</p>
+          </div>
+        ))}
+        <div className="rv8-sec-title-main">Education</div>
+        {d.education.map((e,i) => (
+          <div key={i} style={{marginBottom:8}}>
+            <strong className="rv8-main-text">{e.degree}</strong>
+            <div className="rv8-company">{e.school} · {e.year}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T9 — Minimal White
+══════════════════════════════════════ */
+function Template9() {
+  return (
+    <div className="rv rv9">
+      <div className="rv9-header">
+        <div className="rv9-name">{d.name}</div>
+        <div className="rv9-title">{d.title}</div>
+        <div className="rv9-contacts">
+          <span>{d.email}</span><span>|</span><span>{d.phone}</span><span>|</span><span>{d.location}</span>
+        </div>
+        <div className="rv9-divider"/>
+      </div>
+      <div className="rv9-body">
+        <div className="rv9-sec-title">SUMMARY</div>
+        <p className="rv9-text">{d.summary}</p>
+        <div className="rv9-sec-title">EXPERIENCE</div>
+        {d.experience.map((e,i) => (
+          <div key={i} className="rv9-exp">
+            <div className="rv9-exp-header">
+              <strong className="rv9-text">{e.role} — {e.company}</strong>
+              <span className="rv9-period">{e.period}</span>
+            </div>
+            <p className="rv9-text">{e.desc}</p>
+          </div>
+        ))}
+        <div className="rv9-two-col">
+          <div>
+            <div className="rv9-sec-title">EDUCATION</div>
+            {d.education.map((e,i) => (
+              <div key={i} style={{marginBottom:6}}>
+                <strong className="rv9-text">{e.degree}</strong>
+                <div className="rv9-muted">{e.school} · {e.year}</div>
+              </div>
+            ))}
+            <div className="rv9-sec-title">AWARDS</div>
+            {d.awards.map((a,i) => <p key={i} className="rv9-text">• {a}</p>)}
+          </div>
+          <div>
+            <div className="rv9-sec-title">SKILLS</div>
+            <div className="rv9-skills-wrap">
+              {d.skills.map((s,i) => <span key={i} className="rv9-skill-tag">{s}</span>)}
+            </div>
+            <div className="rv9-sec-title">LANGUAGES</div>
+            {d.languages.map((l,i) => <p key={i} className="rv9-text">{l}</p>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T10 — Red Accent
+══════════════════════════════════════ */
+function Template10() {
+  return (
+    <div className="rv rv10">
+      <div className="rv10-sidebar">
+        <div className="rv10-photo"><span>AP</span></div>
+        <div className="rv10-name">{d.name}</div>
+        <div className="rv10-title">{d.title}</div>
+        <div className="rv10-sec-title">CONTACT</div>
+        <p className="rv10-text">✉ {d.email}</p>
+        <p className="rv10-text">📞 {d.phone}</p>
+        <p className="rv10-text">📍 {d.location}</p>
+        <div className="rv10-sec-title">SKILLS</div>
+        {d.skills.map((s,i) => (
+          <div key={i} style={{marginBottom:5}}>
+            <span className="rv10-text">{s}</span>
+            <div style={{height:3,background:'rgba(255,255,255,0.2)',borderRadius:2,marginTop:2}}>
+              <div style={{width:`${90-i*8}%`,height:'100%',background:'#e53e3e',borderRadius:2}}/>
+            </div>
+          </div>
+        ))}
+        <div className="rv10-sec-title">LANGUAGES</div>
+        {d.languages.map((l,i) => <p key={i} className="rv10-text">{l}</p>)}
+      </div>
+      <div className="rv10-main">
+        <div className="rv10-sec-title-main">PROFILE</div>
+        <p className="rv10-main-text">{d.summary}</p>
+        <div className="rv10-sec-title-main">EXPERIENCE</div>
+        {d.experience.map((e,i) => (
+          <div key={i} className="rv10-exp">
+            <div className="rv10-exp-period">{e.period}</div>
+            <strong className="rv10-main-text">{e.role}</strong>
+            <div className="rv10-company">{e.company}</div>
+            <p className="rv10-main-text">{e.desc}</p>
+          </div>
+        ))}
+        <div className="rv10-sec-title-main">EDUCATION</div>
+        {d.education.map((e,i) => (
+          <div key={i} style={{marginBottom:8}}>
+            <strong className="rv10-main-text">{e.degree}</strong>
+            <div className="rv10-company">{e.school} · {e.year}</div>
+          </div>
+        ))}
+        <div className="rv10-sec-title-main">AWARDS</div>
+        {d.awards.map((a,i) => <p key={i} className="rv10-main-text">• {a}</p>)}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T11 — Green Nature
+══════════════════════════════════════ */
+function Template11() {
+  return (
+    <div className="rv rv11">
+      <div className="rv11-header">
+        <div className="rv11-photo"><span>AP</span></div>
+        <div className="rv11-header-text">
+          <div className="rv11-name">{d.name}</div>
+          <div className="rv11-title">{d.title}</div>
+        </div>
+        <div className="rv11-header-contact">
+          <p className="rv11-contact">✉ {d.email}</p>
+          <p className="rv11-contact">📞 {d.phone}</p>
+          <p className="rv11-contact">📍 {d.location}</p>
+        </div>
+      </div>
+      <div className="rv11-body">
+        <div className="rv11-left">
+          <div className="rv11-sec-title">ABOUT</div>
+          <p className="rv11-text">{d.summary}</p>
+          <div className="rv11-sec-title">SKILLS</div>
+          {d.skills.map((s,i) => <span key={i} className="rv11-skill-tag">{s}</span>)}
+          <div className="rv11-sec-title">LANGUAGES</div>
+          {d.languages.map((l,i) => <p key={i} className="rv11-text">{l}</p>)}
+          <div className="rv11-sec-title">AWARDS</div>
+          {d.awards.map((a,i) => <p key={i} className="rv11-text">🏆 {a}</p>)}
+        </div>
+        <div className="rv11-right">
+          <div className="rv11-sec-title">EXPERIENCE</div>
+          {d.experience.map((e,i) => (
+            <div key={i} className="rv11-exp">
+              <div className="rv11-exp-period">{e.period}</div>
+              <strong className="rv11-text">{e.role}</strong>
+              <div className="rv11-company">{e.company}</div>
+              <p className="rv11-text">{e.desc}</p>
+            </div>
+          ))}
+          <div className="rv11-sec-title">EDUCATION</div>
+          {d.education.map((e,i) => (
+            <div key={i} style={{marginBottom:8}}>
+              <strong className="rv11-text">{e.degree}</strong>
+              <div className="rv11-company">{e.school} · {e.year}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T12 — Navy Classic
+══════════════════════════════════════ */
+function Template12() {
+  return (
+    <div className="rv rv12">
+      <div className="rv12-top">
+        <div className="rv12-photo"><span>AP</span></div>
+        <div className="rv12-top-text">
+          <div className="rv12-name">{d.name}</div>
+          <div className="rv12-title">{d.title}</div>
+          <div className="rv12-contacts">
+            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
+          </div>
+        </div>
+      </div>
+      <div className="rv12-body">
+        <div className="rv12-left">
+          <div className="rv12-sec-title">SUMMARY</div>
+          <p className="rv12-text">{d.summary}</p>
+          <div className="rv12-sec-title">EDUCATION</div>
+          {d.education.map((e,i) => (
+            <div key={i} style={{marginBottom:8}}>
+              <strong className="rv12-text">{e.degree}</strong>
+              <div className="rv12-muted">{e.school} · {e.year}</div>
+            </div>
+          ))}
+          <div className="rv12-sec-title">LANGUAGES</div>
+          {d.languages.map((l,i) => <p key={i} className="rv12-text">{l}</p>)}
+          <div className="rv12-sec-title">AWARDS</div>
+          {d.awards.map((a,i) => <p key={i} className="rv12-text">• {a}</p>)}
+        </div>
+        <div className="rv12-right">
+          <div className="rv12-sec-title">EXPERIENCE</div>
+          {d.experience.map((e,i) => (
+            <div key={i} className="rv12-exp">
+              <div className="rv12-exp-period">{e.period}</div>
+              <strong className="rv12-text">{e.role}</strong>
+              <div className="rv12-company">{e.company}</div>
+              <p className="rv12-text">{e.desc}</p>
+            </div>
+          ))}
+          <div className="rv12-sec-title">SKILLS</div>
+          <div className="rv12-skills-wrap">
+            {d.skills.map((s,i) => <span key={i} className="rv12-skill-tag">{s}</span>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const templates = [
   { id: 1, name: 'Modern Minimalist', tag: 'Popular', component: <Template1 />, recommended: true },
   { id: 2, name: 'Professional Modern', tag: 'Classic', component: <Template2 />, recommended: false },
@@ -384,10 +751,75 @@ const templates = [
   { id: 4, name: 'Orange Graphic', tag: 'Creative', component: <Template4 />, recommended: true },
   { id: 5, name: 'Clean Two-Column', tag: 'Minimal', component: <Template5 />, recommended: false },
   { id: 6, name: 'Bold Teal Header', tag: 'Stand Out', component: <Template6 />, recommended: false },
+  { id: 7, name: 'Dark Executive', tag: 'Premium', component: <Template7 />, recommended: false },
+  { id: 8, name: 'Purple Creative', tag: 'Bold', component: <Template8 />, recommended: true },
+  { id: 9, name: 'Minimal White', tag: 'Clean', component: <Template9 />, recommended: false },
+  { id: 10, name: 'Red Accent', tag: 'Vibrant', component: <Template10 />, recommended: false },
+  { id: 11, name: 'Green Nature', tag: 'Fresh', component: <Template11 />, recommended: false },
+  { id: 12, name: 'Navy Classic', tag: 'Formal', component: <Template12 />, recommended: false },
 ];
 
 function TemplatePickerCard({ onSelect, selected }) {
   const [preview, setPreview] = useState(null);
+  const [page, setPage] = useState(1);
+  const [sliding, setSliding] = useState(false);
+  const PER_PAGE = 6;
+  const totalPages = Math.ceil(templates.length / PER_PAGE);
+
+  const getVisible = (p) => templates.slice((p - 1) * PER_PAGE, p * PER_PAGE);
+
+  // Track is always totalPages wide, positioned so active page is in view
+  // translateX = -(page-1) * (100/totalPages)%
+  const slideWidth = 100 / totalPages; // each slide is this % of the track
+
+  const goToPage = (p) => {
+    if (sliding || p === page) return;
+    setSliding(true);
+    // Use rAF so the transition:none frame paints first, then we update page with transition on
+    requestAnimationFrame(() => {
+      setPage(p);
+    });
+  };
+
+  const handleTransitionEnd = () => {
+    setSliding(false);
+  };
+
+  const trackStyle = {
+    transform: `translateX(-${(page - 1) * slideWidth}%)`,
+    transition: sliding ? 'transform 0.42s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+    width: `${totalPages * 100}%`,
+  };
+
+  const renderGrid = (pageIndex) => {
+    const items = getVisible(pageIndex);
+    return (
+      <div
+        key={pageIndex}
+        className="tpl-slide"
+        style={{ width: `${slideWidth}%` }}
+      >
+        <div className="tpl-grid">
+          {items.map((tpl) => (
+            <div
+              key={tpl.id}
+              className={`tpl-card ${selected === tpl.id ? 'tpl-selected' : ''}`}
+              onClick={() => setPreview(tpl)}
+            >
+              {tpl.recommended && <div className="tpl-recommended">Recommended</div>}
+              <ScaledPreview className="tpl-preview-wrap" scaleDivisor={540}>{tpl.component}</ScaledPreview>
+              <div className="tpl-card-footer">
+                <span className="tpl-card-name">{tpl.name}</span>
+                <button className="tpl-choose-btn" onClick={e => { e.stopPropagation(); onSelect(tpl.id); }}>
+                  {selected === tpl.id ? '✓ Selected' : 'Choose template'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="tpl-picker">
@@ -406,18 +838,25 @@ function TemplatePickerCard({ onSelect, selected }) {
         </div>
       )}
 
-      <div className="tpl-grid">
-        {templates.map((tpl) => (
-          <div key={tpl.id} className={`tpl-card ${selected === tpl.id ? 'tpl-selected' : ''}`} onClick={() => setPreview(tpl)}>
-            {tpl.recommended && <div className="tpl-recommended">Recommended</div>}
-            <ScaledPreview className="tpl-preview-wrap">{tpl.component}</ScaledPreview>
-            <div className="tpl-card-footer">
-              <span className="tpl-card-name">{tpl.name}</span>
-              <button className="tpl-choose-btn" onClick={e => { e.stopPropagation(); onSelect(tpl.id); }}>
-                {selected === tpl.id ? '✓ Selected' : 'Choose template'}
-              </button>
-            </div>
-          </div>
+      <div className="tpl-viewport">
+        <div
+          className="tpl-track"
+          style={trackStyle}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {Array.from({ length: totalPages }, (_, i) => renderGrid(i + 1))}
+        </div>
+      </div>
+
+      <div className="tpl-pagination">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+          <button
+            key={p}
+            className={`tpl-page-btn${page === p ? ' tpl-page-active' : ''}`}
+            onClick={() => goToPage(p)}
+          >
+            {p}
+          </button>
         ))}
       </div>
     </div>

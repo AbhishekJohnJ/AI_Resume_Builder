@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, Send, FileText, Image, X, Download, RefreshCw } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
+import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -345,6 +345,104 @@ function PortfolioTemplate6() {
     </div>
   );
 }
+/* ══════════════════════════════════════
+   Template 7 — Rose Minimal
+══════════════════════════════════════ */
+function PortfolioTemplate7() {
+  return (
+    <div className="pt pt7">
+      <div className="pt7-header">
+        <div className="pt7-header-left">
+          <div className="pt7-avatar">AM</div>
+          <div>
+            <div className="pt7-name">{pd.name}</div>
+            <div className="pt7-title">{pd.title}</div>
+          </div>
+        </div>
+        <div className="pt7-contacts">
+          <span>{pd.email}</span><span>·</span><span>{pd.location}</span>
+        </div>
+      </div>
+      <div className="pt7-body">
+        <div className="pt7-left">
+          <div className="pt7-block">
+            <div className="pt7-sec-title">About</div>
+            <p className="pt7-text">{pd.about}</p>
+          </div>
+          <div className="pt7-block">
+            <div className="pt7-sec-title">Skills</div>
+            {pd.skills.map((s, i) => <span key={i} className="pt7-skill-tag">{s}</span>)}
+          </div>
+          <div className="pt7-block">
+            <div className="pt7-sec-title">Experience</div>
+            {pd.experience.map((e, i) => (
+              <div key={i} className="pt7-exp">
+                <div className="pt7-exp-period">{e.period}</div>
+                <span className="pt7-exp-role">{e.role}</span>
+                <div className="pt7-exp-company">{e.company}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="pt7-right">
+          <div className="pt7-sec-title">Projects</div>
+          {pd.projects.map((p, i) => (
+            <div key={i} className="pt7-project">
+              <div className="pt7-project-name">{p.name}</div>
+              <p className="pt7-project-desc">{p.desc}</p>
+              <div className="pt7-techs">{p.tech.map((t, j) => <span key={j} className="pt7-tech">{t}</span>)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   Template 8 — Emerald Split
+══════════════════════════════════════ */
+function PortfolioTemplate8() {
+  return (
+    <div className="pt pt8">
+      <div className="pt8-sidebar">
+        <div className="pt8-avatar">AM</div>
+        <div className="pt8-name">{pd.name}</div>
+        <div className="pt8-title">{pd.title}</div>
+        <div className="pt8-divider" />
+        <div className="pt8-sec-title">Contact</div>
+        <p className="pt8-text">✉ {pd.email}</p>
+        <p className="pt8-text">📞 {pd.phone}</p>
+        <p className="pt8-text">📍 {pd.location}</p>
+        <p className="pt8-text">🔗 {pd.github}</p>
+        <div className="pt8-sec-title">Skills</div>
+        {pd.skills.map((s, i) => <span key={i} className="pt8-skill-tag">{s}</span>)}
+      </div>
+      <div className="pt8-main">
+        <div className="pt8-main-sec-title">About Me</div>
+        <p className="pt8-about">{pd.about}</p>
+        <div className="pt8-main-sec-title">Experience</div>
+        {pd.experience.map((e, i) => (
+          <div key={i} className="pt8-exp">
+            <div className="pt8-exp-period">{e.period}</div>
+            <span className="pt8-exp-role">{e.role}</span>
+            <div className="pt8-exp-company">{e.company}</div>
+            <p className="pt8-exp-desc">{e.desc}</p>
+          </div>
+        ))}
+        <div className="pt8-main-sec-title">Projects</div>
+        {pd.projects.map((p, i) => (
+          <div key={i} className="pt8-project">
+            <div className="pt8-project-name">{p.name}</div>
+            <p className="pt8-project-desc">{p.desc}</p>
+            <div className="pt8-techs">{p.tech.map((t, j) => <span key={j} className="pt8-tech">{t}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ScaledModalPreview({ children }) {
   return (
     <div style={{ width: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
@@ -393,6 +491,8 @@ const portfolioTemplates = [
   { id: 4, name: 'Navy Executive',  tag: 'Corporate',    component: <PortfolioTemplate4 />, recommended: false },
   { id: 5, name: 'Sunset Bold',     tag: 'Bold',         component: <PortfolioTemplate5 />, recommended: false },
   { id: 6, name: 'Glass Dark',      tag: 'Modern',       component: <PortfolioTemplate6 />, recommended: true  },
+  { id: 7, name: 'Rose Minimal',    tag: 'Elegant',      component: <PortfolioTemplate7 />, recommended: false },
+  { id: 8, name: 'Emerald Split',   tag: 'Fresh',        component: <PortfolioTemplate8 />, recommended: false },
 ];
 
 /* ══════════════════════════════════════
@@ -416,15 +516,21 @@ function ScaledPreview({ children, width = 900 }) {
 ══════════════════════════════════════ */
 function Portfolio() {
   const navigate = useNavigate();
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
+  const [page, setPage] = useState(1);
+  const [sliding, setSliding] = useState(false);
+  const PF_PER_PAGE = 4;
+  const [showCode, setShowCode] = useState(false);
+  const [codeTab, setCodeTab] = useState('html');
+  const [copied, setCopied] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState([]);
   const [showUploadMenu, setShowUploadMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
+  const [themeColor, setThemeColor] = useState(null);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const outputRef = useRef(null);
@@ -440,13 +546,33 @@ function Portfolio() {
     if (!prompt.trim() && files.length === 0) return;
     if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
     setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    const replaceColor = parseColorReplace(prompt, selectedTemplate);
+    // Merge: replace-mode overrides take priority over single/multi-target
+    const mergedColor = (detectedColor || replaceColor)
+      ? { ...(detectedColor || {}), ...(replaceColor || {}) }
+      : null;
+    if (mergedColor) setThemeColor(mergedColor);
+
+    // If it's only a color-change request, just recolor — no AI call needed
+    if (isColorChangeOnly(prompt)) {
+      if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
+      return;
+    }
+
     setLoading(true);
-    setPortfolioData(null);
+    if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
       const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, templateId: selectedTemplate }),
+        body: JSON.stringify({
+          prompt,
+          templateId: selectedTemplate,
+          existingData: portfolioData || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
@@ -458,7 +584,7 @@ function Portfolio() {
         await fetch('http://localhost:5000/api/portfolios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData }),
+          body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: mergedColor || null }),
         });
       }
 
@@ -470,49 +596,80 @@ function Portfolio() {
     }
   };
 
-  const handleDownload = async () => {
-    const el = document.getElementById('gp-portfolio-paper');
-    if (!el) return;
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * ratio, canvas.height * ratio);
-    pdf.save(`${portfolioData?.name?.replace(/\s+/g, '_') || 'portfolio'}.pdf`);
+  const handleExportCode = () => setShowCode(true);
+
+  /** Serialize all active themeColor vars into a CSS block */
+  const buildThemeVarBlock = (tc, selector) => {
+    if (!tc) return '';
+    const ALL_VARS = ['--tc', '--tc-dark', '--tc-light', '--tc-accent', '--bg', '--bg-2', '--text', '--text-muted'];
+    const varMap = {
+      '--tc': tc.main, '--tc-dark': tc.dark, '--tc-light': tc.light, '--tc-accent': tc.accent,
+      '--bg': tc['--bg'], '--bg-2': tc['--bg-2'], '--text': tc['--text'], '--text-muted': tc['--text-muted'],
+    };
+    const lines = ALL_VARS.filter(v => varMap[v]).map(v => `  ${v}: ${varMap[v]};`).join('\n');
+    return lines ? `${selector} {\n${lines}\n}` : '';
+  };
+
+  const getExportedHTML = () => {
+    if (!portfolioData) return '';
+    const markup = renderToStaticMarkup(
+      <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} themeColor={themeColor} />
+    );
+    const block = buildThemeVarBlock(themeColor, ':root');
+    const colorVars = block ? `\n  <style>\n    ${block.replace(/\n/g, '\n    ')}\n  </style>` : '';
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${portfolioData.name || 'Portfolio'}</title>
+  <link rel="stylesheet" href="portfolio.css" />${colorVars}
+</head>
+<body>
+${markup}
+</body>
+</html>`;
+  };
+
+  const getExportedCSS = () => {
+    const tplId = selectedTemplate;
+    try {
+      let css = '/* Portfolio CSS — generated by AI Portfolio Builder */\n\n';
+      const block = buildThemeVarBlock(themeColor, `.pt${tplId}`);
+      if (block) css += `/* Theme color overrides */\n${block}\n\n`;
+      for (const sheet of document.styleSheets) {
+        try {
+          for (const rule of sheet.cssRules) {
+            const text = rule.cssText;
+            if (
+              text.includes(`.pt${tplId}-`) ||
+              text.includes(`.pt${tplId} `) ||
+              text.includes(`.pt${tplId}{`) ||
+              text.includes(`.pt .pt${tplId}`) ||
+              text.startsWith(`.pt${tplId}`)
+            ) {
+              css += rule.cssText + '\n';
+            }
+          }
+        } catch { /* cross-origin sheet */ }
+      }
+      return css;
+    } catch {
+      return '/* Could not extract CSS — copy from Portfolio.css */';
+    }
+  };
+
+  const handleCopy = () => {
+    const text = codeTab === 'html' ? getExportedHTML() : getExportedCSS();
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={() => setShowProfileCard(v => !v)} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={() => navigate('/')} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={() => setShowProfileCard(false)} />
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John" role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78} leaderboardRank={24} totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
+      <TopBar />
 
       <Sidebar />
 
@@ -523,39 +680,77 @@ function Portfolio() {
             <p className="page-subtitle">Choose a template to showcase your work and skills</p>
           </div>
 
-          <div className="pf-grid">
-            {portfolioTemplates.map((tpl) => (
-              <div
-                key={tpl.id}
-                className={`pf-card ${selectedTemplate === tpl.id ? 'pf-card-selected' : ''}`}
-                onClick={() => setPreviewTemplate(tpl)}
-              >
-                {tpl.recommended && <span className="pf-badge">Recommended</span>}
-
-                {/* Full template preview */}
-                <div className="pf-card-preview">
-                  <ScaledPortfolioPreview>{tpl.component}</ScaledPortfolioPreview>
-                  <div className="pf-card-overlay">
-                    <span className="pf-preview-hint">Click to preview</span>
-                  </div>
-                </div>
-
-                {/* Footer info */}
-                <div className="pf-card-footer">
-                  <div className="pf-card-meta">
-                    <span className="pf-tag">{tpl.tag}</span>
-                    <span className="pf-tpl-name">{tpl.name}</span>
-                  </div>
-                  <button
-                    className={`pf-btn-select ${selectedTemplate === tpl.id ? 'pf-btn-selected' : ''}`}
-                    onClick={e => { e.stopPropagation(); setSelectedTemplate(tpl.id); }}
+          {(() => {
+            const totalPages = Math.ceil(portfolioTemplates.length / PF_PER_PAGE);
+            const slideWidth = 100 / totalPages;
+            const trackStyle = {
+              transform: `translateX(-${(page - 1) * slideWidth}%)`,
+              transition: sliding ? 'transform 0.42s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+              width: `${totalPages * 100}%`,
+            };
+            const goToPage = (p) => {
+              if (sliding || p === page) return;
+              setSliding(true);
+              requestAnimationFrame(() => setPage(p));
+            };
+            return (
+              <>
+                <div className="pf-viewport">
+                  <div
+                    className="pf-track"
+                    style={trackStyle}
+                    onTransitionEnd={() => setSliding(false)}
                   >
-                    {selectedTemplate === tpl.id ? '✓ Selected' : 'Use Template'}
-                  </button>
+                    {Array.from({ length: totalPages }, (_, pi) => (
+                      <div key={pi} className="pf-slide" style={{ width: `${slideWidth}%` }}>
+                        <div className="pf-grid">
+                          {portfolioTemplates.slice(pi * PF_PER_PAGE, (pi + 1) * PF_PER_PAGE).map((tpl) => (
+                            <div
+                              key={tpl.id}
+                              className={`pf-card ${selectedTemplate === tpl.id ? 'pf-card-selected' : ''}`}
+                              onClick={() => setPreviewTemplate(tpl)}
+                            >
+                              {tpl.recommended && <span className="pf-badge">Recommended</span>}
+                              <div className="pf-card-preview">
+                                <ScaledPortfolioPreview>{tpl.component}</ScaledPortfolioPreview>
+                                <div className="pf-card-overlay">
+                                  <span className="pf-preview-hint">Click to preview</span>
+                                </div>
+                              </div>
+                              <div className="pf-card-footer">
+                                <div className="pf-card-meta">
+                                  <span className="pf-tag">{tpl.tag}</span>
+                                  <span className="pf-tpl-name">{tpl.name}</span>
+                                </div>
+                                <button
+                                  className={`pf-btn-select ${selectedTemplate === tpl.id ? 'pf-btn-selected' : ''}`}
+                                  onClick={e => { e.stopPropagation(); setSelectedTemplate(tpl.id); }}
+                                >
+                                  {selectedTemplate === tpl.id ? '✓ Selected' : 'Use Template'}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+
+                <div className="pf-pagination">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                    <button
+                      key={p}
+                      className={`pf-page-btn${page === p ? ' pf-page-active' : ''}`}
+                      onClick={() => goToPage(p)}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
 
           {/* ── Portfolio Prompt Section ── */}
           <div className="rb-prompt-section">
@@ -577,9 +772,7 @@ function Portfolio() {
               </div>
             )}
 
-            {!selectedTemplate && (
-              <p className="rb-no-template-warn">⚠ Please select a template above before generating.</p>
-            )}
+
 
             <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
               <div className="rb-plus-wrap">
@@ -599,7 +792,7 @@ function Portfolio() {
               </div>
               <textarea
                 className="rb-input"
-                placeholder="e.g. My name is Alex, I'm a Full Stack Developer with 3 years experience in React and Node.js..."
+                placeholder={portfolioData ? 'e.g. Make the about section more bold, add a new project, improve my tagline...' : 'e.g. Designer, React, portfolio...'}
                 value={prompt}
                 rows={2}
                 onChange={e => {
@@ -621,14 +814,21 @@ function Portfolio() {
               </button>
             </div>
 
-            {error && <p className="rb-no-template-warn">{error}</p>}
+            {error && <div className="gr-error">{error}</div>}
+
+            <div className="rb-help-row">
+              <button className="rb-help-btn" onClick={() => navigate('/about')}>
+                <HelpCircle size={15} />
+                Need any help?
+              </button>
+            </div>
           </div>
 
           {/* ── Loading ── */}
           {loading && (
             <div className="gr-loading">
               <div className="gr-spinner" />
-              <p className="gr-loading-text">Generating your portfolio with AI...</p>
+              <p className="gr-loading-text">{portfolioData ? 'Enhancing your portfolio...' : 'Generating your portfolio with AI...'}</p>
             </div>
           )}
 
@@ -641,20 +841,44 @@ function Portfolio() {
                   <button className="gr-btn gr-btn-regenerate" onClick={handleGenerate}>
                     <RefreshCw size={14} /> Regenerate
                   </button>
-                  <button className="gr-btn gr-btn-download" onClick={handleDownload}>
-                    <Download size={14} /> Download PDF
+                  <button className="gr-btn gr-btn-download" onClick={handleExportCode}>
+                    <Code size={14} /> Export Code
                   </button>
                 </div>
               </div>
               <div className="gr-paper-wrap">
                 <div id="gp-portfolio-paper" className="gr-paper">
-                  <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} />
+                  <GeneratedPortfolio data={portfolioData} templateId={selectedTemplate} themeColor={themeColor} />
                 </div>
               </div>
             </div>
           )}
         </main>
       </div>
+
+      {/* Code Export Modal */}
+      {showCode && portfolioData && (
+        <div className="pf-modal-overlay" onClick={() => setShowCode(false)}>
+          <div className="pf-code-modal" onClick={e => e.stopPropagation()}>
+            <div className="pf-modal-header">
+              <span className="pf-modal-title">Export Code — {portfolioData.name}</span>
+              <div className="pf-modal-actions">
+                <button className={`pf-code-copy-btn${copied ? ' pf-code-copied' : ''}`} onClick={handleCopy}>
+                  {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
+                </button>
+                <button className="pf-modal-close" onClick={() => setShowCode(false)}>✕</button>
+              </div>
+            </div>
+            <div className="pf-code-tabs">
+              <button className={`pf-code-tab${codeTab === 'html' ? ' pf-code-tab-active' : ''}`} onClick={() => setCodeTab('html')}>HTML</button>
+              <button className={`pf-code-tab${codeTab === 'css' ? ' pf-code-tab-active' : ''}`} onClick={() => setCodeTab('css')}>CSS</button>
+            </div>
+            <pre className="pf-code-block">
+              <code>{codeTab === 'html' ? getExportedHTML() : getExportedCSS()}</code>
+            </pre>
+          </div>
+        </div>
+      )}
 
       {/* Full preview modal */}
       {previewTemplate && (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
-import { FaFileAlt, FaPalette, FaRocket, FaChartLine } from 'react-icons/fa';
+import { FaFileAlt, FaPalette, FaMagic, FaLayerGroup } from 'react-icons/fa';
 import { authAPI } from '../services/api';
 import './Login.css';
 
@@ -55,8 +55,8 @@ function Login() {
                   <FaFileAlt />
                 </div>
                 <div className="feature-text">
-                  <h3>Smart Resume Builder</h3>
-                  <p>AI-powered templates that adapt to your industry</p>
+                  <h3>AI Resume Builder</h3>
+                  <p>Describe yourself in plain text — AI generates a full resume instantly</p>
                 </div>
               </div>
               
@@ -65,28 +65,28 @@ function Login() {
                   <FaPalette />
                 </div>
                 <div className="feature-text">
-                  <h3>Portfolio Showcase</h3>
-                  <p>Display your work with beautiful, customizable layouts</p>
+                  <h3>Portfolio Generator</h3>
+                  <p>Turn your experience into a stunning portfolio with one prompt</p>
                 </div>
               </div>
               
               <div className="feature-item">
                 <div className="feature-icon">
-                  <FaRocket />
+                  <FaMagic />
                 </div>
                 <div className="feature-text">
-                  <h3>One-Click Deploy</h3>
-                  <p>Share your profile with a personalized link</p>
+                  <h3>Smart Design Control</h3>
+                  <p>Change button styles, card designs, and backgrounds just by asking</p>
                 </div>
               </div>
               
               <div className="feature-item">
                 <div className="feature-icon">
-                  <FaChartLine />
+                  <FaLayerGroup />
                 </div>
                 <div className="feature-text">
-                  <h3>Track Your Impact</h3>
-                  <p>See who views your resume and portfolio</p>
+                  <h3>Resume &amp; Portfolio Templates</h3>
+                  <p>Pick a template, describe your story — AI fills in the rest</p>
                 </div>
               </div>
             </div>

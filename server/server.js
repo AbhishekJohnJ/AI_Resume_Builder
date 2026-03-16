@@ -3,7 +3,66 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
+const XLSX = require('xlsx');
+const { createWorker } = require('tesseract.js');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Multer: store files in memory
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+// Extract text from uploaded file buffer
+async function extractTextFromFile(file) {
+  const { mimetype, originalname, buffer } = file;
+  const ext = path.extname(originalname).toLowerCase();
+
+  // PDF
+  if (mimetype === 'application/pdf' || ext === '.pdf') {
+    const result = await pdfParse(buffer);
+    return result.text;
+  }
+
+  // Word DOCX
+  if (mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || ext === '.docx') {
+    const result = await mammoth.extractRawText({ buffer });
+    return result.value;
+  }
+
+  // Legacy DOC - return filename hint
+  if (ext === '.doc') {
+    return `[DOC file: ${originalname} - content extraction limited for legacy .doc format]`;
+  }
+
+  // Excel XLSX / XLS / CSV
+  if (ext === '.xlsx' || ext === '.xls' || ext === '.csv' ||
+      mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      mimetype === 'application/vnd.ms-excel') {
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    let text = '';
+    workbook.SheetNames.forEach(name => {
+      const sheet = workbook.Sheets[name];
+      text += `Sheet: ${name}\n` + XLSX.utils.sheet_to_csv(sheet) + '\n';
+    });
+    return text;
+  }
+
+  // Images - OCR
+  if (mimetype.startsWith('image/')) {
+    const worker = await createWorker('eng');
+    const { data: { text } } = await worker.recognize(buffer);
+    await worker.terminate();
+    return text;
+  }
+
+  // Plain text
+  if (mimetype === 'text/plain' || ext === '.txt') {
+    return buffer.toString('utf-8');
+  }
+
+  return '';
+}
 
 const app = express();
 
@@ -47,6 +106,7 @@ const resumeSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   templateId: { type: Number, required: true },
   data: { type: Object, required: true },
+  themeColor: { type: Object, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -57,6 +117,7 @@ const portfolioSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   templateId: { type: Number, required: true },
   data: { type: Object, required: true },
+  themeColor: { type: Object, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -168,9 +229,9 @@ app.get('/api/users/:id', async (req, res) => {
 // Save resume
 app.post('/api/resumes', async (req, res) => {
   try {
-    const { userId, templateId, data } = req.body;
+    const { userId, templateId, data, themeColor } = req.body;
     if (!userId || !templateId || !data) return res.status(400).json({ error: 'Missing fields' });
-    const resume = new Resume({ userId, templateId, data });
+    const resume = new Resume({ userId, templateId, data, themeColor: themeColor || null });
     await resume.save();
     res.status(201).json(resume);
   } catch (error) {
@@ -203,9 +264,9 @@ app.delete('/api/resumes/:id', async (req, res) => {
 // Save portfolio
 app.post('/api/portfolios', async (req, res) => {
   try {
-    const { userId, templateId, data } = req.body;
+    const { userId, templateId, data, themeColor } = req.body;
     if (!userId || !templateId || !data) return res.status(400).json({ error: 'Missing fields' });
-    const portfolio = new Portfolio({ userId, templateId, data });
+    const portfolio = new Portfolio({ userId, templateId, data, themeColor: themeColor || null });
     await portfolio.save();
     res.status(201).json(portfolio);
   } catch (error) {
@@ -387,14 +448,87 @@ app.post('/api/ai/chat', async (req, res) => {
 // Generate portfolio data from prompt
 app.post('/api/ai/generate-portfolio', async (req, res) => {
   try {
-    const { prompt, templateId } = req.body;
+    const { prompt, templateId, existingData } = req.body;
     if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
 
     const apiKey = process.env.AI_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
-    const systemPrompt = `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
+    const isEnhancement = !!existingData;
+
+    const systemPrompt = isEnhancement
+      ? `You are an expert portfolio designer and content writer. The user already has a generated portfolio and wants to enhance or modify it.
+
+Your job is to apply the user's requested changes to the existing portfolio data and return the FULL updated portfolio JSON.
+
+You can:
+- Rewrite or improve any text field (name, title, tagline, about, project descriptions, experience descriptions)
+- Add, remove, or reorder projects or experience entries
+- Update skills list
+- Change contact details if requested
+- Make the content more professional, bold, creative, minimal, etc. based on user's style request
+- Expand or shorten sections as requested
+
+You can also change VISUAL DESIGN via the "designStyle" field:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
+
+DESIGN KEYWORD MAPPING:
+- "pill buttons / rounded buttons / capsule" → designStyle.button = "pill"
+- "outlined / border buttons" → designStyle.button = "outline"
+- "gradient buttons" → designStyle.button = "gradient"
+- "ghost / minimal buttons" → designStyle.button = "ghost"
+- "sharp / square buttons" → designStyle.button = "sharp"
+- "bordered cards / card borders" → designStyle.card = "bordered"
+- "shadow / elevated cards" → designStyle.card = "shadowed" or "elevated"
+- "glass / glassmorphism / frosted cards" → designStyle.card = "glass"
+- "gradient background" → designStyle.background = "gradient"
+- "mesh / blob background" → designStyle.background = "mesh"
+- "dotted / dots background" → designStyle.background = "dots"
+- "lines / line pattern background" → designStyle.background = "lines"
+
+IMPORTANT: Return the COMPLETE updated portfolio JSON — not just the changed parts.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+{
+  "name": "Full Name",
+  "initials": "AB",
+  "title": "Job Title",
+  "tagline": "A short inspiring tagline",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "location": "City, Country",
+  "github": "github.com/username",
+  "linkedin": "linkedin.com/in/username",
+  "website": "www.website.com",
+  "about": "2-3 sentence personal bio",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
+  "projects": [
+    { "name": "Project Name", "desc": "Short description.", "tech": ["Tech1", "Tech2", "Tech3"], "link": "#" }
+  ],
+  "experience": [
+    { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." }
+  ],
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
+}`
+      : `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
+
+The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer... make project descriptions very detailed and impactful").
+You MUST follow ALL such instructions when generating the portfolio — apply them to the relevant sections.
+
+For project descriptions: if the user asks for detailed/defined points, write rich, specific descriptions that highlight impact, technologies used, and outcomes.
+For experience descriptions: if the user asks for detailed points, write achievement-focused, quantified descriptions.
+
+If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background"), set the appropriate designStyle fields:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
 {
   "name": "Full Name",
   "initials": "AB",
@@ -416,9 +550,18 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   "experience": [
     { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." },
     { "role": "Job Title 2", "company": "Company 2", "period": "2019 – 2021", "desc": "Description." }
-  ]
+  ],
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
+If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
+
+    const userMessage = isEnhancement
+      ? `Here is my current portfolio data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`
+      : `User description: ${prompt}`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -430,7 +573,7 @@ If any field is not mentioned, make a reasonable professional inference. Always 
         model: 'deepseek/deepseek-chat',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `User description: ${prompt}` }
+          { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
         max_tokens: 2048
@@ -441,8 +584,16 @@ If any field is not mentioned, make a reasonable professional inference. Always 
     if (!response.ok) throw new Error(data.error?.message || 'AI API error');
 
     const raw = data.choices?.[0]?.message?.content || '';
-    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const portfolioData = JSON.parse(cleaned);
+
+    // Robust JSON extraction
+    let jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    if (!jsonStr.startsWith('{')) {
+      const match = jsonStr.match(/\{[\s\S]*\}/);
+      if (match) jsonStr = match[0];
+      else throw new Error('AI did not return valid JSON. Try rephrasing your prompt.');
+    }
+
+    const portfolioData = JSON.parse(jsonStr);
 
     res.json({ portfolioData });
   } catch (error) {
@@ -451,16 +602,101 @@ If any field is not mentioned, make a reasonable professional inference. Always 
   }
 });
 
-// Generate resume data from prompt
-app.post('/api/ai/generate-resume', async (req, res) => {
+// Generate resume data from prompt (supports file attachments)
+app.post('/api/ai/generate-resume', upload.array('files', 5), async (req, res) => {
   try {
     const { prompt, templateId } = req.body;
-    if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
+    const existingData = req.body.existingData ? JSON.parse(req.body.existingData) : null;
+    const uploadedFiles = req.files || [];
+
+    if (!prompt && uploadedFiles.length === 0) {
+      return res.status(400).json({ error: 'Prompt or at least one file is required' });
+    }
+
+    // Extract text from all uploaded files
+    let extractedContent = '';
+    if (uploadedFiles.length > 0) {
+      const extractions = await Promise.all(uploadedFiles.map(f => extractTextFromFile(f)));
+      extractedContent = extractions.filter(Boolean).join('\n\n');
+    }
+
+    const isEnhancement = !!existingData && !extractedContent;
 
     const apiKey = process.env.AI_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
 
-    const systemPrompt = `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object. 
+    const systemPrompt = isEnhancement
+      ? `You are an expert resume writer, career coach, and UI designer. The user already has a generated resume and wants to enhance, modify, or redesign sections of it.
+
+Your job is to apply the user's requested changes to the existing resume data and return the FULL updated resume JSON.
+
+You can change CONTENT:
+- Rewrite or improve any text field (summary, job descriptions, education details)
+- Add, remove, or reorder experience, education, skills, awards, languages
+- Make content more professional, concise, impactful, or creative
+- Add quantifiable achievements, action verbs, or industry keywords
+
+You can change SECTION DESIGN via the "sectionStyle" field:
+- sectionStyle.skills controls how skills are displayed:
+    "bars"     → progress bar for each skill (default)
+    "badges"   → pill/tag badges
+    "dots"     → bullet dot list
+    "numbered" → numbered list
+- sectionStyle.experience controls how experience is displayed:
+    "default"  → dot + vertical list (default)
+    "timeline" → connected timeline with dots and lines
+    "card"     → each job in a bordered card
+    "compact"  → condensed single-line header per job
+
+For experience entries, you can also add a "bullets" array to any experience item for bullet-point descriptions:
+  { "role": "...", "company": "...", "period": "...", "desc": "...", "bullets": ["Did X", "Achieved Y"] }
+If bullets are present, they are shown instead of desc.
+
+You can change VISUAL DESIGN via the "designStyle" field:
+- designStyle.button controls button appearance:
+    "default"   → solid filled button (default)
+    "outline"   → transparent with border
+    "pill"      → fully rounded pill shape
+    "gradient"  → gradient background
+    "ghost"     → minimal, no border, subtle hover
+    "sharp"     → square corners, bold
+- designStyle.card controls card/section appearance:
+    "default"   → flat, no border (default)
+    "bordered"  → thin border around cards
+    "shadowed"  → drop shadow on cards
+    "glass"     → frosted glass effect
+    "elevated"  → raised card with strong shadow
+- designStyle.background controls the page background style:
+    "solid"     → plain solid color (default)
+    "gradient"  → subtle gradient background
+    "mesh"      → soft mesh/blob gradient
+    "dots"      → dotted pattern overlay
+    "lines"     → subtle line pattern
+
+DESIGN KEYWORD MAPPING — when user says:
+- "badge tags / pill tags / chips" for skills → sectionStyle.skills = "badges"
+- "progress bars / skill bars" → sectionStyle.skills = "bars"
+- "dot list / bullet list" for skills → sectionStyle.skills = "dots"
+- "numbered / numbered list" for skills → sectionStyle.skills = "numbered"
+- "timeline / timeline style" for experience → sectionStyle.experience = "timeline"
+- "cards / card style" for experience → sectionStyle.experience = "card"
+- "compact / condensed" for experience → sectionStyle.experience = "compact"
+- "bullet points / bullets" for experience → keep existing style, add bullets array to each experience item
+- "pill buttons / rounded buttons / capsule buttons" → designStyle.button = "pill"
+- "outlined buttons / border buttons" → designStyle.button = "outline"
+- "gradient buttons" → designStyle.button = "gradient"
+- "ghost buttons / minimal buttons" → designStyle.button = "ghost"
+- "sharp buttons / square buttons" → designStyle.button = "sharp"
+- "bordered cards / card borders" → designStyle.card = "bordered"
+- "shadow cards / card shadows / elevated cards" → designStyle.card = "shadowed" or "elevated"
+- "glass cards / glassmorphism / frosted" → designStyle.card = "glass"
+- "gradient background / gradient bg" → designStyle.background = "gradient"
+- "mesh background / blob background" → designStyle.background = "mesh"
+- "dotted background / dots pattern" → designStyle.background = "dots"
+- "lines background / line pattern" → designStyle.background = "lines"
+
+IMPORTANT: Always preserve the existing sectionStyle and designStyle values for things the user did NOT ask to change.
+Return the COMPLETE updated resume JSON — not just the changed parts.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
@@ -474,15 +710,76 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   "summary": "2-3 sentence professional summary",
   "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
   "experience": [
-    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description." }
+    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description.", "bullets": [] }
   ],
   "education": [
     { "degree": "Degree Name", "school": "University Name", "year": "2020" }
   ],
   "languages": ["English – Native", "Spanish – Intermediate"],
-  "awards": ["Award 1", "Award 2"]
+  "awards": ["Award 1", "Award 2"],
+  "sectionStyle": {
+    "skills": "bars",
+    "experience": "default"
+  },
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
+}`
+      : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object.
+
+The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer with 3 years experience... in work experience, make every point very detailed and defined").
+You MUST follow ALL such instructions when generating the resume — apply them to the relevant sections.
+
+For experience descriptions: if the user asks for detailed/defined points, write 3-5 specific, achievement-focused bullet-style sentences in the "desc" field, or populate the "bullets" array with detailed points.
+
+If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background", "bordered cards"), set the appropriate designStyle fields:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
+{
+  "name": "Full Name",
+  "initials": "AB",
+  "title": "Job Title",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "location": "City, Country",
+  "linkedin": "linkedin.com/in/username",
+  "website": "www.website.com",
+  "summary": "2-3 sentence professional summary",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
+  "experience": [
+    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description.", "bullets": ["Point 1", "Point 2"] }
+  ],
+  "education": [
+    { "degree": "Degree Name", "school": "University Name", "year": "2020" }
+  ],
+  "languages": ["English – Native", "Spanish – Intermediate"],
+  "awards": ["Award 1", "Award 2"],
+  "sectionStyle": {
+    "skills": "bars",
+    "experience": "default"
+  },
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
+If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
+
+    // Build user message
+    let userMessage = '';
+    if (isEnhancement) {
+      userMessage = `Here is my current resume data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`;
+    } else {
+      if (prompt) userMessage += `User description: ${prompt}\n\n`;
+      if (extractedContent) userMessage += `Extracted content from uploaded file(s):\n${extractedContent}`;
+      userMessage = userMessage.trim();
+    }
 
     const response = await fetch(url, {
       method: 'POST',
@@ -494,7 +791,7 @@ If any field is not mentioned, make a reasonable professional inference. Always 
         model: 'deepseek/deepseek-chat',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `User description: ${prompt}` }
+          { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
         max_tokens: 2048
@@ -505,11 +802,23 @@ If any field is not mentioned, make a reasonable professional inference. Always 
     if (!response.ok) throw new Error(data.error?.message || 'AI API error');
 
     const raw = data.choices?.[0]?.message?.content || '';
-    // Strip markdown code fences if present
-    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const resumeData = JSON.parse(cleaned);
 
-    res.json({ resumeData });
+    // Try to extract JSON robustly — handles markdown fences and mixed text responses
+    let jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    // If the response isn't pure JSON, extract the first {...} block
+    if (!jsonStr.startsWith('{')) {
+      const match = jsonStr.match(/\{[\s\S]*\}/);
+      if (match) {
+        jsonStr = match[0];
+      } else {
+        throw new Error('AI did not return valid JSON. Try rephrasing your prompt.');
+      }
+    }
+
+    const resumeData = JSON.parse(jsonStr);
+
+    res.json({ resumeData, filesProcessed: uploadedFiles.length });
   } catch (error) {
     console.error('Generate resume error:', error);
     res.status(500).json({ error: 'Failed to generate resume: ' + error.message });

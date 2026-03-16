@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Trash2, Eye, X } from 'lucide-react';
+import { Trash2, Eye, X, Download, Code, Copy, Check } from 'lucide-react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
 import GeneratedResume from '../components/GeneratedResume';
 import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import './Dashboard.css';
@@ -13,7 +17,10 @@ function MyResumes() {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
-  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showCode, setShowCode] = useState(false);
+  const [codeTab, setCodeTab] = useState('html');
+  const [copied, setCopied] = useState(false);
+  const previewRef = useRef(null);
 
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
@@ -30,35 +37,58 @@ function MyResumes() {
     setResumes(prev => prev.filter(r => r._id !== id));
   };
 
+  const handleDownloadPDF = async () => {
+    const el = previewRef.current?.querySelector('.rv');
+    if (!el) return;
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+    const jsPDF = (await import('jspdf')).default;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * ratio, canvas.height * ratio);
+    pdf.save(`${preview?.data?.name?.replace(/\s+/g, '_') || 'resume'}.pdf`);
+  };
+
+  const getExportedHTML = () => {
+    if (!preview) return '';
+    const markup = renderToStaticMarkup(
+      <GeneratedResume data={preview.data} templateId={preview.templateId} />
+    );
+    return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <title>${preview.data?.name || 'Resume'}</title>\n  <link rel="stylesheet" href="resume.css" />\n</head>\n<body>\n${markup}\n</body>\n</html>`;
+  };
+
+  const getExportedCSS = () => {
+    const tplId = preview?.templateId;
+    if (!tplId) return '';
+    try {
+      let css = '/* Resume CSS */\n\n';
+      for (const sheet of document.styleSheets) {
+        try {
+          for (const rule of sheet.cssRules) {
+            const t = rule.cssText;
+            if (t.includes(`.rv${tplId}-`) || t.includes(`.rv${tplId} `) || t.startsWith(`.rv${tplId}{`) || t.startsWith(`.rv${tplId} `)) {
+              css += rule.cssText + '\n';
+            }
+          }
+        } catch { /* cross-origin */ }
+      }
+      return css;
+    } catch { return '/* Could not extract CSS */'; }
+  };
+
+  const handleCopy = () => {
+    const text = codeTab === 'html' ? getExportedHTML() : getExportedCSS();
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={() => setShowProfileCard(v => !v)} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={() => navigate('/')} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={() => setShowProfileCard(false)} />
-          <div className="profile-dropdown">
-            <ProfileSummaryCard name={user.name || 'User'} role="Member"
-              profileImage={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&size=200&background=667eea&color=fff&bold=true`}
-              resumeScore={0} leaderboardRank={0} totalPoints={0} />
-          </div>
-        </>
-      )}
-
+      <TopBar />
       <Sidebar />
 
       <div className="dashboard-container">
@@ -83,7 +113,7 @@ function MyResumes() {
                 <div key={r._id} className="mr-card">
                   <div className="mr-card-preview">
                     <div className="mr-card-inner">
-                      <GeneratedResume data={r.data} templateId={r.templateId} />
+                      <GeneratedResume data={r.data} templateId={r.templateId} themeColor={r.themeColor || null} />
                     </div>
                   </div>
                   <div className="mr-card-footer">
@@ -104,12 +134,31 @@ function MyResumes() {
       </div>
 
       {preview && (
-        <div className="mr-modal-overlay" onClick={() => setPreview(null)}>
+        <div className="mr-modal-overlay" onClick={() => { setPreview(null); setShowCode(false); }}>
           <div className="mr-modal" onClick={e => e.stopPropagation()}>
-            <button className="mr-modal-close" onClick={() => setPreview(null)}><X size={20} /></button>
-            <div className="mr-modal-body">
-              <GeneratedResume data={preview.data} templateId={preview.templateId} />
+            <div className="mr-modal-topbar">
+              <div className="mr-modal-actions-bar">
+                <button className="mr-action-btn" onClick={handleDownloadPDF}><Download size={14} /> Export PDF</button>
+                <button className="mr-action-btn" onClick={() => { setShowCode(true); setCodeTab('html'); }}><Code size={14} /> View Code</button>
+              </div>
+              <button className="mr-modal-close" onClick={() => { setPreview(null); setShowCode(false); }}><X size={20} /></button>
             </div>
+            {showCode ? (
+              <div className="mr-code-panel">
+                <div className="mr-code-tabs">
+                  <button className={`mr-code-tab${codeTab === 'html' ? ' mr-code-tab-active' : ''}`} onClick={() => setCodeTab('html')}>HTML</button>
+                  <button className={`mr-code-tab${codeTab === 'css' ? ' mr-code-tab-active' : ''}`} onClick={() => setCodeTab('css')}>CSS</button>
+                  <button className={`mr-copy-btn${copied ? ' mr-copy-copied' : ''}`} onClick={handleCopy}>
+                    {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy</>}
+                  </button>
+                </div>
+                <pre className="mr-code-block"><code>{codeTab === 'html' ? getExportedHTML() : getExportedCSS()}</code></pre>
+              </div>
+            ) : (
+              <div className="mr-modal-body" ref={previewRef}>
+                <GeneratedResume data={preview.data} templateId={preview.templateId} themeColor={preview.themeColor || null} />
+              </div>
+            )}
           </div>
         </div>
       )}

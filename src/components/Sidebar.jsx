@@ -6,7 +6,7 @@ import {
   Briefcase,
   CheckSquare,
   Trophy,
-  Settings,
+  Info,
   Menu,
   X
 } from 'lucide-react';
@@ -23,7 +23,7 @@ function Sidebar() {
     { name: 'Portfolio', icon: Briefcase, path: '/portfolio' },
     { name: 'My Resumes', icon: CheckSquare, path: '/my-resumes' },
     { name: 'My Portfolios', icon: Trophy, path: '/my-portfolios' },
-    { name: 'Settings', icon: Settings, path: '/settings' }
+    { name: 'About', icon: Info, path: '/about' }
   ];
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
