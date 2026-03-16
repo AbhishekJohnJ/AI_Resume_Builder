@@ -458,7 +458,14 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   ]
 }`
       : `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
-Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+
+The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer... make project descriptions very detailed and impactful").
+You MUST follow ALL such instructions when generating the portfolio — apply them to the relevant sections.
+
+For project descriptions: if the user asks for detailed/defined points, write rich, specific descriptions that highlight impact, technologies used, and outcomes.
+For experience descriptions: if the user asks for detailed points, write achievement-focused, quantified descriptions.
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
 {
   "name": "Full Name",
   "initials": "AB",
@@ -482,7 +489,7 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
     { "role": "Job Title 2", "company": "Company 2", "period": "2019 – 2021", "desc": "Description." }
   ]
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only.`;
+If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
 
     const userMessage = isEnhancement
       ? `Here is my current portfolio data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`
