@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu } from 'lucide-react';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import './Dashboard.css';
 import './DashboardMain.css';
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [tasks, setTasks] = useState([
     { id: 1, name: 'Add GitHub project', points: 20, completed: false },
     { id: 2, name: 'Update LinkedIn profile', points: 15, completed: false },
@@ -25,10 +23,6 @@ function Dashboard() {
     navigate('/');
   };
 
-  const toggleProfileCard = () => {
-    setShowProfileCard(!showProfileCard);
-  };
-
   const toggleTask = (taskId) => {
     setTasks(tasks.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
@@ -39,47 +33,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn">
-              <Menu size={24} />
-            </button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-            <a href="/about" className="nav-link">About</a>
-            <a href="/projects" className="nav-link">Projects</a>
-            <a href="/contact" className="nav-link">Contact</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={toggleProfileCard} className="btn-user-profile">
-              <User size={20} />
-            </button>
-            <button onClick={handleLogout} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Profile Card Dropdown */}
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={toggleProfileCard}></div>
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John"
-              role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78}
-              leaderboardRank={24}
-              totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
-
-      {/* Sidebar */}
+      <TopBar />
       <Sidebar />
 
       <div className="dashboard-container">

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
 import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check } from 'lucide-react';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
@@ -516,7 +516,6 @@ function ScaledPreview({ children, width = 900 }) {
 ══════════════════════════════════════ */
 function Portfolio() {
   const navigate = useNavigate();
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [page, setPage] = useState(1);
@@ -670,34 +669,7 @@ ${markup}
 
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={() => setShowProfileCard(v => !v)} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={() => navigate('/')} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={() => setShowProfileCard(false)} />
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John" role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78} leaderboardRank={24} totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
+      <TopBar />
 
       <Sidebar />
 

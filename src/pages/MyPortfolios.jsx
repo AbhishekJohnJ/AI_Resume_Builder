@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Trash2, Eye, X, Download, Code, Copy, Check } from 'lucide-react';
+import { Trash2, Eye, X, Download, Code, Copy, Check } from 'lucide-react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
 import './Dashboard.css';
 import './MyResumes.css';
 
@@ -13,7 +13,6 @@ function MyPortfolios() {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [codeTab, setCodeTab] = useState('html');
   const [copied, setCopied] = useState(false);
@@ -103,33 +102,7 @@ function MyPortfolios() {
 
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={() => setShowProfileCard(v => !v)} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={() => navigate('/')} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={() => setShowProfileCard(false)} />
-          <div className="profile-dropdown">
-            <ProfileSummaryCard name={user.name || 'User'} role="Member"
-              profileImage={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&size=200&background=667eea&color=fff&bold=true`}
-              resumeScore={0} leaderboardRank={0} totalPoints={0} />
-          </div>
-        </>
-      )}
-
+      <TopBar />
       <Sidebar />
 
       <div className="dashboard-container">

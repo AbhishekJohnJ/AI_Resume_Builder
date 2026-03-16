@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, X, Send, FileText, Image, Download, RefreshCw } from 'lucide-react';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import { Plus, X, Send, FileText, Image, Download, RefreshCw } from 'lucide-react';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
@@ -14,7 +14,6 @@ import '../components/GeneratedResume.css';
 
 function ResumeBuilder() {
   const navigate = useNavigate();
-  const [showProfileCard, setShowProfileCard] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState([]);
@@ -28,7 +27,6 @@ function ResumeBuilder() {
   const resumeRef = useRef(null);
 
   const handleLogout = () => navigate('/');
-  const toggleProfileCard = () => setShowProfileCard(!showProfileCard);
 
   const handleFileChange = (e) => {
     const picked = Array.from(e.target.files);
@@ -109,38 +107,7 @@ function ResumeBuilder() {
 
   return (
     <div className="dashboard-page resume-builder-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn"><Menu size={24} /></button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-          <div className="nav-links">
-            <a href="/" className="nav-link">Home</a>
-            <a href="/about" className="nav-link">About</a>
-            <a href="/projects" className="nav-link">Projects</a>
-            <a href="/contact" className="nav-link">Contact</a>
-          </div>
-          <div className="auth-buttons">
-            <button onClick={toggleProfileCard} className="btn-user-profile"><User size={20} /></button>
-            <button onClick={handleLogout} className="btn-logout-nav">Logout</button>
-          </div>
-        </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={toggleProfileCard}></div>
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John"
-              role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78} leaderboardRank={24} totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
+      <TopBar />
 
       <Sidebar />
 
