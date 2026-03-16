@@ -807,7 +807,7 @@ function TemplatePickerCard({ onSelect, selected }) {
               onClick={() => setPreview(tpl)}
             >
               {tpl.recommended && <div className="tpl-recommended">Recommended</div>}
-              <ScaledPreview className="tpl-preview-wrap" scaleDivisor={580}>{tpl.component}</ScaledPreview>
+              <ScaledPreview className="tpl-preview-wrap" scaleDivisor={540}>{tpl.component}</ScaledPreview>
               <div className="tpl-card-footer">
                 <span className="tpl-card-name">{tpl.name}</span>
                 <button className="tpl-choose-btn" onClick={e => { e.stopPropagation(); onSelect(tpl.id); }}>
