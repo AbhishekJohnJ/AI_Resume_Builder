@@ -5,12 +5,16 @@ import '../pages/Portfolio.css';
 /** Build CSS variable overrides from a themeColor palette */
 function themeVars(themeColor) {
   if (!themeColor) return {};
-  return {
+  const vars = {
     '--tc': themeColor.main,
     '--tc-dark': themeColor.dark,
     '--tc-light': themeColor.light,
     '--tc-accent': themeColor.accent,
   };
+  // Pass through any extra targeted overrides (--bg, --text, --bg-2, --text-muted)
+  const extras = ['--bg', '--bg-2', '--text', '--text-muted'];
+  extras.forEach(k => { if (themeColor[k]) vars[k] = themeColor[k]; });
+  return vars;
 }
 
 function T1({ d, themeColor }) {

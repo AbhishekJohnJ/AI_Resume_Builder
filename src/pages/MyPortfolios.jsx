@@ -49,13 +49,25 @@ function MyPortfolios() {
     pdf.save(`${preview?.data?.name?.replace(/\s+/g, '_') || 'portfolio'}.pdf`);
   };
 
+  const buildThemeVarBlock = (tc, selector) => {
+    if (!tc) return '';
+    const ALL_VARS = ['--tc', '--tc-dark', '--tc-light', '--tc-accent', '--bg', '--bg-2', '--text', '--text-muted'];
+    const varMap = {
+      '--tc': tc.main, '--tc-dark': tc.dark, '--tc-light': tc.light, '--tc-accent': tc.accent,
+      '--bg': tc['--bg'], '--bg-2': tc['--bg-2'], '--text': tc['--text'], '--text-muted': tc['--text-muted'],
+    };
+    const lines = ALL_VARS.filter(v => varMap[v]).map(v => `  ${v}: ${varMap[v]};`).join('\n');
+    return lines ? `${selector} {\n${lines}\n}` : '';
+  };
+
   const getExportedHTML = () => {
     if (!preview) return '';
     const tc = preview.themeColor || null;
     const markup = renderToStaticMarkup(
       <GeneratedPortfolio data={preview.data} templateId={preview.templateId} themeColor={tc} />
     );
-    const colorVars = tc ? `\n  <style>\n    :root {\n      --tc: ${tc.main};\n      --tc-dark: ${tc.dark};\n      --tc-light: ${tc.light};\n      --tc-accent: ${tc.accent};\n    }\n  </style>` : '';
+    const block = buildThemeVarBlock(tc, ':root');
+    const colorVars = block ? `\n  <style>\n    ${block.replace(/\n/g, '\n    ')}\n  </style>` : '';
     return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <title>${preview.data?.name || 'Portfolio'}</title>\n  <link rel="stylesheet" href="portfolio.css" />${colorVars}\n</head>\n<body>\n${markup}\n</body>\n</html>`;
   };
 
@@ -65,9 +77,8 @@ function MyPortfolios() {
     if (!tplId) return '';
     try {
       let css = '/* Portfolio CSS */\n\n';
-      if (tc) {
-        css += `/* Theme color overrides */\n.pt${tplId} {\n  --tc: ${tc.main};\n  --tc-dark: ${tc.dark};\n  --tc-light: ${tc.light};\n  --tc-accent: ${tc.accent};\n}\n\n`;
-      }
+      const block = buildThemeVarBlock(tc, `.pt${tplId}`);
+      if (block) css += `/* Theme color overrides */\n${block}\n\n`;
       for (const sheet of document.styleSheets) {
         try {
           for (const rule of sheet.cssRules) {

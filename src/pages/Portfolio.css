@@ -320,8 +320,8 @@
    T1 — Dark Hacker Theme
 ════════════════════════════════════ */
 .pt1 {
-  background: #0d0d0d;
-  color: #e0e0e0;
+  background: var(--bg, #0d0d0d);
+  color: var(--text, #e0e0e0);
   font-family: 'Courier New', monospace;
   padding: 0;
 }
@@ -332,7 +332,7 @@
   align-items: center;
   padding: 18px 40px;
   border-bottom: 1px solid #1a1a1a;
-  background: #0d0d0d;
+  background: var(--bg, #0d0d0d);
 }
 .pt1-logo { color: var(--tc, #00ff88); font-size: 18px; font-weight: 700; }
 .pt1-nav-links { display: flex; gap: 24px; }
@@ -353,9 +353,9 @@
   border-radius: 20px;
   margin-bottom: 16px;
 }
-.pt1-hero-name { font-size: 48px; font-weight: 700; color: #fff; margin: 0 0 6px; letter-spacing: -1px; }
+.pt1-hero-name { font-size: 48px; font-weight: 700; color: var(--text, #fff); margin: 0 0 6px; letter-spacing: -1px; }
 .pt1-hero-title { font-size: 18px; color: var(--tc, #00ff88); margin: 0 0 12px; }
-.pt1-hero-tagline { font-size: 14px; color: #666; margin: 0 0 24px; max-width: 500px; }
+.pt1-hero-tagline { font-size: 14px; color: var(--text-muted, #666); margin: 0 0 24px; max-width: 500px; }
 .pt1-hero-btns { display: flex; gap: 12px; }
 .pt1-btn-primary { padding: 10px 24px; background: var(--tc, #00ff88); color: #0d0d0d; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .pt1-btn-outline { padding: 10px 24px; background: transparent; color: var(--tc, #00ff88); border: 1px solid var(--tc, #00ff88); border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -366,10 +366,10 @@
   gap: 8px;
   padding: 20px 40px;
   border-bottom: 1px solid #1a1a1a;
-  background: #111;
+  background: var(--bg-2, #111);
 }
 .pt1-skill-tag {
-  background: #1a1a1a;
+  background: var(--bg-2, #1a1a1a);
   border: 1px solid #2a2a2a;
   color: var(--tc, #00ff88);
   font-size: 11px;
@@ -378,11 +378,11 @@
 }
 
 .pt1-projects { padding: 32px 40px; }
-.pt1-section-title { font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px; }
+.pt1-section-title { font-size: 20px; font-weight: 700; color: var(--text, #fff); margin: 0 0 20px; }
 .pt1-accent { color: var(--tc, #00ff88); margin-right: 8px; }
 .pt1-projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .pt1-project-card {
-  background: #111;
+  background: var(--bg-2, #111);
   border: 1px solid #1e1e1e;
   border-radius: 8px;
   padding: 20px;
@@ -390,20 +390,20 @@
 }
 .pt1-project-card:hover { border-color: var(--tc, #00ff88); }
 .pt1-project-num { font-size: 28px; font-weight: 700; color: #1e1e1e; margin-bottom: 8px; }
-.pt1-project-name { font-size: 14px; font-weight: 700; color: #fff; margin: 0 0 8px; }
-.pt1-project-desc { font-size: 12px; color: #666; margin: 0 0 12px; line-height: 1.5; }
+.pt1-project-name { font-size: 14px; font-weight: 700; color: var(--text, #fff); margin: 0 0 8px; }
+.pt1-project-desc { font-size: 12px; color: var(--text-muted, #666); margin: 0 0 12px; line-height: 1.5; }
 .pt1-project-tech { display: flex; flex-wrap: wrap; gap: 6px; }
 .pt1-tech-tag { background: rgba(0,255,136,0.08); color: var(--tc, #00ff88); font-size: 10px; padding: 2px 8px; border-radius: 4px; }
 
 .pt1-contact { padding: 24px 40px; border-top: 1px solid #1a1a1a; }
-.pt1-contact-text { color: #555; font-size: 13px; }
+.pt1-contact-text { color: var(--text-muted, #555); font-size: 13px; }
 
 /* ════════════════════════════════════
    T2 — Clean Minimal Light
 ════════════════════════════════════ */
 .pt2 {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg, #fff);
+  color: var(--text, #1a1a1a);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   display: flex;
 }
@@ -411,7 +411,7 @@
 .pt2-sidebar {
   width: 240px;
   flex-shrink: 0;
-  background: #f8f8f8;
+  background: var(--bg-2, #f8f8f8);
   border-right: 1px solid #e8e8e8;
   padding: 32px 20px;
 }
@@ -428,12 +428,12 @@
   justify-content: center;
   margin-bottom: 14px;
 }
-.pt2-name { font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 0 0 4px; }
+.pt2-name { font-size: 16px; font-weight: 700; color: var(--text, #1a1a1a); margin: 0 0 4px; }
 .pt2-title { font-size: 12px; color: var(--tc, #6366f1); margin: 0 0 16px; }
 .pt2-divider { border: none; border-top: 1px solid #e0e0e0; margin: 12px 0; }
 .pt2-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin: 0 0 8px; }
 .pt2-contact-list { display: flex; flex-direction: column; gap: 6px; }
-.pt2-contact-item { font-size: 11px; color: #555; margin: 0; }
+.pt2-contact-item { font-size: 11px; color: var(--text-muted, #555); margin: 0; }
 .pt2-skills { display: flex; flex-wrap: wrap; gap: 6px; }
 .pt2-skill { background: var(--tc-light, #ede9fe); color: var(--tc, #6366f1); font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
 
@@ -442,27 +442,27 @@
 .pt2-section-title {
   font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text, #1a1a1a);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   border-bottom: 2px solid var(--tc, #6366f1);
   padding-bottom: 6px;
   margin: 0 0 14px;
 }
-.pt2-about { font-size: 13px; color: #444; line-height: 1.7; margin: 0; }
+.pt2-about { font-size: 13px; color: var(--text-muted, #444); line-height: 1.7; margin: 0; }
 .pt2-project { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; }
 .pt2-project:last-child { border-bottom: none; }
 .pt2-project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
-.pt2-project-name { font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0; }
+.pt2-project-name { font-size: 13px; font-weight: 700; color: var(--text, #1a1a1a); margin: 0; }
 .pt2-project-tech { display: flex; flex-wrap: wrap; gap: 4px; }
 .pt2-tech { background: #f0f0f0; color: #555; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
-.pt2-project-desc { font-size: 12px; color: #666; margin: 0; line-height: 1.5; }
+.pt2-project-desc { font-size: 12px; color: var(--text-muted, #666); margin: 0; line-height: 1.5; }
 .pt2-exp { margin-bottom: 14px; }
 .pt2-exp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-.pt2-exp-role { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.pt2-exp-role { font-size: 13px; font-weight: 700; color: var(--text, #1a1a1a); }
 .pt2-exp-period { font-size: 11px; color: #999; }
 .pt2-exp-company { font-size: 12px; color: var(--tc, #6366f1); margin: 0 0 4px; }
-.pt2-exp-desc { font-size: 12px; color: #666; margin: 0; line-height: 1.5; }
+.pt2-exp-desc { font-size: 12px; color: var(--text-muted, #666); margin: 0; line-height: 1.5; }
 
 /* ════════════════════════════════════
    T3 — Vibrant Gradient Creative
@@ -554,8 +554,8 @@
    T4 — Navy Executive
 ════════════════════════════════════ */
 .pt4 {
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--bg, #0f172a);
+  color: var(--text, #e2e8f0);
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 .pt4-header {
@@ -563,7 +563,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 40px;
-  background: #1e293b;
+  background: var(--bg-2, #1e293b);
   border-bottom: 1px solid #334155;
 }
 .pt4-header-left { display: flex; align-items: center; gap: 18px; }
@@ -574,9 +574,9 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.pt4-name { font-size: 22px; font-weight: 800; color: #f1f5f9; margin: 0 0 3px; }
+.pt4-name { font-size: 22px; font-weight: 800; color: var(--text, #f1f5f9); margin: 0 0 3px; }
 .pt4-title { font-size: 12px; color: var(--tc-accent, #60a5fa); margin: 0 0 6px; text-transform: uppercase; letter-spacing: 1px; }
-.pt4-contacts { display: flex; gap: 8px; font-size: 10px; color: #64748b; flex-wrap: wrap; }
+.pt4-contacts { display: flex; gap: 8px; font-size: 10px; color: var(--text-muted, #64748b); flex-wrap: wrap; }
 .pt4-nav { display: flex; gap: 20px; }
 .pt4-nav span { font-size: 12px; color: #94a3b8; cursor: pointer; }
 .pt4-nav span:hover { color: var(--tc-accent, #60a5fa); }
@@ -589,15 +589,15 @@
   border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin: 0 0 12px;
 }
 .pt4-sec-title + .pt4-sec-title, .pt4-exp + .pt4-sec-title, .pt4-project + .pt4-sec-title { margin-top: 20px; }
-.pt4-text { font-size: 11px; color: #94a3b8; line-height: 1.6; margin: 0 0 4px; }
+.pt4-text { font-size: 11px; color: var(--text-muted, #94a3b8); line-height: 1.6; margin: 0 0 4px; }
 .pt4-skill-row { margin-bottom: 7px; }
 .pt4-skill-name { font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 3px; }
 .pt4-skill-bar { height: 3px; background: #1e293b; border-radius: 2px; }
 .pt4-skill-fill { height: 100%; background: linear-gradient(90deg, var(--tc, #3b82f6), var(--tc-accent, #60a5fa)); border-radius: 2px; }
 .pt4-exp { margin-bottom: 14px; }
 .pt4-exp-period { font-size: 10px; color: var(--tc, #3b82f6); font-weight: 700; margin-bottom: 2px; }
-.pt4-exp-role { font-size: 12px; font-weight: 700; color: #f1f5f9; display: block; margin-bottom: 1px; }
-.pt4-exp-company { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+.pt4-exp-role { font-size: 12px; font-weight: 700; color: var(--text, #f1f5f9); display: block; margin-bottom: 1px; }
+.pt4-exp-company { font-size: 11px; color: var(--text-muted, #64748b); margin-bottom: 4px; }
 .pt4-project { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #1e293b; }
 .pt4-project:last-child { border-bottom: none; }
 .pt4-techs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
@@ -658,8 +658,8 @@
    T6 — Glass Dark
 ════════════════════════════════════ */
 .pt6 {
-  background: #09090b;
-  color: #e4e4e7;
+  background: var(--bg, #09090b);
+  color: var(--text, #e4e4e7);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   position: relative;
   overflow: hidden;
@@ -687,9 +687,9 @@
   box-shadow: 0 0 40px rgba(139,92,246,0.4);
 }
 .pt6-hero-text { flex: 1; }
-.pt6-name { font-size: 40px; font-weight: 800; color: #fff; margin: 0 0 6px; letter-spacing: -1px; }
+.pt6-name { font-size: 40px; font-weight: 800; color: var(--text, #fff); margin: 0 0 6px; letter-spacing: -1px; }
 .pt6-title { font-size: 14px; color: var(--tc-accent, #a78bfa); margin: 0 0 8px; }
-.pt6-tagline { font-size: 13px; color: #71717a; margin: 0 0 20px; }
+.pt6-tagline { font-size: 13px; color: var(--text-muted, #71717a); margin: 0 0 20px; }
 .pt6-btns { display: flex; gap: 12px; }
 .pt6-btn-primary {
   padding: 10px 24px; background: var(--tc, #8b5cf6); color: #fff;
@@ -734,8 +734,8 @@
   background: radial-gradient(circle, rgba(139,92,246,0.3), transparent 70%);
   pointer-events: none;
 }
-.pt6-project-name { font-size: 13px; font-weight: 700; color: #f4f4f5; margin: 0 0 6px; }
-.pt6-project-desc { font-size: 11px; color: #71717a; margin: 0 0 10px; line-height: 1.5; }
+.pt6-project-name { font-size: 13px; font-weight: 700; color: var(--text, #f4f4f5); margin: 0 0 6px; }
+.pt6-project-desc { font-size: 11px; color: var(--text-muted, #71717a); margin: 0 0 10px; line-height: 1.5; }
 .pt6-techs { display: flex; flex-wrap: wrap; gap: 5px; }
 .pt6-tech {
   background: rgba(139,92,246,0.15); color: var(--tc-accent, #a78bfa);
@@ -768,12 +768,12 @@
    T7 — Rose Minimal
 ════════════════════════════════════ */
 .pt7 {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg, #fff);
+  color: var(--text, #1a1a1a);
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 .pt7-header {
-  background: var(--tc-light, #fff1f2);
+  background: var(--bg-2, var(--tc-light, #fff1f2));
   border-bottom: 3px solid var(--tc, #fb7185);
   padding: 28px 40px;
   display: flex;
@@ -788,11 +788,11 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.pt7-name { font-size: 22px; font-weight: 800; color: #1a1a1a; margin: 0 0 3px; }
+.pt7-name { font-size: 22px; font-weight: 800; color: var(--text, #1a1a1a); margin: 0 0 3px; }
 .pt7-title { font-size: 12px; color: var(--tc, #fb7185); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-.pt7-contacts { display: flex; gap: 14px; font-size: 11px; color: #888; }
+.pt7-contacts { display: flex; gap: 14px; font-size: 11px; color: var(--text-muted, #888); }
 .pt7-body { display: flex; }
-.pt7-left { width: 260px; flex-shrink: 0; padding: 24px 20px; background: var(--tc-light, #fff8f8); border-right: 1px solid var(--tc-light, #ffe4e6); }
+.pt7-left { width: 260px; flex-shrink: 0; padding: 24px 20px; background: var(--bg-2, var(--tc-light, #fff8f8)); border-right: 1px solid var(--tc-light, #ffe4e6); }
 .pt7-right { flex: 1; padding: 24px 28px; }
 .pt7-sec-title {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -801,7 +801,7 @@
 }
 .pt7-sec-title + * { margin-top: 0; }
 .pt7-block { margin-bottom: 20px; }
-.pt7-text { font-size: 11px; color: #555; line-height: 1.6; margin: 0 0 4px; }
+.pt7-text { font-size: 11px; color: var(--text-muted, #555); line-height: 1.6; margin: 0 0 4px; }
 .pt7-skill-tag {
   display: inline-block; font-size: 10px; font-weight: 600;
   padding: 3px 10px; background: var(--tc-light, #fff1f2); color: var(--tc, #fb7185);
@@ -814,8 +814,8 @@
 .pt7-exp-company { font-size: 11px; color: #999; margin-bottom: 4px; }
 .pt7-project { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--tc-light, #fff1f2); }
 .pt7-project:last-child { border-bottom: none; }
-.pt7-project-name { font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 5px; }
-.pt7-project-desc { font-size: 11px; color: #666; margin: 0 0 8px; line-height: 1.5; }
+.pt7-project-name { font-size: 13px; font-weight: 700; color: var(--text, #1a1a1a); margin: 0 0 5px; }
+.pt7-project-desc { font-size: 11px; color: var(--text-muted, #666); margin: 0 0 8px; line-height: 1.5; }
 .pt7-techs { display: flex; flex-wrap: wrap; gap: 5px; }
 .pt7-tech { background: var(--tc-light, #fff1f2); color: var(--tc, #fb7185); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
 
@@ -823,15 +823,15 @@
    T8 — Emerald Split
 ════════════════════════════════════ */
 .pt8 {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg, #fff);
+  color: var(--text, #1a1a1a);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   display: flex;
   min-height: 100%;
 }
 .pt8-sidebar {
   width: 260px; flex-shrink: 0;
-  background: var(--tc-dark, #064e3b);
+  background: var(--bg-2, var(--tc-dark, #064e3b));
   padding: 32px 20px;
   display: flex; flex-direction: column;
 }
@@ -864,7 +864,7 @@
   border-bottom: 2px solid var(--tc, #10b981); padding-bottom: 4px; margin: 0 0 12px;
 }
 .pt8-main-sec-title + .pt8-main-sec-title { margin-top: 20px; }
-.pt8-about { font-size: 12px; color: #444; line-height: 1.7; margin: 0 0 20px; }
+.pt8-about { font-size: 12px; color: var(--text-muted, #444); line-height: 1.7; margin: 0 0 20px; }
 .pt8-exp { margin-bottom: 14px; }
 .pt8-exp-period { font-size: 10px; color: var(--tc, #10b981); font-weight: 700; margin-bottom: 2px; }
 .pt8-exp-role { font-size: 12px; font-weight: 700; color: #1a1a1a; display: block; margin-bottom: 1px; }
