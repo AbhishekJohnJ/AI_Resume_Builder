@@ -4,7 +4,7 @@ import './GeneratedResume.css';
 function GeneratedResume({ data, templateId, themeColor }) {
   const d = data;
   const initials = d.initials || d.name?.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || 'AB';
-  const props = { d, initials, themeColor };
+  const props = { d, initials, themeColor, ds: d.designStyle };
   if (templateId === 1) return <T1 {...props} />;
   if (templateId === 2) return <T2 {...props} />;
   if (templateId === 3) return <T3 {...props} />;
@@ -29,6 +29,16 @@ function themeVars(themeColor) {
     '--tc-light': themeColor.light,
     '--tc-accent': themeColor.accent,
   };
+}
+
+/** Build design style class names from designStyle object */
+function designClasses(ds) {
+  if (!ds) return '';
+  const parts = [];
+  if (ds.button && ds.button !== 'default') parts.push(`ds-btn-${ds.button}`);
+  if (ds.card && ds.card !== 'default') parts.push(`ds-card-${ds.card}`);
+  if (ds.background && ds.background !== 'solid') parts.push(`ds-bg-${ds.background}`);
+  return parts.join(' ');
 }
 
 /**
@@ -167,10 +177,10 @@ function ExperienceSection({ experience, style = 'default', periodClass, roleCla
 }
 
 /* ── T1: Blue Sidebar ── */
-function T1({ d, initials, themeColor }) {
+function T1({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv1" style={themeVars(themeColor)}>
+    <div className={`rv rv1 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv1-sidebar">
         <div className="rv1-photo"><span>{initials}</span></div>
         <div className="rv1-name">{d.name}</div>
@@ -228,10 +238,10 @@ function T1({ d, initials, themeColor }) {
 }
 
 /* ── T2: Dark Header, Two-Column ── */
-function T2({ d, initials, themeColor }) {
+function T2({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv2" style={themeVars(themeColor)}>
+    <div className={`rv rv2 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv2-header">
         <div className="rv2-photo"><span>{initials}</span></div>
         <div className="rv2-header-info">
@@ -278,10 +288,10 @@ function T2({ d, initials, themeColor }) {
 }
 
 /* ── T3: Teal Sidebar ── */
-function T3({ d, initials, themeColor }) {
+function T3({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv3" style={themeVars(themeColor)}>
+    <div className={`rv rv3 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv3-sidebar">
         <div className="rv3-photo"><span>{initials}</span></div>
         <div className="rv3-name">{d.name?.toUpperCase()}</div>
@@ -319,10 +329,10 @@ function T3({ d, initials, themeColor }) {
 }
 
 /* ── T4: Orange Header ── */
-function T4({ d, initials, themeColor }) {
+function T4({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv4" style={themeVars(themeColor)}>
+    <div className={`rv rv4 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv4-header">
         <div className="rv4-header-left">
           <div className="rv4-photo"><span>{initials}</span></div>
@@ -364,10 +374,10 @@ function T4({ d, initials, themeColor }) {
 }
 
 /* ── T5: Grey Header, Two-Column ── */
-function T5({ d, initials, themeColor }) {
+function T5({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv5" style={themeVars(themeColor)}>
+    <div className={`rv rv5 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv5-header">
         <div className="rv5-photo"><span>{initials}</span></div>
         <div>
@@ -403,10 +413,10 @@ function T5({ d, initials, themeColor }) {
 }
 
 /* ── T6: Teal Header ── */
-function T6({ d, initials, themeColor }) {
+function T6({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv6" style={themeVars(themeColor)}>
+    <div className={`rv rv6 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv6-header">
         <div className="rv6-photo"><span>{initials}</span></div>
         <div className="rv6-header-text">
@@ -447,10 +457,10 @@ function T6({ d, initials, themeColor }) {
 }
 
 /* ── T7: Dark Executive ── */
-function T7({ d, initials, themeColor }) {
+function T7({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv7" style={themeVars(themeColor)}>
+    <div className={`rv rv7 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv7-header">
         <div className="rv7-photo"><span>{initials}</span></div>
         <div>
@@ -490,10 +500,10 @@ function T7({ d, initials, themeColor }) {
 }
 
 /* ── T8: Purple Creative ── */
-function T8({ d, initials, themeColor }) {
+function T8({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv8" style={themeVars(themeColor)}>
+    <div className={`rv rv8 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv8-sidebar">
         <div className="rv8-photo"><span>{initials}</span></div>
         <div className="rv8-name">{d.name}</div>
@@ -527,10 +537,10 @@ function T8({ d, initials, themeColor }) {
 }
 
 /* ── T9: Minimal White ── */
-function T9({ d, initials, themeColor }) {
+function T9({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv9" style={themeVars(themeColor)}>
+    <div className={`rv rv9 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv9-header">
         <div className="rv9-name">{d.name}</div>
         <div className="rv9-title">{d.title}</div>
@@ -568,10 +578,10 @@ function T9({ d, initials, themeColor }) {
 }
 
 /* ── T10: Red Accent ── */
-function T10({ d, initials, themeColor }) {
+function T10({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv10" style={themeVars(themeColor)}>
+    <div className={`rv rv10 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv10-sidebar">
         <div className="rv10-photo"><span>{initials}</span></div>
         <div className="rv10-name">{d.name}</div>
@@ -604,10 +614,10 @@ function T10({ d, initials, themeColor }) {
 }
 
 /* ── T11: Green Nature ── */
-function T11({ d, initials, themeColor }) {
+function T11({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv11" style={themeVars(themeColor)}>
+    <div className={`rv rv11 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv11-header">
         <div className="rv11-photo"><span>{initials}</span></div>
         <div className="rv11-header-text">
@@ -647,10 +657,10 @@ function T11({ d, initials, themeColor }) {
 }
 
 /* ── T12: Navy Classic ── */
-function T12({ d, initials, themeColor }) {
+function T12({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
-    <div className="rv rv12" style={themeVars(themeColor)}>
+    <div className={`rv rv12 ${designClasses(ds)}`} style={themeVars(themeColor)}>
       <div className="rv12-top">
         <div className="rv12-photo"><span>{initials}</span></div>
         <div className="rv12-top-text">

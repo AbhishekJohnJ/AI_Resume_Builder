@@ -17,9 +17,19 @@ function themeVars(themeColor) {
   return vars;
 }
 
+/** Build design style class names from designStyle object */
+function designClasses(ds) {
+  if (!ds) return '';
+  const parts = [];
+  if (ds.button && ds.button !== 'default') parts.push(`ds-btn-${ds.button}`);
+  if (ds.card && ds.card !== 'default') parts.push(`ds-card-${ds.card}`);
+  if (ds.background && ds.background !== 'solid') parts.push(`ds-bg-${ds.background}`);
+  return parts.join(' ');
+}
+
 function T1({ d, themeColor }) {
   return (
-    <div className="pt pt1" style={themeVars(themeColor)}>
+    <div className={`pt pt1 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt1-nav">
         <span className="pt1-logo">&lt;{d.name.split(' ')[0]} /&gt;</span>
         <div className="pt1-nav-links"><span>About</span><span>Projects</span><span>Contact</span></div>
@@ -60,7 +70,7 @@ function T1({ d, themeColor }) {
 
 function T2({ d, themeColor }) {
   return (
-    <div className="pt pt2" style={themeVars(themeColor)}>
+    <div className={`pt pt2 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt2-sidebar">
         <div className="pt2-avatar">{d.initials}</div>
         <h2 className="pt2-name">{d.name}</h2>
@@ -112,7 +122,7 @@ function T2({ d, themeColor }) {
 
 function T3({ d, themeColor }) {
   return (
-    <div className="pt pt3" style={themeVars(themeColor)}>
+    <div className={`pt pt3 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt3-hero">
         <div className="pt3-hero-content">
           <p className="pt3-greeting">Hello, I'm</p>
@@ -160,7 +170,7 @@ function T3({ d, themeColor }) {
 
 function T4({ d, themeColor }) {
   return (
-    <div className="pt pt4" style={themeVars(themeColor)}>
+    <div className={`pt pt4 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt4-header">
         <div className="pt4-header-left">
           <div className="pt4-avatar">{d.initials}</div>
@@ -214,7 +224,7 @@ function T4({ d, themeColor }) {
 
 function T5({ d, themeColor }) {
   return (
-    <div className="pt pt5" style={themeVars(themeColor)}>
+    <div className={`pt pt5 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt5-hero">
         <div className="pt5-hero-tag">Portfolio</div>
         <h1 className="pt5-name">{d.name}</h1>
@@ -253,7 +263,7 @@ function T5({ d, themeColor }) {
 
 function T6({ d, themeColor }) {
   return (
-    <div className="pt pt6" style={themeVars(themeColor)}>
+    <div className={`pt pt6 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt6-bg" />
       <div className="pt6-content">
         <div className="pt6-hero">
@@ -296,7 +306,7 @@ function T6({ d, themeColor }) {
 
 function T7({ d, themeColor }) {
   return (
-    <div className="pt pt7" style={themeVars(themeColor)}>
+    <div className={`pt pt7 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt7-header">
         <div className="pt7-header-left">
           <div className="pt7-avatar">{d.initials || d.name?.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
@@ -347,7 +357,7 @@ function T7({ d, themeColor }) {
 
 function T8({ d, themeColor }) {
   return (
-    <div className="pt pt8" style={themeVars(themeColor)}>
+    <div className={`pt pt8 ${designClasses(d.designStyle)}`} style={themeVars(themeColor)}>
       <div className="pt8-sidebar">
         <div className="pt8-avatar">{d.initials || d.name?.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
         <div className="pt8-name">{d.name}</div>

@@ -435,6 +435,25 @@ You can:
 - Make the content more professional, bold, creative, minimal, etc. based on user's style request
 - Expand or shorten sections as requested
 
+You can also change VISUAL DESIGN via the "designStyle" field:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
+
+DESIGN KEYWORD MAPPING:
+- "pill buttons / rounded buttons / capsule" → designStyle.button = "pill"
+- "outlined / border buttons" → designStyle.button = "outline"
+- "gradient buttons" → designStyle.button = "gradient"
+- "ghost / minimal buttons" → designStyle.button = "ghost"
+- "sharp / square buttons" → designStyle.button = "sharp"
+- "bordered cards / card borders" → designStyle.card = "bordered"
+- "shadow / elevated cards" → designStyle.card = "shadowed" or "elevated"
+- "glass / glassmorphism / frosted cards" → designStyle.card = "glass"
+- "gradient background" → designStyle.background = "gradient"
+- "mesh / blob background" → designStyle.background = "mesh"
+- "dotted / dots background" → designStyle.background = "dots"
+- "lines / line pattern background" → designStyle.background = "lines"
+
 IMPORTANT: Return the COMPLETE updated portfolio JSON — not just the changed parts.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
@@ -455,7 +474,12 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   ],
   "experience": [
     { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." }
-  ]
+  ],
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
 }`
       : `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
 
@@ -464,6 +488,11 @@ You MUST follow ALL such instructions when generating the portfolio — apply th
 
 For project descriptions: if the user asks for detailed/defined points, write rich, specific descriptions that highlight impact, technologies used, and outcomes.
 For experience descriptions: if the user asks for detailed points, write achievement-focused, quantified descriptions.
+
+If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background"), set the appropriate designStyle fields:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
 
 Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
 {
@@ -487,7 +516,12 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation, n
   "experience": [
     { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." },
     { "role": "Job Title 2", "company": "Company 2", "period": "2019 – 2021", "desc": "Description." }
-  ]
+  ],
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
+  }
 }
 If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
 
@@ -584,6 +618,27 @@ For experience entries, you can also add a "bullets" array to any experience ite
   { "role": "...", "company": "...", "period": "...", "desc": "...", "bullets": ["Did X", "Achieved Y"] }
 If bullets are present, they are shown instead of desc.
 
+You can change VISUAL DESIGN via the "designStyle" field:
+- designStyle.button controls button appearance:
+    "default"   → solid filled button (default)
+    "outline"   → transparent with border
+    "pill"      → fully rounded pill shape
+    "gradient"  → gradient background
+    "ghost"     → minimal, no border, subtle hover
+    "sharp"     → square corners, bold
+- designStyle.card controls card/section appearance:
+    "default"   → flat, no border (default)
+    "bordered"  → thin border around cards
+    "shadowed"  → drop shadow on cards
+    "glass"     → frosted glass effect
+    "elevated"  → raised card with strong shadow
+- designStyle.background controls the page background style:
+    "solid"     → plain solid color (default)
+    "gradient"  → subtle gradient background
+    "mesh"      → soft mesh/blob gradient
+    "dots"      → dotted pattern overlay
+    "lines"     → subtle line pattern
+
 DESIGN KEYWORD MAPPING — when user says:
 - "badge tags / pill tags / chips" for skills → sectionStyle.skills = "badges"
 - "progress bars / skill bars" → sectionStyle.skills = "bars"
@@ -593,8 +648,20 @@ DESIGN KEYWORD MAPPING — when user says:
 - "cards / card style" for experience → sectionStyle.experience = "card"
 - "compact / condensed" for experience → sectionStyle.experience = "compact"
 - "bullet points / bullets" for experience → keep existing style, add bullets array to each experience item
+- "pill buttons / rounded buttons / capsule buttons" → designStyle.button = "pill"
+- "outlined buttons / border buttons" → designStyle.button = "outline"
+- "gradient buttons" → designStyle.button = "gradient"
+- "ghost buttons / minimal buttons" → designStyle.button = "ghost"
+- "sharp buttons / square buttons" → designStyle.button = "sharp"
+- "bordered cards / card borders" → designStyle.card = "bordered"
+- "shadow cards / card shadows / elevated cards" → designStyle.card = "shadowed" or "elevated"
+- "glass cards / glassmorphism / frosted" → designStyle.card = "glass"
+- "gradient background / gradient bg" → designStyle.background = "gradient"
+- "mesh background / blob background" → designStyle.background = "mesh"
+- "dotted background / dots pattern" → designStyle.background = "dots"
+- "lines background / line pattern" → designStyle.background = "lines"
 
-IMPORTANT: Always preserve the existing sectionStyle values for sections the user did NOT ask to change.
+IMPORTANT: Always preserve the existing sectionStyle and designStyle values for things the user did NOT ask to change.
 Return the COMPLETE updated resume JSON — not just the changed parts.
 Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
@@ -619,6 +686,11 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
   "sectionStyle": {
     "skills": "bars",
     "experience": "default"
+  },
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
   }
 }`
       : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object.
@@ -627,6 +699,11 @@ The user may include both their profile information AND specific instructions in
 You MUST follow ALL such instructions when generating the resume — apply them to the relevant sections.
 
 For experience descriptions: if the user asks for detailed/defined points, write 3-5 specific, achievement-focused bullet-style sentences in the "desc" field, or populate the "bullets" array with detailed points.
+
+If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background", "bordered cards"), set the appropriate designStyle fields:
+- designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
+- designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
+- designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
 
 Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
 {
@@ -651,6 +728,11 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation, n
   "sectionStyle": {
     "skills": "bars",
     "experience": "default"
+  },
+  "designStyle": {
+    "button": "default",
+    "card": "default",
+    "background": "solid"
   }
 }
 If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;

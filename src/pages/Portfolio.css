@@ -946,3 +946,85 @@
 }
 .pf-code-copy-btn:hover { background: rgba(255,161,22,0.15); border-color: #ffa116; color: #ffa116; }
 .pf-code-copied { background: rgba(34,197,94,0.12) !important; border-color: #22c55e !important; color: #22c55e !important; }
+
+/* ── Design Style: Button variants (portfolio) ── */
+.pt.ds-btn-pill button, .pt.ds-btn-pill [class*="-btn"] { border-radius: 999px !important; }
+.pt.ds-btn-outline button, .pt.ds-btn-outline [class*="-btn"] {
+  background: transparent !important;
+  border: 2px solid var(--tc, #667eea) !important;
+  color: var(--tc, #667eea) !important;
+}
+.pt.ds-btn-gradient button, .pt.ds-btn-gradient [class*="-btn"] {
+  background: linear-gradient(135deg, var(--tc, #667eea), var(--tc-accent, #a78bfa)) !important;
+  border: none !important;
+  color: #fff !important;
+}
+.pt.ds-btn-ghost button, .pt.ds-btn-ghost [class*="-btn"] {
+  background: transparent !important;
+  border: none !important;
+  color: var(--tc, #667eea) !important;
+  text-decoration: underline;
+}
+.pt.ds-btn-sharp button, .pt.ds-btn-sharp [class*="-btn"] { border-radius: 2px !important; }
+
+/* ── Design Style: Card variants (portfolio) ── */
+.pt.ds-card-bordered [class*="-project-card"],
+.pt.ds-card-bordered [class*="-project"],
+.pt.ds-card-bordered [class*="-exp"],
+.pt.ds-card-bordered [class*="-skill-card"] {
+  border: 1.5px solid var(--tc-light, rgba(255,255,255,0.2)) !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+}
+.pt.ds-card-shadowed [class*="-project-card"],
+.pt.ds-card-shadowed [class*="-project"],
+.pt.ds-card-shadowed [class*="-exp"],
+.pt.ds-card-shadowed [class*="-skill-card"] {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18) !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+}
+.pt.ds-card-glass [class*="-project-card"],
+.pt.ds-card-glass [class*="-project"],
+.pt.ds-card-glass [class*="-exp"],
+.pt.ds-card-glass [class*="-skill-card"] {
+  background: rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+}
+.pt.ds-card-elevated [class*="-project-card"],
+.pt.ds-card-elevated [class*="-project"],
+.pt.ds-card-elevated [class*="-exp"],
+.pt.ds-card-elevated [class*="-skill-card"] {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22) !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+  transform: translateY(-2px);
+}
+
+/* ── Design Style: Background variants (portfolio) ── */
+.pt.ds-bg-gradient { background: linear-gradient(135deg, var(--tc-dark, #1e1b4b) 0%, var(--bg, #0d0d0d) 70%) !important; }
+.pt.ds-bg-mesh {
+  background-color: var(--bg, #0d0d0d);
+  background-image:
+    radial-gradient(at 15% 25%, var(--tc-dark, #4c1d95) 0px, transparent 50%),
+    radial-gradient(at 85% 75%, var(--tc, #7c3aed) 0px, transparent 50%) !important;
+}
+.pt.ds-bg-dots {
+  background-color: var(--bg, #0d0d0d);
+  background-image: radial-gradient(var(--tc-light, rgba(255,255,255,0.08)) 1.5px, transparent 1.5px) !important;
+  background-size: 20px 20px !important;
+}
+.pt.ds-bg-lines {
+  background-color: var(--bg, #0d0d0d);
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 24px,
+    var(--tc-light, rgba(255,255,255,0.05)) 24px, var(--tc-light, rgba(255,255,255,0.05)) 25px
+  ) !important;
+}
