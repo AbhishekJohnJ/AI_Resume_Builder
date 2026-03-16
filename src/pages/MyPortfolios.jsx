@@ -51,17 +51,23 @@ function MyPortfolios() {
 
   const getExportedHTML = () => {
     if (!preview) return '';
+    const tc = preview.themeColor || null;
     const markup = renderToStaticMarkup(
-      <GeneratedPortfolio data={preview.data} templateId={preview.templateId} />
+      <GeneratedPortfolio data={preview.data} templateId={preview.templateId} themeColor={tc} />
     );
-    return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <title>${preview.data?.name || 'Portfolio'}</title>\n  <link rel="stylesheet" href="portfolio.css" />\n</head>\n<body>\n${markup}\n</body>\n</html>`;
+    const colorVars = tc ? `\n  <style>\n    :root {\n      --tc: ${tc.main};\n      --tc-dark: ${tc.dark};\n      --tc-light: ${tc.light};\n      --tc-accent: ${tc.accent};\n    }\n  </style>` : '';
+    return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <title>${preview.data?.name || 'Portfolio'}</title>\n  <link rel="stylesheet" href="portfolio.css" />${colorVars}\n</head>\n<body>\n${markup}\n</body>\n</html>`;
   };
 
   const getExportedCSS = () => {
     const tplId = preview?.templateId;
+    const tc = preview?.themeColor || null;
     if (!tplId) return '';
     try {
       let css = '/* Portfolio CSS */\n\n';
+      if (tc) {
+        css += `/* Theme color overrides */\n.pt${tplId} {\n  --tc: ${tc.main};\n  --tc-dark: ${tc.dark};\n  --tc-light: ${tc.light};\n  --tc-accent: ${tc.accent};\n}\n\n`;
+      }
       for (const sheet of document.styleSheets) {
         try {
           for (const rule of sheet.cssRules) {
