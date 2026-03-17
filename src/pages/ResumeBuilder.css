@@ -8,7 +8,7 @@
   position: fixed;
   top: -50%; left: -50%;
   width: 200%; height: 200%;
-  background: radial-gradient(circle, rgba(255,215,0,0.05) 1px, transparent 1px);
+  background: radial-gradient(circle, var(--accent-05) 1px, transparent 1px);
   background-size: 40px 40px;
   animation: rbMoveBg 25s linear infinite;
   pointer-events: none;
@@ -20,9 +20,9 @@
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 15% 85%, rgba(255,215,0,0.15) 0%, transparent 40%),
-    radial-gradient(circle at 85% 15%, rgba(255,193,7,0.15) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(255,165,0,0.1) 0%, transparent 50%);
+    radial-gradient(circle at 15% 85%, var(--accent-15) 0%, transparent 40%),
+    radial-gradient(circle at 85% 15%, var(--accent-15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, var(--accent-10) 0%, transparent 50%);
   pointer-events: none;
   animation: rbPulse 8s ease-in-out infinite;
   z-index: 0;
@@ -44,10 +44,10 @@
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffd700;
+  color: var(--accent);
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 20px rgba(255,215,0,0.3);
+  text-shadow: 0 0 20px var(--accent-border);
 }
 
 .page-subtitle {
@@ -67,7 +67,7 @@
 .rb-prompt-section {
   margin-top: 2.5rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(255,215,0,0.15);
+  border-top: 1px solid var(--accent-15);
 }
 
 .rb-prompt-title {
@@ -97,9 +97,9 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255,215,0,0.1);
-  border: 1px solid rgba(255,215,0,0.3);
-  color: #ffd700;
+  background: var(--accent-10);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
   font-size: 0.75rem;
   font-weight: 500;
   padding: 3px 8px;
@@ -119,7 +119,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #ffd700;
+  color: var(--accent);
   display: flex;
   align-items: center;
   padding: 0;
@@ -132,20 +132,20 @@
   display: flex;
   align-items: flex-end;
   background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,215,0,0.5);
+  border: 1.5px solid var(--accent-50);
   border-radius: 24px;
   padding: 6px 8px 6px 6px;
   backdrop-filter: blur(10px);
   transition: border-color 0.2s, box-shadow 0.2s;
   max-width: 700px;
   margin: 0 auto;
-  box-shadow: 0 0 0 3px rgba(255,215,0,0.08);
+  box-shadow: 0 0 0 3px var(--accent-08);
 }
 
 .rb-bar:focus-within,
 .rb-bar-active {
-  border-color: rgba(255,215,0,0.8);
-  box-shadow: 0 0 0 3px rgba(255,215,0,0.12);
+  border-color: var(--accent-60);
+  box-shadow: 0 0 0 3px var(--accent-12);
 }
 
 /* + button */
@@ -154,9 +154,9 @@
 .rb-plus-btn {
   width: 34px; height: 34px;
   border-radius: 50%;
-  background: rgba(255,215,0,0.1);
-  border: 1px solid rgba(255,215,0,0.25);
-  color: #ffd700;
+  background: var(--accent-10);
+  border: 1px solid var(--accent-25);
+  color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
@@ -164,9 +164,9 @@
 }
 
 .rb-plus-btn:hover {
-  background: #ffd700;
+  background: var(--accent);
   color: #1a1a1a;
-  box-shadow: 0 0 12px rgba(255,215,0,0.4);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 /* Upload popup menu */
@@ -175,7 +175,7 @@
   bottom: calc(100% + 10px);
   left: 0;
   background: #1a1a1a;
-  border: 1px solid rgba(255,215,0,0.2);
+  border: 1px solid var(--accent-20);
   border-radius: 12px;
   padding: 6px;
   min-width: 220px;
@@ -206,7 +206,7 @@
   transition: background 0.15s;
 }
 
-.rb-upload-option:hover { background: rgba(255,215,0,0.08); color: #ffd700; }
+.rb-upload-option:hover { background: var(--accent-08); color: var(--accent); }
 
 .rb-upload-hint { font-size: 0.72rem; color: #555; margin-left: auto; }
 
@@ -240,7 +240,7 @@
   border-radius: 50%;
   background: rgba(255,255,255,0.05);
   border: none;
-  color: rgba(255,215,0,0.35);
+  color: var(--accent-border);
   display: flex; align-items: center; justify-content: center;
   cursor: not-allowed;
   flex-shrink: 0;
@@ -249,13 +249,13 @@
 }
 
 .rb-send-active {
-  background: #ffd700 !important;
+  background: var(--accent) !important;
   color: #1a1a1a !important;
   cursor: pointer !important;
-  box-shadow: 0 0 12px rgba(255,215,0,0.4) !important;
+  box-shadow: 0 0 12px var(--accent-glow) !important;
 }
 
-.rb-send-active:hover { background: #ffed4e !important; }
+.rb-send-active:hover { background: var(--accent) !important; }
 
 @media (max-width: 768px) {
   .page-title { font-size: 1.5rem; }
@@ -298,7 +298,7 @@
   align-items: center;
   gap: 0.4rem;
   background: transparent;
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  border: 1px solid var(--accent-25);
   color: #9ca3af;
   font-size: 0.8rem;
   padding: 0.35rem 0.85rem;
@@ -308,6 +308,6 @@
 }
 
 .rb-help-btn:hover {
-  border-color: #ffd700;
-  color: #ffd700;
+  border-color: var(--accent);
+  color: var(--accent);
 }

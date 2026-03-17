@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bot } from 'lucide-react';
+import { User, Bot, Palette } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
 import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
@@ -41,7 +41,7 @@ const logoStyles = `
     display: block;
   }
   .brand-craft {
-    background: linear-gradient(90deg, #ffd700 0%, #fff8a0 40%, #ffd700 60%, #b8860b 100%);
+    background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 40%, var(--accent) 60%, var(--accent-alt) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -53,6 +53,13 @@ const logoStyles = `
 function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
+  const [isPurple, setIsPurple] = useState(false);
+
+  const toggleTheme = () => {
+    const next = !isPurple;
+    setIsPurple(next);
+    document.body.setAttribute('data-theme', next ? 'purple' : '');
+  };
 
   return (
     <>
@@ -97,13 +104,33 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            title={isPurple ? 'Switch to Gold theme' : 'Switch to Purple theme'}
+            style={{
+              background: isPurple ? 'rgba(168,85,247,0.15)' : 'transparent',
+              border: `1px solid ${isPurple ? '#a855f7' : 'rgba(255,215,0,0.35)'}`,
+              color: isPurple ? '#a855f7' : 'rgba(255,255,255,0.6)',
+              borderRadius: '8px',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <Palette size={17} />
+          </button>
           {onAiToggle && (
             <button
               onClick={onAiToggle}
               title="Toggle AI Assistant"
               style={{
                 background: aiOpen ? 'rgba(255,215,0,0.15)' : 'transparent',
-                border: `1px solid ${aiOpen ? '#ffd700' : 'rgba(255,215,0,0.35)'}`,
+                border: `1px solid ${aiOpen ? 'var(--accent)' : 'rgba(255,215,0,0.35)'}`,
                 borderRadius: '8px',
                 width: '36px',
                 height: '36px',
@@ -116,7 +143,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
                 overflow: 'hidden',
               }}
             >
-              <Bot size={20} color={aiOpen ? '#ffd700' : 'rgba(255,255,255,0.7)'} />
+              <Bot size={20} color={aiOpen ? 'var(--accent)' : 'rgba(255,255,255,0.7)'} />
             </button>
           )}
           <button
@@ -138,8 +165,8 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             onClick={() => navigate('/')}
             style={{
               background: 'transparent',
-              border: '1px solid #ffd700',
-              color: '#ffd700',
+              border: '1px solid var(--accent, #ffd700)',
+              color: 'var(--accent, #ffd700)',
               borderRadius: '6px',
               padding: '0.3rem 0.9rem',
               fontSize: '0.875rem',
@@ -147,8 +174,8 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
-            onMouseEnter={e => { e.target.style.background = '#ffd700'; e.target.style.color = '#111'; }}
-            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#ffd700'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent, #ffd700)'; e.currentTarget.style.color = '#111'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--accent, #ffd700)'; }}
           >
             Logout
           </button>

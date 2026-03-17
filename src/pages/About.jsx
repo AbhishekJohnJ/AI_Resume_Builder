@@ -114,13 +114,13 @@ function About() {
                 title="How to use Resume Builder"
                 icon={FileText}
                 steps={resumeSteps}
-                color="#ffd700"
+                color="var(--accent)"
               />
               <HelpAccordion
                 title="How to use Portfolio Builder"
                 icon={Layout}
                 steps={portfolioSteps}
-                color="#ffa500"
+                color="var(--accent-alt)"
               />
             </div>
 

@@ -73,7 +73,7 @@
 
 .ai-panel.ai-panel-open {
   width: 320px;
-  border-left: 1px solid rgba(255, 215, 0, 0.15);
+  border-left: 1px solid var(--accent-border);
   opacity: 1;
   pointer-events: all;
 }
@@ -84,10 +84,10 @@
   gap: 0.6rem;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #ffd700;
+  color: var(--accent);
   padding: 0.9rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-  background: rgba(255, 215, 0, 0.04);
+  border-bottom: 1px solid var(--accent-border);
+  background: var(--accent-soft);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -118,7 +118,7 @@
 
 .ai-panel .ai-chat-input-row {
   padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  border-top: 1px solid var(--accent-12);
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   gap: 0.5rem;
@@ -128,7 +128,7 @@
 .ai-panel .ai-chat-input {
   flex: 1;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  border: 1px solid var(--accent-20);
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
   color: #fff;
@@ -138,8 +138,8 @@
 }
 
 .ai-panel .ai-chat-input:focus {
-  border-color: #ffd700;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .ai-panel .ai-chat-input::placeholder { color: #444; }
@@ -148,7 +148,7 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #ffd700, #ffa500);
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
   border: none;
   color: #111;
   display: flex;
@@ -214,7 +214,7 @@
 }
 
 .greeting-text strong {
-  color: #ffa116;
+  color: var(--accent-alt);
 }
 
 .greeting-sub {
@@ -246,8 +246,8 @@
 
 .top-bar-icon-btn:hover {
   background: #2a2a2a;
-  border-color: #ffa116;
-  color: #ffa116;
+  border-color: var(--accent-alt);
+  color: var(--accent-alt);
 }
 
 .notif-badge {
@@ -285,7 +285,7 @@
 }
 
 .logo-icon {
-  color: #ffa116;
+  color: var(--accent-alt);
   font-size: 1.5rem;
   font-weight: bold;
   font-family: monospace;
@@ -326,7 +326,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: #ffa116;
+  background: var(--accent-alt);
   transition: width 0.3s;
 }
 
@@ -343,8 +343,8 @@
 .btn-logout-nav {
   padding: 0.5rem 1.25rem;
   background: transparent;
-  color: #ffa116;
-  border: 1px solid #ffa116;
+  color: var(--accent-alt);
+  border: 1px solid var(--accent-alt);
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
@@ -353,7 +353,7 @@
 }
 
 .btn-logout-nav:hover {
-  background: #ffa116;
+  background: var(--accent-alt);
   color: #1a1a1a;
 }
 
@@ -472,8 +472,8 @@
 
 .btn-user-profile:hover {
   background: #2d2d2d;
-  border-color: #ffa116;
-  color: #ffa116;
+  border-color: var(--accent-alt);
+  color: var(--accent-alt);
 }
 
 /* Profile Dropdown */

@@ -83,8 +83,8 @@
 
 .sidebar-item.active {
   background: #2d2d2d;
-  color: #ffa116;
-  border-left-color: #ffa116;
+  color: var(--accent-alt);
+  border-left-color: var(--accent-alt);
 }
 
 .sidebar-icon {
