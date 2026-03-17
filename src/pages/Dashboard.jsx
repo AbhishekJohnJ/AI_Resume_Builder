@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send } from 'lucide-react';
+import { Send, Bot, User2 } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import './Dashboard.css';
@@ -75,6 +75,7 @@ function Dashboard() {
 
   const completedTasksCount = tasks.filter(t => t.completed).length;
 
+  const [aiOpen, setAiOpen] = useState(false);
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'ai',
@@ -122,7 +123,10 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      <TopBar centerContent={
+      <TopBar
+        onAiToggle={() => setAiOpen(v => !v)}
+        aiOpen={aiOpen}
+        centerContent={
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
@@ -293,19 +297,27 @@ function Dashboard() {
           </main>
         </div>
 
-        <div className="ai-panel">
-          <div className="ai-panel-title">🤖 AI Assistant</div>
+        <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
+          <div className="ai-panel-title">
+            <div className="ai-panel-title-icon"><Bot size={16} /></div>
+            AI Assistant
+          </div>
           <div className="ai-chat-messages">
             {aiMessages.map((msg, i) => (
               <div key={i} className={`ai-msg ${msg.role}`}>
-                {msg.role === 'ai' && <span className="ai-avatar">🤖</span>}
+                {msg.role === 'ai' && (
+                  <div className="ai-avatar"><Bot size={14} /></div>
+                )}
+                {msg.role === 'user' && (
+                  <div className="ai-avatar user-avatar"><User2 size={14} /></div>
+                )}
                 <span className="ai-msg-text">{msg.text}</span>
               </div>
             ))}
 
             {aiLoading && (
               <div className="ai-msg ai">
-                <span className="ai-avatar">🤖</span>
+                <div className="ai-avatar"><Bot size={14} /></div>
                 <span className="ai-typing">
                   <span />
                   <span />
@@ -332,7 +344,7 @@ function Dashboard() {
               disabled={aiLoading}
               type="button"
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           </div>
         </div>

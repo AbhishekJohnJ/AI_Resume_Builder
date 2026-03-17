@@ -679,7 +679,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  max-width: 90%;
+  max-width: 92%;
 }
 
 .ai-msg.user {
@@ -688,28 +688,41 @@
 }
 
 .ai-avatar {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #111;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
+.user-avatar {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
 .ai-msg-text {
   font-size: 0.82rem;
-  line-height: 1.5;
-  padding: 0.6rem 0.9rem;
+  line-height: 1.55;
+  padding: 0.65rem 0.95rem;
   border-radius: 12px;
 }
 
 .ai-msg.ai .ai-msg-text {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 215, 0, 0.06);
   color: #e5e5e5;
   border-radius: 4px 12px 12px 12px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 215, 0, 0.12);
 }
 
 .ai-msg.user .ai-msg-text {
-  background: linear-gradient(135deg, #ffa116, #ffd700);
-  color: #1a1a1a;
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #111;
   font-weight: 600;
   border-radius: 12px 4px 12px 12px;
 }

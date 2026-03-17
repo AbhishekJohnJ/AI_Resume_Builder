@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
 
 const logoStyles = `
@@ -48,7 +48,7 @@ const logoStyles = `
   }
 `;
 
-function TopBar({ centerContent = null }) {
+function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
 
@@ -95,6 +95,27 @@ function TopBar({ centerContent = null }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {onAiToggle && (
+            <button
+              onClick={onAiToggle}
+              title="Toggle AI Assistant"
+              style={{
+                background: aiOpen ? 'rgba(255,215,0,0.15)' : 'transparent',
+                border: `1px solid ${aiOpen ? '#ffd700' : 'rgba(255,215,0,0.35)'}`,
+                color: aiOpen ? '#ffd700' : 'rgba(255,255,255,0.55)',
+                borderRadius: '8px',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Bot size={18} />
+            </button>
+          )}
           <button
             onClick={() => setShowProfileCard(v => !v)}
             style={{
