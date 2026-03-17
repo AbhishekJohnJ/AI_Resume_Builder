@@ -2,7 +2,7 @@
 .sidebar {
   position: fixed;
   left: 0;
-  top: 68px;
+  top: 64px;
   bottom: 0;
   width: 260px;
   background: #111;
@@ -115,7 +115,7 @@
 
   .sidebar-overlay {
     position: fixed;
-    top: 68px;
+    top: 64px;
     left: 0;
     right: 0;
     bottom: 0;

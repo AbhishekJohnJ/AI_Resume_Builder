@@ -21,8 +21,8 @@
 .dashboard-body {
   display: flex;
   flex: 1;
-  margin-top: 68px;
-  height: calc(100vh - 68px);
+  margin-top: 64px;
+  height: calc(100vh - 64px);
   overflow: hidden;
   position: relative;
   z-index: 1;
@@ -39,8 +39,8 @@
 
 /* When dashboard-container is used standalone (not inside dashboard-body), offset for fixed top bar */
 .dashboard-page > .dashboard-container {
-  margin-top: 68px;
-  height: calc(100vh - 68px);
+  margin-top: 64px;
+  height: calc(100vh - 64px);
 }
 
 .dashboard-content {

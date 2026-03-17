@@ -14,7 +14,7 @@ function TopBar({ centerContent = null }) {
         top: 0,
         left: 0,
         right: 0,
-        height: '68px',
+        height: '64px',
         background: '#111111',
         display: 'flex',
         alignItems: 'center',
@@ -24,11 +24,11 @@ function TopBar({ centerContent = null }) {
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         {/* Logo + Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img
-            src="/src/assets/WhatsApp Image 2026-03-16 at 10.19.21 PM.jpeg"
+            src="/src/assets/mithun logo nobg.png"
             alt="ResumeCraft logo"
-            style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+            style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }}
           />
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.01em' }}>
             Resume<span style={{ color: '#ffd700' }}>Craft</span>
