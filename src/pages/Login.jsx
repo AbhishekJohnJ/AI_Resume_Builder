@@ -46,8 +46,8 @@ function Login() {
       <div className="login-content">
         <div className="login-left">
           <div className="feature-showcase">
-            <h1 className="showcase-title">Build Your Professional Story</h1>
-            <p className="showcase-subtitle">Create stunning resumes and portfolios that get you noticed</p>
+            <h1 className="showcase-title">ResumeCraft AI</h1>
+            <p className="showcase-subtitle">Your AI-powered resume & portfolio builder — from prompt to professional in seconds</p>
             
             <div className="features-list">
               <div className="feature-item">
