@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Bot, User2 } from 'lucide-react';
+import { Send, User2 } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
+import chatbotIcon from '../assets/chatbot.jpg';
 import './Dashboard.css';
 import './DashboardMain.css';
 
@@ -299,14 +300,18 @@ function Dashboard() {
 
         <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
           <div className="ai-panel-title">
-            <div className="ai-panel-title-icon"><Bot size={16} /></div>
+            <div className="ai-panel-title-icon">
+              <img src={chatbotIcon} alt="AI" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover' }} />
+            </div>
             AI Assistant
           </div>
           <div className="ai-chat-messages">
             {aiMessages.map((msg, i) => (
               <div key={i} className={`ai-msg ${msg.role}`}>
                 {msg.role === 'ai' && (
-                  <div className="ai-avatar"><Bot size={14} /></div>
+                  <div className="ai-avatar">
+                    <img src={chatbotIcon} alt="AI" style={{ width: '26px', height: '26px', borderRadius: '6px', objectFit: 'cover' }} />
+                  </div>
                 )}
                 {msg.role === 'user' && (
                   <div className="ai-avatar user-avatar"><User2 size={14} /></div>
@@ -317,7 +322,9 @@ function Dashboard() {
 
             {aiLoading && (
               <div className="ai-msg ai">
-                <div className="ai-avatar"><Bot size={14} /></div>
+                <div className="ai-avatar">
+                  <img src={chatbotIcon} alt="AI" style={{ width: '26px', height: '26px', borderRadius: '6px', objectFit: 'cover' }} />
+                </div>
                 <span className="ai-typing">
                   <span />
                   <span />

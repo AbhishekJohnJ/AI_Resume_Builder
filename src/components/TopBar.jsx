@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bot } from 'lucide-react';
+import { User } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
+import chatbotIcon from '../assets/chatbot.jpg';
 
 const logoStyles = `
   @keyframes shimmerSweep {
@@ -102,7 +103,6 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
               style={{
                 background: aiOpen ? 'rgba(255,215,0,0.15)' : 'transparent',
                 border: `1px solid ${aiOpen ? '#ffd700' : 'rgba(255,215,0,0.35)'}`,
-                color: aiOpen ? '#ffd700' : 'rgba(255,255,255,0.55)',
                 borderRadius: '8px',
                 width: '36px',
                 height: '36px',
@@ -111,9 +111,15 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
                 justifyContent: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
+                padding: 0,
+                overflow: 'hidden',
               }}
             >
-              <Bot size={18} />
+              <img
+                src={chatbotIcon}
+                alt="AI Assistant"
+                style={{ width: '30px', height: '30px', borderRadius: '6px', objectFit: 'cover' }}
+              />
             </button>
           )}
           <button

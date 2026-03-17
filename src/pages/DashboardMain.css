@@ -691,11 +691,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #ffd700, #ffa500);
-  color: #111;
+  background: transparent;
   flex-shrink: 0;
   margin-top: 2px;
 }
