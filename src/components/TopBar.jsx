@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
 
-function TopBar({ title = 'Portfolio', centerContent = null }) {
+function TopBar({ centerContent = null }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
 
@@ -14,7 +14,7 @@ function TopBar({ title = 'Portfolio', centerContent = null }) {
         top: 0,
         left: 0,
         right: 0,
-        height: '64px',
+        height: '68px',
         background: '#111111',
         display: 'flex',
         alignItems: 'center',
@@ -23,7 +23,17 @@ function TopBar({ title = 'Portfolio', centerContent = null }) {
         zIndex: 1000,
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
-        <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '1rem' }}>{title}</span>
+        {/* Logo + Brand */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <img
+            src="/src/assets/WhatsApp Image 2026-03-16 at 10.19.21 PM.jpeg"
+            alt="ResumeCraft logo"
+            style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+          />
+          <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.01em' }}>
+            Resume<span style={{ color: '#ffd700' }}>Craft</span>
+          </span>
+        </div>
 
         {centerContent && (
           <div style={{

@@ -122,7 +122,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      <TopBar title="Dashboard" centerContent={
+      <TopBar centerContent={
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
