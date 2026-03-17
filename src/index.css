@@ -60,6 +60,23 @@
   --accent-60:     rgba(34, 197, 94, 0.6);
 }
 
+[data-theme="cyan"] {
+  --accent:        #06b6d4;
+  --accent-alt:    #0891b2;
+  --accent-soft:   rgba(6, 182, 212, 0.15);
+  --accent-border: rgba(6, 182, 212, 0.3);
+  --accent-glow:   rgba(6, 182, 212, 0.4);
+  --accent-05:     rgba(6, 182, 212, 0.05);
+  --accent-08:     rgba(6, 182, 212, 0.08);
+  --accent-10:     rgba(6, 182, 212, 0.1);
+  --accent-12:     rgba(6, 182, 212, 0.12);
+  --accent-15:     rgba(6, 182, 212, 0.15);
+  --accent-20:     rgba(6, 182, 212, 0.2);
+  --accent-25:     rgba(6, 182, 212, 0.25);
+  --accent-50:     rgba(6, 182, 212, 0.5);
+  --accent-60:     rgba(6, 182, 212, 0.6);
+}
+
 html, body, #root {
   height: 100%;
   width: 100%;

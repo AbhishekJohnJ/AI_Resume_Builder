@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
@@ -53,18 +53,26 @@ const logoStyles = `
 function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [theme, setTheme] = useState('gold');
+  const [theme, setTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
   const [showThemePicker, setShowThemePicker] = useState(false);
+
+  // Apply saved theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('appTheme') || 'gold';
+    document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
+  }, []);
 
   const themes = [
     { id: 'gold',   label: 'Gold',   dot: '#ffd700' },
     { id: 'purple', label: 'Purple', dot: '#a855f7' },
     { id: 'green',  label: 'Green',  dot: '#22c55e' },
+    { id: 'cyan',   label: 'Cyan',   dot: '#06b6d4' },
   ];
 
   const applyTheme = (id) => {
     setTheme(id);
     setShowThemePicker(false);
+    localStorage.setItem('appTheme', id);
     document.body.setAttribute('data-theme', id === 'gold' ? '' : id);
   };
 
