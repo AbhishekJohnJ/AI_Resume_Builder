@@ -31,7 +31,7 @@ function TopBar({ centerContent = null }) {
             style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }}
           />
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>
-            ʀᴇsᴜᴍᴇ<span style={{ color: '#ffd700' }}> ᴄʀᴀғᴛ</span>
+          𝐑𝐞𝐬𝐮𝐦𝐞<span style={{ color: '#ffd700' }}>𝐂𝐫𝐚𝐟𝐭</span>
           </span>
         </div>
 
