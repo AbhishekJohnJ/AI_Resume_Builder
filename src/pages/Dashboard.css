@@ -35,6 +35,11 @@
   min-width: 0;
   margin-left: 260px;
   border-right: 1px solid #2d2d2d;
+  scrollbar-width: none;
+}
+
+.dashboard-container::-webkit-scrollbar {
+  display: none;
 }
 
 /* When dashboard-container is used standalone (not inside dashboard-body), offset for fixed top bar */
