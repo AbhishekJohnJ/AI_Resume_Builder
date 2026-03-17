@@ -3,12 +3,58 @@ import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
 
+const logoStyles = `
+  @keyframes shimmerSweep {
+    0% { left: -100%; }
+    60%, 100% { left: 200%; }
+  }
+  @keyframes brandShimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .logo-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .logo-wrapper::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -100%;
+    width: 45%;
+    height: 140%;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%);
+    animation: shimmerSweep 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .logo-img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    display: block;
+  }
+  .brand-craft {
+    background: linear-gradient(90deg, #ffd700 0%, #fff8a0 40%, #ffd700 60%, #b8860b 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brandShimmer 2.5s linear infinite;
+  }
+`;
+
 function TopBar({ centerContent = null }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
 
   return (
     <>
+      <style>{logoStyles}</style>
       <nav style={{
         position: 'fixed',
         top: 0,
@@ -25,13 +71,15 @@ function TopBar({ centerContent = null }) {
       }}>
         {/* Logo + Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <img
-            src="/src/assets/mithun logo nobg.png"
-            alt="ResumeCraft logo"
-            style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }}
-          />
+          <div className="logo-wrapper">
+            <img
+              src="/src/assets/finalized_logo.png"
+              alt="ResumeCraft logo"
+              className="logo-img"
+            />
+          </div>
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>
-          𝐑𝐞𝐬𝐮𝐦𝐞<span style={{ color: '#ffd700' }}>𝐂𝐫𝐚𝐟𝐭</span>
+            𝐑𝐞𝐬𝐮𝐦𝐞<span className="brand-craft">𝐂𝐫𝐚𝐟𝐭</span>
           </span>
         </div>
 
