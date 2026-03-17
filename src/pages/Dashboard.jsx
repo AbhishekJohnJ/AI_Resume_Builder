@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Bell, Send } from 'lucide-react';
-import ProfileSummaryCard from '../components/ProfileSummaryCard';
+import { Send } from 'lucide-react';
+import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import './Dashboard.css';
 import './DashboardMain.css';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const userName = user?.name?.split(' ')[0] || 'there';
 
   const [tasks, setTasks] = useState([
     {
@@ -58,11 +60,6 @@ function Dashboard() {
     { name: 'MongoDB', progress: 40 }
   ];
 
-  const [showProfileCard, setShowProfileCard] = useState(false);
-
-  const toggleProfileCard = () => {
-    setShowProfileCard(prev => !prev);
-  };
 
   const handleLogout = () => {
     navigate('/');
@@ -125,55 +122,36 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      <nav className="top-bar">
-        <div className="top-bar-content">
-          <div className="logo">
-            <button className="mobile-menu-btn" type="button">
-              <Menu size={24} />
-            </button>
-            <span className="logo-text">Portfolio</span>
-          </div>
-
-          <div className="top-bar-greeting">
-            <span className="greeting-text">
-              👋 Welcome back, <strong>Abhishek</strong>
-            </span>
-            <span className="greeting-sub">
-              Ready to build something great today?
-            </span>
-          </div>
-
-          <div className="top-bar-actions">
-            <button className="top-bar-icon-btn notif-btn" type="button">
-              <Bell size={20} />
-              <span className="notif-badge">3</span>
-            </button>
-            <button
-              onClick={toggleProfileCard}
-              className="top-bar-icon-btn profile-btn"
-              type="button"
-            >
-              <User size={20} />
-            </button>
-          </div>
+      <TopBar title="Dashboard" centerContent={
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+          <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <style>{`
+                @keyframes orbitDot {
+                  0%   { transform: rotate(0deg)   translateX(7px) rotate(0deg); }
+                  100% { transform: rotate(360deg) translateX(7px) rotate(-360deg); }
+                }
+                @keyframes corePulse {
+                  0%, 100% { r: 3; opacity: 1; }
+                  50%       { r: 4; opacity: 0.7; }
+                }
+                .ai-core   { animation: corePulse 1.8s ease-in-out infinite; }
+                .ai-orbit1 { animation: orbitDot 2.2s linear infinite; transform-origin: 11px 11px; }
+                .ai-orbit2 { animation: orbitDot 2.2s linear infinite reverse; transform-origin: 11px 11px; animation-delay: -1.1s; }
+              `}</style>
+              {/* outer ring */}
+              <circle cx="11" cy="11" r="9" stroke="#ffd700" strokeWidth="1" strokeDasharray="3 2" opacity="0.4" />
+              {/* core */}
+              <circle className="ai-core" cx="11" cy="11" r="3" fill="#ffd700" />
+              {/* orbiting dots */}
+              <circle className="ai-orbit1" cx="11" cy="11" r="1.5" fill="#ffd700" opacity="0.9" />
+              <circle className="ai-orbit2" cx="11" cy="11" r="1.5" fill="#fff" opacity="0.6" />
+            </svg>
+            Welcome back, <strong style={{ color: '#ffd700' }}>{userName}</strong>
+          </span>
+          <span style={{ color: '#666', fontSize: '0.78rem' }}>Ready to build something great today?</span>
         </div>
-      </nav>
-
-      {showProfileCard && (
-        <>
-          <div className="profile-overlay" onClick={toggleProfileCard}></div>
-          <div className="profile-dropdown">
-            <ProfileSummaryCard
-              name="Abhishek John"
-              role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78}
-              leaderboardRank={24}
-              totalPoints={1240}
-            />
-          </div>
-        </>
-      )}
+      } />
 
       <Sidebar />
 
