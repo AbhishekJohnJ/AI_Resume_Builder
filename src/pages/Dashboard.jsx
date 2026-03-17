@@ -125,27 +125,39 @@ function Dashboard() {
       <TopBar title="Dashboard" centerContent={
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
               <style>{`
-                @keyframes orbitDot {
-                  0%   { transform: rotate(0deg)   translateX(7px) rotate(0deg); }
-                  100% { transform: rotate(360deg) translateX(7px) rotate(-360deg); }
+                @keyframes diamondSpin {
+                  0%   { transform: rotate(0deg)   scale(1);    }
+                  25%  { transform: rotate(90deg)  scale(0.75); }
+                  50%  { transform: rotate(180deg) scale(1);    }
+                  75%  { transform: rotate(270deg) scale(0.75); }
+                  100% { transform: rotate(360deg) scale(1);    }
                 }
-                @keyframes corePulse {
-                  0%, 100% { r: 3; opacity: 1; }
-                  50%       { r: 4; opacity: 0.7; }
+                @keyframes diamondInner {
+                  0%   { transform: rotate(0deg)   scale(1);    opacity: 0.5; }
+                  25%  { transform: rotate(-90deg) scale(1.3);  opacity: 1;   }
+                  50%  { transform: rotate(-180deg) scale(1);   opacity: 0.5; }
+                  75%  { transform: rotate(-270deg) scale(1.3); opacity: 1;   }
+                  100% { transform: rotate(-360deg) scale(1);   opacity: 0.5; }
                 }
-                .ai-core   { animation: corePulse 1.8s ease-in-out infinite; }
-                .ai-orbit1 { animation: orbitDot 2.2s linear infinite; transform-origin: 11px 11px; }
-                .ai-orbit2 { animation: orbitDot 2.2s linear infinite reverse; transform-origin: 11px 11px; animation-delay: -1.1s; }
+                .diamond-outer { animation: diamondSpin  2.8s ease-in-out infinite; transform-origin: 12px 12px; }
+                .diamond-inner { animation: diamondInner 2.8s ease-in-out infinite; transform-origin: 12px 12px; }
               `}</style>
-              {/* outer ring */}
-              <circle cx="11" cy="11" r="9" stroke="#ffd700" strokeWidth="1" strokeDasharray="3 2" opacity="0.4" />
-              {/* core */}
-              <circle className="ai-core" cx="11" cy="11" r="3" fill="#ffd700" />
-              {/* orbiting dots */}
-              <circle className="ai-orbit1" cx="11" cy="11" r="1.5" fill="#ffd700" opacity="0.9" />
-              <circle className="ai-orbit2" cx="11" cy="11" r="1.5" fill="#fff" opacity="0.6" />
+              {/* outer diamond */}
+              <rect className="diamond-outer"
+                x="4" y="4" width="16" height="16" rx="2"
+                stroke="#ffd700" strokeWidth="1.5" fill="none"
+                transform="rotate(45 12 12)"
+              />
+              {/* inner diamond */}
+              <rect className="diamond-inner"
+                x="7.5" y="7.5" width="9" height="9" rx="1"
+                stroke="#ffd700" strokeWidth="1" fill="rgba(255,215,0,0.15)"
+                transform="rotate(45 12 12)"
+              />
+              {/* center dot */}
+              <circle cx="12" cy="12" r="1.5" fill="#ffd700" />
             </svg>
             Welcome back, <strong style={{ color: '#ffd700' }}>{userName}</strong>
           </span>
