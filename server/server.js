@@ -411,6 +411,40 @@ app.post('/api/ai/analyze-skills', async (req, res) => {
   }
 });
 
+// AI Chat
+app.post('/api/ai/chat', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Message is required' });
+
+    const apiKey = process.env.AI_API_KEY;
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek/deepseek-chat',
+        messages: [
+          { role: 'system', content: 'You are a helpful AI career assistant for a portfolio and resume builder platform. Give concise, actionable advice about resumes, portfolios, LinkedIn, GitHub, and career growth. Keep responses short and friendly.' },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 300
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'AI API error');
+    const reply = data.choices?.[0]?.message?.content || 'No response.';
+    res.json({ reply });
+  } catch (error) {
+    console.error('Chat error:', error);
+    res.status(500).json({ error: 'Failed to get AI response' });
+  }
+});
+
 // Generate portfolio data from prompt
 app.post('/api/ai/generate-portfolio', async (req, res) => {
   try {
