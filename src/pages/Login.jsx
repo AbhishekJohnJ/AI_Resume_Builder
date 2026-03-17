@@ -46,7 +46,13 @@ function Login() {
       <div className="login-content">
         <div className="login-left">
           <div className="feature-showcase">
-            <h1 className="showcase-title">ResumeCraft AI</h1>
+            <h1 className="showcase-title">
+              {'ResumeCraft AI'.split('').map((char, i) =>
+                char === ' '
+                  ? <span key={i} className="glow-space" />
+                  : <span key={i} className="glow-letter" style={{ animationDelay: `${i * 0.15}s` }}>{char}</span>
+              )}
+            </h1>
             <p className="showcase-subtitle">Your AI-powered resume & portfolio builder — from prompt to professional in seconds</p>
             
             <div className="features-list">

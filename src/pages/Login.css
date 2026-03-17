@@ -86,10 +86,9 @@
   }
 }
 
-@keyframes titleWave {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes letterGlow {
+  0%, 100% { color: #ffffff; text-shadow: none; }
+  50% { color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.35); }
 }
 
 .showcase-title {
@@ -97,12 +96,17 @@
   font-weight: 800;
   margin-bottom: 1rem;
   line-height: 1.2;
-  background: linear-gradient(270deg, #ffffff, #ffd700, #ffffff, #ffc200);
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: titleWave 5s ease infinite;
+}
+
+.showcase-title .glow-letter {
+  display: inline-block;
+  color: #ffffff;
+  animation: letterGlow 3s ease-in-out infinite;
+}
+
+.showcase-title .glow-space {
+  display: inline-block;
+  width: 0.4em;
 }
 
 .showcase-subtitle {
