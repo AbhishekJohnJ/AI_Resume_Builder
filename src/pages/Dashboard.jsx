@@ -301,7 +301,7 @@ function Dashboard() {
         <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
           <div className="ai-panel-title">
             <div className="ai-panel-title-icon">
-              <img src={chatbotIcon} alt="AI" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover' }} />
+              <img src={chatbotIcon} alt="AI" style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
             </div>
             AI Assistant
           </div>
@@ -310,7 +310,7 @@ function Dashboard() {
               <div key={i} className={`ai-msg ${msg.role}`}>
                 {msg.role === 'ai' && (
                   <div className="ai-avatar">
-                    <img src={chatbotIcon} alt="AI" style={{ width: '26px', height: '26px', borderRadius: '6px', objectFit: 'cover' }} />
+                    <img src={chatbotIcon} alt="AI" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                   </div>
                 )}
                 {msg.role === 'user' && (
@@ -323,7 +323,7 @@ function Dashboard() {
             {aiLoading && (
               <div className="ai-msg ai">
                 <div className="ai-avatar">
-                  <img src={chatbotIcon} alt="AI" style={{ width: '26px', height: '26px', borderRadius: '6px', objectFit: 'cover' }} />
+                  <img src={chatbotIcon} alt="AI" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                 </div>
                 <span className="ai-typing">
                   <span />

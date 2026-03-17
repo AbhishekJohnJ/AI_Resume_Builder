@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
 import chatbotIcon from '../assets/chatbot.jpg';
+import finalLogo from '../assets/finalized_logo.png';
 
 const logoStyles = `
   @keyframes shimmerSweep {
@@ -74,7 +75,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div className="logo-wrapper">
             <img
-              src="/src/assets/finalized_logo.png"
+              src={finalLogo}
               alt="ResumeCraft logo"
               className="logo-img"
             />
@@ -115,11 +116,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
                 overflow: 'hidden',
               }}
             >
-              <img
-                src={chatbotIcon}
-                alt="AI Assistant"
-                style={{ width: '30px', height: '30px', borderRadius: '6px', objectFit: 'cover' }}
-              />
+              <Bot size={20} color={aiOpen ? '#ffd700' : 'rgba(255,255,255,0.7)'} />
             </button>
           )}
           <button
