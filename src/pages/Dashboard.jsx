@@ -127,37 +127,41 @@ function Dashboard() {
           <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
               <style>{`
-                @keyframes diamondSpin {
-                  0%   { transform: rotate(0deg)   scale(1);    }
-                  25%  { transform: rotate(90deg)  scale(0.75); }
-                  50%  { transform: rotate(180deg) scale(1);    }
-                  75%  { transform: rotate(270deg) scale(0.75); }
-                  100% { transform: rotate(360deg) scale(1);    }
+                @keyframes synapse {
+                  0%, 100% { stroke-dashoffset: 20; opacity: 0.2; }
+                  50%       { stroke-dashoffset: 0;  opacity: 1;   }
                 }
-                @keyframes diamondInner {
-                  0%   { transform: rotate(0deg)   scale(1);    opacity: 0.5; }
-                  25%  { transform: rotate(-90deg) scale(1.3);  opacity: 1;   }
-                  50%  { transform: rotate(-180deg) scale(1);   opacity: 0.5; }
-                  75%  { transform: rotate(-270deg) scale(1.3); opacity: 1;   }
-                  100% { transform: rotate(-360deg) scale(1);   opacity: 0.5; }
+                @keyframes nodePulse {
+                  0%, 100% { r: 1.5; opacity: 0.5; }
+                  50%       { r: 2.2; opacity: 1;   }
                 }
-                .diamond-outer { animation: diamondSpin  2.8s ease-in-out infinite; transform-origin: 12px 12px; }
-                .diamond-inner { animation: diamondInner 2.8s ease-in-out infinite; transform-origin: 12px 12px; }
+                @keyframes coreBeat {
+                  0%, 100% { r: 3;   }
+                  50%       { r: 3.8; }
+                }
+                .syn-t  { animation: synapse 1.8s ease-in-out infinite; }
+                .syn-r  { animation: synapse 1.8s ease-in-out infinite; animation-delay: -0.45s; }
+                .syn-b  { animation: synapse 1.8s ease-in-out infinite; animation-delay: -0.9s;  }
+                .syn-l  { animation: synapse 1.8s ease-in-out infinite; animation-delay: -1.35s; }
+                .nd-t   { animation: nodePulse 1.8s ease-in-out infinite; }
+                .nd-r   { animation: nodePulse 1.8s ease-in-out infinite; animation-delay: -0.45s; }
+                .nd-b   { animation: nodePulse 1.8s ease-in-out infinite; animation-delay: -0.9s;  }
+                .nd-l   { animation: nodePulse 1.8s ease-in-out infinite; animation-delay: -1.35s; }
+                .nd-core { animation: coreBeat 1.8s ease-in-out infinite; }
               `}</style>
-              {/* outer diamond */}
-              <rect className="diamond-outer"
-                x="4" y="4" width="16" height="16" rx="2"
-                stroke="#ffd700" strokeWidth="1.5" fill="none"
-                transform="rotate(45 12 12)"
-              />
-              {/* inner diamond */}
-              <rect className="diamond-inner"
-                x="7.5" y="7.5" width="9" height="9" rx="1"
-                stroke="#ffd700" strokeWidth="1" fill="rgba(255,215,0,0.15)"
-                transform="rotate(45 12 12)"
-              />
-              {/* center dot */}
-              <circle cx="12" cy="12" r="1.5" fill="#ffd700" />
+              {/* synapse lines */}
+              <line className="syn-t" x1="12" y1="9" x2="12" y2="3"  stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-r" x1="15" y1="12" x2="21" y2="12" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-b" x1="12" y1="15" x2="12" y2="21" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-l" x1="9"  y1="12" x2="3"  y2="12" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              {/* outer nodes */}
+              <circle className="nd-t"  cx="12" cy="3"  r="1.5" fill="#ffd700" />
+              <circle className="nd-r"  cx="21" cy="12" r="1.5" fill="#ffd700" />
+              <circle className="nd-b"  cx="12" cy="21" r="1.5" fill="#ffd700" />
+              <circle className="nd-l"  cx="3"  cy="12" r="1.5" fill="#ffd700" />
+              {/* core node */}
+              <circle className="nd-core" cx="12" cy="12" r="3" fill="#ffd700" />
+              <circle cx="12" cy="12" r="1.2" fill="#111" />
             </svg>
             Welcome back, <strong style={{ color: '#ffd700' }}>{userName}</strong>
           </span>
