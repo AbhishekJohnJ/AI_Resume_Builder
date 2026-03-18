@@ -1,4 +1,13 @@
 /* Sidebar Container */
+@keyframes sidebarAccentLine {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 0% 200%; }
+}
+@keyframes sidebarBorderGlow {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
 .sidebar {
   position: fixed;
   left: 0;
@@ -6,11 +15,30 @@
   bottom: 0;
   width: 260px;
   background: #111;
-  border-right: 1px solid #2d2d2d;
   display: flex;
   flex-direction: column;
   z-index: 1000;
   overflow-y: auto;
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--accent) 25%,
+    var(--accent-alt) 50%,
+    var(--accent) 75%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: sidebarAccentLine 3s linear infinite, sidebarBorderGlow 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .sidebar::-webkit-scrollbar {

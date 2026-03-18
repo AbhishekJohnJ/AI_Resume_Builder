@@ -6,6 +6,33 @@ import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
 
 const logoStyles = `
+  @keyframes topbarBorderGlow {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+  }
+  @keyframes topbarAccentLine {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .topbar-nav {
+  }
+  .topbar-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--accent) 30%,
+      var(--accent-alt) 50%,
+      var(--accent) 70%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: topbarAccentLine 3s linear infinite, topbarBorderGlow 3s ease-in-out infinite;
+  }
   @keyframes shimmerSweep {
     0% { left: -100%; }
     60%, 100% { left: 200%; }
@@ -39,7 +66,17 @@ const logoStyles = `
     height: 54px;
     object-fit: contain;
     display: block;
+    transition: filter 0.4s ease;
   }
+  .chatbot-img.theme-gold   { filter: none; }
+  .chatbot-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
+  .chatbot-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
+  .chatbot-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
+  .chatbot-img { transition: filter 0.4s ease; }
+  .logo-img.theme-gold   { filter: none; }
+  .logo-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
+  .logo-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
+  .logo-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
   .brand-craft {
     background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 40%, var(--accent) 60%, var(--accent-alt) 100%);
     background-size: 200% auto;
@@ -74,6 +111,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
     setShowThemePicker(false);
     localStorage.setItem('appTheme', id);
     document.body.setAttribute('data-theme', id === 'gold' ? '' : id);
+    window.dispatchEvent(new Event('focus'));
   };
 
   const currentTheme = themes.find(t => t.id === theme);
@@ -81,7 +119,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   return (
     <>
       <style>{logoStyles}</style>
-      <nav style={{
+      <nav className="topbar-nav" style={{
         position: 'fixed',
         top: 0,
         left: 0,
@@ -93,7 +131,6 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         justifyContent: 'space-between',
         padding: '0 1.25rem',
         zIndex: 1000,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         {/* Logo + Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -101,7 +138,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             <img
               src={finalLogo}
               alt="ResumeCraft logo"
-              className="logo-img"
+              className={`logo-img theme-${theme}`}
             />
           </div>
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>
