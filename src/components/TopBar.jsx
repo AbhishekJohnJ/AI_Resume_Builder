@@ -6,6 +6,47 @@ import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
 
 const logoStyles = `
+  @keyframes topbarSlideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    60% {
+      transform: translateY(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes topbarBorderGlow {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+  }
+  @keyframes topbarAccentLine {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .topbar-nav {
+    animation: topbarSlideDown 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .topbar-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--accent) 30%,
+      var(--accent-alt) 50%,
+      var(--accent) 70%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: topbarAccentLine 3s linear infinite, topbarBorderGlow 3s ease-in-out infinite;
+  }
   @keyframes shimmerSweep {
     0% { left: -100%; }
     60%, 100% { left: 200%; }
@@ -81,7 +122,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   return (
     <>
       <style>{logoStyles}</style>
-      <nav style={{
+      <nav className="topbar-nav" style={{
         position: 'fixed',
         top: 0,
         left: 0,
@@ -93,7 +134,6 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         justifyContent: 'space-between',
         padding: '0 1.25rem',
         zIndex: 1000,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         {/* Logo + Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
