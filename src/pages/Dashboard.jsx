@@ -130,7 +130,7 @@ function Dashboard() {
         centerContent={
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <span style={{ color: '#e5e5e5', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, color: 'var(--accent)' }}>
               <style>{`
                 @keyframes synapse {
                   0%, 100% { stroke-dashoffset: 20; opacity: 0.2; }
@@ -155,20 +155,20 @@ function Dashboard() {
                 .nd-core { animation: coreBeat 1.8s ease-in-out infinite; }
               `}</style>
               {/* synapse lines */}
-              <line className="syn-t" x1="12" y1="9" x2="12" y2="3"  stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
-              <line className="syn-r" x1="15" y1="12" x2="21" y2="12" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
-              <line className="syn-b" x1="12" y1="15" x2="12" y2="21" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
-              <line className="syn-l" x1="9"  y1="12" x2="3"  y2="12" stroke="#ffd700" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-t" x1="12" y1="9" x2="12" y2="3"  stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-r" x1="15" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-b" x1="12" y1="15" x2="12" y2="21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
+              <line className="syn-l" x1="9"  y1="12" x2="3"  y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="6" strokeDashoffset="20" />
               {/* outer nodes */}
-              <circle className="nd-t"  cx="12" cy="3"  r="1.5" fill="#ffd700" />
-              <circle className="nd-r"  cx="21" cy="12" r="1.5" fill="#ffd700" />
-              <circle className="nd-b"  cx="12" cy="21" r="1.5" fill="#ffd700" />
-              <circle className="nd-l"  cx="3"  cy="12" r="1.5" fill="#ffd700" />
+              <circle className="nd-t"  cx="12" cy="3"  r="1.5" fill="currentColor" />
+              <circle className="nd-r"  cx="21" cy="12" r="1.5" fill="currentColor" />
+              <circle className="nd-b"  cx="12" cy="21" r="1.5" fill="currentColor" />
+              <circle className="nd-l"  cx="3"  cy="12" r="1.5" fill="currentColor" />
               {/* core node */}
-              <circle className="nd-core" cx="12" cy="12" r="3" fill="#ffd700" />
+              <circle className="nd-core" cx="12" cy="12" r="3" fill="currentColor" />
               <circle cx="12" cy="12" r="1.2" fill="#111" />
             </svg>
-            Welcome back, <strong style={{ color: '#ffd700' }}>{userName}</strong>
+            Welcome back, <strong style={{ color: 'var(--accent)' }}>{userName}</strong>
           </span>
           <span style={{ color: '#666', fontSize: '0.78rem' }}>Ready to build something great today?</span>
         </div>

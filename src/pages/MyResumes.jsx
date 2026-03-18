@@ -94,7 +94,7 @@ function MyResumes() {
       <div className="dashboard-container">
         <main className="dashboard-content">
           <div className="page-header">
-            <h1 className="page-title" style={{ color: '#ffd700' }}>My Resumes</h1>
+            <h1 className="page-title" style={{ color: 'var(--accent)' }}>My Resumes</h1>
             <p className="page-subtitle">All your generated resumes in one place</p>
           </div>
 

@@ -21,15 +21,15 @@
   justify-content: center;
   width: 90px;
   height: 90px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 2px solid rgba(255, 215, 0, 0.35);
+  background: var(--accent-10);
+  border: 2px solid var(--accent-border);
   border-radius: 20px;
   margin-bottom: 1.25rem;
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+  box-shadow: 0 0 30px var(--accent-15);
 }
 
 .about-logo-icon {
-  color: #ffd700;
+  color: var(--accent);
 }
 
 .about-title {
@@ -41,7 +41,7 @@
 }
 
 .about-version {
-  color: #ffd700;
+  color: var(--accent);
   font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 1px;
@@ -65,7 +65,7 @@
 
 .about-card {
   background: linear-gradient(135deg, #1a1a1a, #111111);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  border: 1px solid var(--accent-20);
   border-radius: 14px;
   padding: 1.75rem 1.5rem;
   text-align: center;
@@ -73,13 +73,13 @@
 }
 
 .about-card:hover {
-  border-color: #ffd700;
-  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 8px 30px var(--accent-15);
   transform: translateY(-4px);
 }
 
 .about-card-icon {
-  color: #ffd700;
+  color: var(--accent);
   margin-bottom: 0.9rem;
 }
 
@@ -100,7 +100,7 @@
 /* Sections */
 .about-section {
   background: linear-gradient(135deg, #1a1a1a, #111111);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  border: 1px solid var(--accent-20);
   border-radius: 14px;
   padding: 1.75rem 2rem;
   margin-bottom: 1.5rem;
@@ -115,7 +115,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
+  background: linear-gradient(90deg, var(--accent), var(--accent-alt), var(--accent));
   background-size: 200% 100%;
   animation: shimmer 3s ease infinite;
 }
@@ -126,7 +126,7 @@
 }
 
 .about-section h2 {
-  color: #ffd700;
+  color: var(--accent);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 1.25rem;
@@ -151,7 +151,7 @@
 }
 
 .about-features li svg {
-  color: #ffd700;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -163,9 +163,9 @@
 }
 
 .tech-badge {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.4);
-  color: #ffd700;
+  background: var(--accent-08);
+  border: 1px solid var(--accent-glow);
+  color: var(--accent);
   padding: 0.4rem 1rem;
   border-radius: 999px;
   font-size: 0.85rem;
@@ -214,7 +214,7 @@
 }
 
 .help-accordion {
-  border: 1px solid rgba(255, 215, 0, 0.15);
+  border: 1px solid var(--accent-15);
   border-radius: 10px;
   margin-bottom: 0.75rem;
   overflow: hidden;
@@ -222,7 +222,7 @@
 }
 
 .help-accordion-open {
-  border-color: rgba(255, 215, 0, 0.4);
+  border-color: var(--accent-glow);
 }
 
 .help-accordion-header {
@@ -241,11 +241,11 @@
 }
 
 .help-accordion-header:hover {
-  background: rgba(255, 215, 0, 0.06);
+  background: var(--accent-08);
 }
 
 .help-accordion-header svg:last-child {
-  color: #ffd700;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -291,7 +291,7 @@
 .help-step-line {
   flex: 1;
   width: 2px;
-  background: rgba(255, 215, 0, 0.12);
+  background: var(--accent-12);
   margin: 4px 0;
   min-height: 16px;
 }

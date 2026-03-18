@@ -108,7 +108,7 @@ function MyPortfolios() {
       <div className="dashboard-container">
         <main className="dashboard-content">
           <div className="page-header">
-            <h1 className="page-title" style={{ color: '#ffa116' }}>My Portfolios</h1>
+            <h1 className="page-title" style={{ color: 'var(--accent)' }}>My Portfolios</h1>
             <p className="page-subtitle">All your generated portfolios in one place</p>
           </div>
 

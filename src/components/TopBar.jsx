@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
@@ -41,7 +41,7 @@ const logoStyles = `
     display: block;
   }
   .brand-craft {
-    background: linear-gradient(90deg, #ffd700 0%, #fff8a0 40%, #ffd700 60%, #b8860b 100%);
+    background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 40%, var(--accent) 60%, var(--accent-alt) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -53,6 +53,30 @@ const logoStyles = `
 function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
+  const [showThemePicker, setShowThemePicker] = useState(false);
+
+  // Apply saved theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('appTheme') || 'gold';
+    document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
+  }, []);
+
+  const themes = [
+    { id: 'gold',   label: 'Gold',   dot: '#ffd700' },
+    { id: 'purple', label: 'Purple', dot: '#a855f7' },
+    { id: 'green',  label: 'Green',  dot: '#22c55e' },
+    { id: 'cyan',   label: 'Cyan',   dot: '#06b6d4' },
+  ];
+
+  const applyTheme = (id) => {
+    setTheme(id);
+    setShowThemePicker(false);
+    localStorage.setItem('appTheme', id);
+    document.body.setAttribute('data-theme', id === 'gold' ? '' : id);
+  };
+
+  const currentTheme = themes.find(t => t.id === theme);
 
   return (
     <>
@@ -97,13 +121,96 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Theme picker */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowThemePicker(v => !v)}
+              title="Switch theme"
+              style={{
+                background: showThemePicker ? 'rgba(255,255,255,0.08)' : 'transparent',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '8px',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                gap: '0',
+              }}
+            >
+              <span style={{
+                width: '14px', height: '14px', borderRadius: '50%',
+                background: currentTheme.dot,
+                display: 'block',
+                boxShadow: `0 0 6px ${currentTheme.dot}`,
+              }} />
+            </button>
+
+            {showThemePicker && (
+              <>
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+                  onClick={() => setShowThemePicker(false)}
+                />
+                <div style={{
+                  position: 'absolute',
+                  top: '44px',
+                  right: 0,
+                  background: '#1a1a1a',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '10px',
+                  padding: '0.4rem',
+                  zIndex: 1000,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.2rem',
+                  minWidth: '120px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                }}>
+                  {themes.map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => applyTheme(t.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        padding: '0.5rem 0.75rem',
+                        background: theme === t.id ? 'rgba(255,255,255,0.07)' : 'transparent',
+                        border: 'none',
+                        borderRadius: '7px',
+                        cursor: 'pointer',
+                        color: theme === t.id ? '#fff' : 'rgba(255,255,255,0.6)',
+                        fontSize: '0.82rem',
+                        fontWeight: theme === t.id ? 600 : 400,
+                        transition: 'all 0.15s',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+                      onMouseLeave={e => e.currentTarget.style.background = theme === t.id ? 'rgba(255,255,255,0.07)' : 'transparent'}
+                    >
+                      <span style={{
+                        width: '10px', height: '10px', borderRadius: '50%',
+                        background: t.dot, flexShrink: 0,
+                        boxShadow: `0 0 5px ${t.dot}`,
+                      }} />
+                      {t.label}
+                      {theme === t.id && <span style={{ marginLeft: 'auto', color: t.dot, fontSize: '0.7rem' }}>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
           {onAiToggle && (
             <button
               onClick={onAiToggle}
               title="Toggle AI Assistant"
               style={{
                 background: aiOpen ? 'rgba(255,215,0,0.15)' : 'transparent',
-                border: `1px solid ${aiOpen ? '#ffd700' : 'rgba(255,215,0,0.35)'}`,
+                border: `1px solid ${aiOpen ? 'var(--accent)' : 'rgba(255,215,0,0.35)'}`,
                 borderRadius: '8px',
                 width: '36px',
                 height: '36px',
@@ -116,7 +223,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
                 overflow: 'hidden',
               }}
             >
-              <Bot size={20} color={aiOpen ? '#ffd700' : 'rgba(255,255,255,0.7)'} />
+              <Bot size={20} color={aiOpen ? 'var(--accent)' : 'rgba(255,255,255,0.7)'} />
             </button>
           )}
           <button
@@ -138,8 +245,8 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             onClick={() => navigate('/')}
             style={{
               background: 'transparent',
-              border: '1px solid #ffd700',
-              color: '#ffd700',
+              border: '1px solid var(--accent, #ffd700)',
+              color: 'var(--accent, #ffd700)',
               borderRadius: '6px',
               padding: '0.3rem 0.9rem',
               fontSize: '0.875rem',
@@ -147,8 +254,8 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
-            onMouseEnter={e => { e.target.style.background = '#ffd700'; e.target.style.color = '#111'; }}
-            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#ffd700'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent, #ffd700)'; e.currentTarget.style.color = '#111'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--accent, #ffd700)'; }}
           >
             Logout
           </button>

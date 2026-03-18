@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import './Signup.css';
@@ -11,6 +11,11 @@ function Signup() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('appTheme') || 'gold';
+    document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

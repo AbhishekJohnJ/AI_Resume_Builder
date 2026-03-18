@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaFileAlt, FaPalette, FaMagic, FaLayerGroup } from 'react-icons/fa';
@@ -12,6 +12,11 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('appTheme') || 'gold';
+    document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

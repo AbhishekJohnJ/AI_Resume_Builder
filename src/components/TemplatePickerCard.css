@@ -3,7 +3,7 @@
 /* ── Picker Layout ── */
 .tpl-picker { width: 100%; }
 .tpl-picker-header { margin-bottom: 2rem; }
-.tpl-picker-title { font-size: 1.6rem; font-weight: 700; color: #ffa116; margin: 0 0 0.4rem; font-family: 'Inter', sans-serif; }
+.tpl-picker-title { font-size: 1.6rem; font-weight: 700; color: var(--accent-alt); margin: 0 0 0.4rem; font-family: 'Inter', sans-serif; }
 .tpl-picker-sub { font-size: 0.95rem; color: #888; margin: 0; font-family: 'Inter', sans-serif; }
 
 /* ── Slide viewport & track ── */
@@ -43,12 +43,12 @@
   overflow: hidden; position: relative;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; cursor: pointer;
 }
-.tpl-card:hover { border-color: #ffa116; box-shadow: 0 8px 28px rgba(255,161,22,0.2); transform: translateY(-3px); }
-.tpl-selected { border-color: #ffa116; box-shadow: 0 8px 32px rgba(255,161,22,0.3); }
+.tpl-card:hover { border-color: var(--accent-alt); box-shadow: 0 8px 28px var(--accent-20); transform: translateY(-3px); }
+.tpl-selected { border-color: var(--accent-alt); box-shadow: 0 8px 32px var(--accent-border); }
 
 .tpl-recommended {
   position: absolute; top: 10px; right: 10px;
-  background: #ffa116; color: #1a1a1a;
+  background: var(--accent-alt); color: #1a1a1a;
   font-size: 10px; font-weight: 700; padding: 3px 10px;
   border-radius: 20px; z-index: 10;
   font-family: 'Inter', sans-serif; letter-spacing: 0.5px;
@@ -70,8 +70,8 @@
   font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.tpl-choose-btn:hover { background: #ffa116; color: #1a1a1a; border-color: #ffa116; }
-.tpl-selected .tpl-choose-btn { background: #ffa116; color: #1a1a1a; border-color: #ffa116; }
+.tpl-choose-btn:hover { background: var(--accent-alt); color: #1a1a1a; border-color: var(--accent-alt); }
+.tpl-selected .tpl-choose-btn { background: var(--accent-alt); color: #1a1a1a; border-color: var(--accent-alt); }
 
 /* ── Modal ── */
 .tpl-modal-overlay {
@@ -93,7 +93,7 @@
   z-index: 10; display: flex; align-items: center; justify-content: center;
   transition: background 0.2s, color 0.2s;
 }
-.tpl-modal-close:hover { background: #3d3d3d; color: #ffa116; }
+.tpl-modal-close:hover { background: #3d3d3d; color: var(--accent-alt); }
 .tpl-modal-preview {
   width: 480px;
   overflow: hidden;
@@ -109,7 +109,7 @@
 }
 .tpl-modal-name { font-size: 1rem; font-weight: 700; color: #fff; margin: 0; font-family: 'Inter', sans-serif; }
 .tpl-modal-use-btn {
-  padding: 0.6rem 1.8rem; background: #ffa116; color: #1a1a1a;
+  padding: 0.6rem 1.8rem; background: var(--accent-alt); color: #1a1a1a;
   border: none; border-radius: 30px; font-size: 0.9rem; font-weight: 700;
   cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap;
   transition: background 0.2s, transform 0.1s;
@@ -162,9 +162,9 @@
 ════════════════════════════════════ */
 .rv2 { font-family: 'Inter', sans-serif; }
 .rv2-header { background: #1a1a1a; padding: 22px 28px; display: flex; align-items: center; gap: 18px; }
-.rv2-photo { width: 72px; height: 72px; border-radius: 50%; background: #555; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0; border: 2px solid var(--tc, #ffa116); }
+.rv2-photo { width: 72px; height: 72px; border-radius: 50%; background: #555; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0; border: 2px solid var(--tc, var(--accent-alt)); }
 .rv2-name { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 3px; }
-.rv2-title { font-size: 11px; color: var(--tc, #ffa116); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.rv2-title { font-size: 11px; color: var(--tc, var(--accent-alt)); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
 .rv2-contacts { display: flex; gap: 12px; flex-wrap: wrap; }
 .rv2-contacts span { font-size: 9px; color: #aaa; }
 .rv2-body { display: flex; }
@@ -178,10 +178,10 @@
 .rv2-skill-bar { height: 3px; background: #ddd; border-radius: 2px; }
 .rv2-skill-fill { height: 100%; background: #1a1a1a; border-radius: 2px; }
 .rv2-exp { margin-bottom: 12px; }
-.rv2-exp-period { font-size: 9px; color: var(--tc, #ffa116); font-weight: 700; margin-bottom: 2px; }
+.rv2-exp-period { font-size: 9px; color: var(--tc, var(--accent-alt)); font-weight: 700; margin-bottom: 2px; }
 .rv2-company { font-size: 10px; color: #888; margin: 1px 0 3px; }
 .rv2-award-item { font-size: 10px; color: #333; margin: 0 0 4px; padding-left: 10px; position: relative; }
-.rv2-award-item::before { content: '•'; position: absolute; left: 0; color: var(--tc, #ffa116); }
+.rv2-award-item::before { content: '•'; position: absolute; left: 0; color: var(--tc, var(--accent-alt)); }
 
 /* ════════════════════════════════════
    T3 — White Simple Student CV (Teal sidebar)
@@ -291,8 +291,8 @@
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   display: flex; align-items: center; justify-content: center;
 }
-.tpl-page-btn:hover { background: rgba(255,161,22,0.15); border-color: #ffa116; color: #ffa116; }
-.tpl-page-active { background: #ffa116 !important; border-color: #ffa116 !important; color: #1a1a1a !important; }
+.tpl-page-btn:hover { background: var(--accent-15); border-color: var(--accent-alt); color: var(--accent-alt); }
+.tpl-page-active { background: var(--accent-alt) !important; border-color: var(--accent-alt) !important; color: #1a1a1a !important; }
 
 /* ════════════════════════════════════
    T7 — Dark Executive
