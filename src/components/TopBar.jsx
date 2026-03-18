@@ -6,19 +6,6 @@ import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
 
 const logoStyles = `
-  @keyframes topbarSlideDown {
-    0% {
-      opacity: 0;
-      transform: translateY(-100%);
-    }
-    60% {
-      transform: translateY(6px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
   @keyframes topbarBorderGlow {
     0%, 100% { opacity: 0.4; }
     50%       { opacity: 1; }
@@ -28,7 +15,6 @@ const logoStyles = `
     100% { background-position: 200% 50%; }
   }
   .topbar-nav {
-    animation: topbarSlideDown 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .topbar-nav::after {
     content: '';
