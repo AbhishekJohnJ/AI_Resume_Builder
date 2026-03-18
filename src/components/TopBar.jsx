@@ -66,7 +66,17 @@ const logoStyles = `
     height: 54px;
     object-fit: contain;
     display: block;
+    transition: filter 0.4s ease;
   }
+  .chatbot-img.theme-gold   { filter: none; }
+  .chatbot-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
+  .chatbot-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
+  .chatbot-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
+  .chatbot-img { transition: filter 0.4s ease; }
+  .logo-img.theme-gold   { filter: none; }
+  .logo-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
+  .logo-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
+  .logo-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
   .brand-craft {
     background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 40%, var(--accent) 60%, var(--accent-alt) 100%);
     background-size: 200% auto;
@@ -101,6 +111,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
     setShowThemePicker(false);
     localStorage.setItem('appTheme', id);
     document.body.setAttribute('data-theme', id === 'gold' ? '' : id);
+    window.dispatchEvent(new Event('focus'));
   };
 
   const currentTheme = themes.find(t => t.id === theme);
@@ -127,7 +138,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             <img
               src={finalLogo}
               alt="ResumeCraft logo"
-              className="logo-img"
+              className={`logo-img theme-${theme}`}
             />
           </div>
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>

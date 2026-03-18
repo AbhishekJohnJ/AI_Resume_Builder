@@ -11,6 +11,16 @@ function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const userName = user?.name?.split(' ')[0] || 'there';
+  const [appTheme, setAppTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
+
+  useEffect(() => {
+    const onStorage = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
+    window.addEventListener('storage', onStorage);
+    // also poll on focus in case theme changed in same tab
+    const onFocus = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
+    window.addEventListener('focus', onFocus);
+    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
+  }, []);
 
   const [tasks, setTasks] = useState([
     {
@@ -301,7 +311,7 @@ function Dashboard() {
         <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
           <div className="ai-panel-title">
             <div className="ai-panel-title-icon">
-              <img src={chatbotIcon} alt="AI" style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+              <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
             </div>
             AI Assistant
           </div>
@@ -310,7 +320,7 @@ function Dashboard() {
               <div key={i} className={`ai-msg ${msg.role}`}>
                 {msg.role === 'ai' && (
                   <div className="ai-avatar">
-                    <img src={chatbotIcon} alt="AI" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+                    <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                   </div>
                 )}
                 {msg.role === 'user' && (
@@ -323,7 +333,7 @@ function Dashboard() {
             {aiLoading && (
               <div className="ai-msg ai">
                 <div className="ai-avatar">
-                  <img src={chatbotIcon} alt="AI" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+                  <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                 </div>
                 <span className="ai-typing">
                   <span />
