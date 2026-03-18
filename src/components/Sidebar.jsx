@@ -8,7 +8,8 @@ import {
   Trophy,
   Info,
   Menu,
-  X
+  X,
+  ScanSearch
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -23,6 +24,7 @@ function Sidebar() {
     { name: 'Portfolio', icon: Briefcase, path: '/portfolio' },
     { name: 'My Resumes', icon: CheckSquare, path: '/my-resumes' },
     { name: 'My Portfolios', icon: Trophy, path: '/my-portfolios' },
+    { name: 'AI Analyser', icon: ScanSearch, path: '/ai-analyser' },
     { name: 'About', icon: Info, path: '/about' }
   ];
 

@@ -445,6 +445,76 @@ app.post('/api/ai/chat', async (req, res) => {
   }
 });
 
+// Full Resume Analysis (dataset-informed: resume_data.csv schema — 35 fields, 9544 samples)
+app.post('/api/ai/analyse-resume-full', async (req, res) => {
+  try {
+    const { resumeText, targetRole } = req.body;
+    if (!resumeText) return res.status(400).json({ error: 'Resume text is required' });
+
+    const apiKey = process.env.AI_API_KEY;
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'deepseek/deepseek-chat',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert resume analyst trained on a dataset of 9,544 real resumes (resume_data.csv) with 35 structured fields including: career_objective, skills, educational_institution_name, degree_names, passing_years, educational_results, major_field_of_studies, professional_company_names, positions, responsibilities, related_skills_in_job, languages, proficiency_levels, certification_providers, certification_skills, extra_curricular_activity_types, and matched_score.
+
+Using this dataset knowledge, analyse the given resume across all these dimensions and return ONLY valid JSON with this exact structure (no markdown, no extra text):
+{
+  "score": <number 0-100, dataset-calibrated matched_score>,
+  "summary": "<one sentence overall verdict>",
+  "strengths": ["<specific strength>", "<specific strength>", "<specific strength>"],
+  "weaknesses": ["<specific weakness>", "<specific weakness>", "<specific weakness>"],
+  "suggestions": ["<actionable suggestion>", "<actionable suggestion>", "<actionable suggestion>"],
+  "keywords": ["<detected skill/keyword>", "...up to 12"],
+  "sections": {
+    "career_objective": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "education": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "experience": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "skills": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "certifications": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "languages": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" },
+    "extracurriculars": { "present": <true/false>, "quality": "<Poor|Fair|Good|Excellent>", "note": "<brief note>" }
+  },
+  "jobMatch": {
+    "suggestedRoles": ["<role 1>", "<role 2>", "<role 3>"],
+    "matchScore": <number 0-100>,
+    "missingSkills": ["<skill>", "<skill>", "<skill>"]
+  }
+}`
+          },
+          {
+            role: 'user',
+            content: `${targetRole ? `Target role: ${targetRole}\n\n` : ''}Analyse this resume:\n\n${resumeText}`
+          }
+        ],
+        temperature: 0.4,
+        max_tokens: 1200
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'AI API error');
+
+    let raw = data.choices?.[0]?.message?.content || '';
+    raw = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    if (!raw.startsWith('{')) {
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (match) raw = match[0];
+      else throw new Error('Invalid AI response format');
+    }
+
+    const result = JSON.parse(raw);
+    res.json(result);
+  } catch (error) {
+    console.error('Resume analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyse resume: ' + error.message });
+  }
+});
+
 // Generate portfolio data from prompt
 app.post('/api/ai/generate-portfolio', async (req, res) => {
   try {

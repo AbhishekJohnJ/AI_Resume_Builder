@@ -9,6 +9,8 @@ import MyPortfolios from './pages/MyPortfolios';
 
 import About from './pages/About';
 
+import AIAnalyser from './pages/AIAnalyser';
+
 function App() {
   return (
     <Router>
@@ -20,6 +22,7 @@ function App() {
         <Route path="/my-resumes" element={<MyResumes />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/my-portfolios" element={<MyPortfolios />} />
+        <Route path="/ai-analyser" element={<AIAnalyser />} />
         <Route path="/about" element={<About />} />
       </Routes>
     </Router>
