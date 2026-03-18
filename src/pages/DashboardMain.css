@@ -389,10 +389,10 @@
 .ai-msg-text { font-size: 0.82rem; line-height: 1.55; padding: 0.65rem 0.95rem; border-radius: 12px; }
 
 .ai-msg.ai .ai-msg-text {
-  background: var(--accent-soft);
+  background: #0d0d0d;
   color: #e5e5e5;
   border-radius: 4px 12px 12px 12px;
-  border: 1px solid var(--accent-border);
+  border: 1px solid rgba(255,255,255,0.07);
 }
 
 .ai-msg.user .ai-msg-text {
