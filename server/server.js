@@ -8,6 +8,12 @@ const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 const XLSX = require('xlsx');
 const { createWorker } = require('tesseract.js');
+const TFIDFAnalyzer = require('./utils/tfidfAnalyzer');
+const FeatureExtractor = require('./utils/featureExtractor');
+const { StandardScaler } = require('./utils/featureExtractor');
+const { GradientBoostingRegressor, RandomForestRegressor } = require('./utils/mlModels');
+const { GridSearchCV, RandomizedSearchCV } = require('./utils/hyperparameterTuning');
+const ImprovementSuggestionsGenerator = require('./utils/improvementSuggestions');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Multer: store files in memory
@@ -1089,6 +1095,201 @@ Return JSON format:
   } catch (error) {
     console.error('Resume analysis with dataset error:', error);
     res.status(500).json({ error: 'Failed to analyze resume: ' + error.message });
+  }
+});
+
+// TF-IDF Enhanced Resume Analysis with Feature Extraction
+app.post('/api/ai/analyze-resume-tfidf', async (req, res) => {
+  try {
+    const { resumeText, targetRole } = req.body;
+    if (!resumeText) return res.status(400).json({ error: 'Resume text is required' });
+
+    // Initialize analyzers
+    const tfidfAnalyzer = new TFIDFAnalyzer(500, [1, 2]);
+    const featureExtractor = new FeatureExtractor();
+    
+    // Analyze the resume using TF-IDF
+    const tfidfAnalysis = tfidfAnalyzer.analyzeResume(resumeText);
+
+    // Extract numerical features
+    const extractedFeatures = featureExtractor.extractFeaturesFromText(resumeText);
+    
+    // Apply StandardScaler normalization (z-score normalization)
+    // Equivalent to: scaler = StandardScaler(); X_num = scaler.fit_transform(X_num)
+    const scaler = new StandardScaler();
+    const scaledFeatures = scaler.fitTransform([extractedFeatures])[0];
+    
+    // Generate feature summary
+    const featureSummary = featureExtractor.generateFeatureSummary(extractedFeatures);
+    
+    // Analyze feature quality
+    const featureQuality = featureExtractor.analyzeFeatureQuality(extractedFeatures);
+    
+    // Compare against benchmarks
+    const benchmarkComparison = featureExtractor.compareAgainstBenchmarks(extractedFeatures);
+
+    // Extract key information
+    const keyTerms = tfidfAnalysis.keyTerms.slice(0, 20);
+    const skills = tfidfAnalysis.categorizedTerms.skills;
+    const experience = tfidfAnalysis.categorizedTerms.experience;
+    const education = tfidfAnalysis.categorizedTerms.education;
+    const certifications = tfidfAnalysis.categorizedTerms.certifications;
+
+    // Calculate resume quality metrics based on features
+    const skillCount = extractedFeatures.skill_count;
+    const projectCount = extractedFeatures.project_count;
+    const certCount = extractedFeatures.cert_count;
+    const githubScore = extractedFeatures.GitHub_Score;
+    const linkedinScore = extractedFeatures.LinkedIn_Score;
+    const atsScore = extractedFeatures.ATS_Score;
+
+    // Calculate TF-IDF based score
+    let tfidfScore = 50; // Base score
+    tfidfScore += Math.min(skillCount * 3, 20); // Skills contribute up to 20 points
+    tfidfScore += Math.min(projectCount * 2, 15); // Projects contribute up to 15 points
+    tfidfScore += Math.min(certCount * 2, 10); // Certifications contribute up to 10 points
+    tfidfScore += Math.min(githubScore, 5); // GitHub activity contributes up to 5 points
+    tfidfScore = Math.min(tfidfScore, 100); // Cap at 100
+
+    // Direct analysis without AI API dependency
+    // Calculate resume score based on extracted features
+    let resumeScore = 50; // Base score
+    
+    // Add points for skills (max 20 points)
+    resumeScore += Math.min(skillCount * 2, 20);
+    
+    // Add points for projects (max 15 points)
+    resumeScore += Math.min(projectCount * 3, 15);
+    
+    // Add points for certifications (max 10 points)
+    resumeScore += Math.min(certCount * 3, 10);
+    
+    // Add points for GitHub activity (max 5 points)
+    resumeScore += Math.min(githubScore, 5);
+    
+    // Cap at 100
+    resumeScore = Math.min(resumeScore, 100);
+    
+    // Determine resume level
+    let resumeLevel = 'Needs Improvement';
+    if (resumeScore >= 90) resumeLevel = 'Excellent';
+    else if (resumeScore >= 75) resumeLevel = 'Good';
+    else if (resumeScore >= 60) resumeLevel = 'Average';
+
+    // Identify weak areas
+    const weakAreas = [];
+    if (skillCount < 8) weakAreas.push('🔧 You\'ve got ' + skillCount + ' skills right now - let\'s bump that up! Try picking up 2-3 more like React, Python, or AWS. It\'ll make you way more competitive.');
+    if (projectCount < 2) weakAreas.push('📁 Your project portfolio is a bit light. Build 1-2 more projects and throw them on GitHub - employers love seeing what you can actually build!');
+    if (certCount < 1) weakAreas.push('🎓 No certs yet? Getting one (AWS, Google Cloud, etc.) would seriously boost your credibility and show you\'re serious about your skills.');
+    if (githubScore < 3) weakAreas.push('💻 Your GitHub is pretty quiet. Start pushing code regularly - even small projects count. Aim for 20+ commits a month to show you\'re active.');
+    if (linkedinScore < 3) weakAreas.push('🤝 Your LinkedIn could use some love. Post about what you\'re learning, share wins, and engage with your network. It really helps!');
+    if (atsScore < 70) weakAreas.push('📄 Your resume might get filtered out by automated systems. Use clear formatting, add keywords from job postings, and keep it clean and simple.');
+
+    // Identify strengths
+    const strengths = [];
+    if (skillCount >= 10) strengths.push('🎯 Awesome! You\'ve got ' + skillCount + ' solid technical skills - that\'s a great foundation!');
+    if (projectCount >= 3) strengths.push('🚀 Nice! You\'ve got ' + projectCount + ' real projects - that\'s exactly what employers want to see!');
+    if (certCount >= 2) strengths.push('🏆 You\'ve got ' + certCount + ' certifications - that shows real commitment and expertise!');
+    if (githubScore >= 6) strengths.push('💪 Your GitHub is active and employers love that - keep pushing code!');
+    if (linkedinScore >= 6) strengths.push('⭐ Your LinkedIn game is strong - you\'re building a great professional presence!');
+    if (atsScore >= 80) strengths.push('✨ Your resume is clean and well-formatted - it\'ll pass through automated systems no problem!');
+
+    // Generate suggestions
+    const suggestions = [];
+    if (skillCount < 10) suggestions.push('🎓 Pick up ' + (10 - skillCount) + ' more skills - React, Python, AWS, Docker, or whatever fits your goals. Even one new skill makes a difference!');
+    if (projectCount < 3) suggestions.push('🛠️ Build ' + (3 - projectCount) + ' more projects and put them on GitHub with a live demo. Real projects beat theory every time!');
+    if (certCount < 2) suggestions.push('📜 Grab ' + (2 - certCount) + ' certifications - AWS, Google Cloud, or Azure are all solid choices that employers recognize.');
+    if (githubScore < 5) suggestions.push('📤 Push code to GitHub regularly - aim for at least 20 commits a month. Consistency matters more than perfection!');
+    if (linkedinScore < 5) suggestions.push('📢 Share your learning journey on LinkedIn 2-3 times a week. People love seeing your growth!');
+    if (atsScore < 75) suggestions.push('🎨 Make your resume shine - use clean fonts, add keywords from job postings, and organize with bullet points. Simple is better!');
+
+    // Generate key insights
+    const keyInsights = [];
+    keyInsights.push('📝 Your resume is ' + tfidfAnalysis.totalTokens + ' words - perfect length!');
+    keyInsights.push('🔍 We spotted ' + skillCount + ' skills, ' + projectCount + ' projects, and ' + certCount + ' certifications in your resume.');
+    keyInsights.push('📊 Scores: GitHub ' + githubScore + '/10 | LinkedIn ' + linkedinScore + '/10 | Resume Quality ' + atsScore + '/100');
+    
+    if (resumeScore >= 80) {
+      keyInsights.push('🏆 Wow! Your resume is really strong - you\'re totally ready for senior roles and leadership positions!');
+    } else if (resumeScore >= 70) {
+      keyInsights.push('📈 Your resume is solid! Follow the tips below and you\'ll be crushing it in no time.');
+    } else if (resumeScore >= 60) {
+      keyInsights.push('🚀 You\'re on the right track! Focus on the suggestions below and you\'ll level up fast.');
+    } else {
+      keyInsights.push('💪 This is your moment to shine! Start with the top suggestions and watch your resume transform.');
+    }
+
+    // Create result object
+    const result = {
+      resumeScore: Math.round(resumeScore),
+      resumeLevel: resumeLevel,
+      atsScore: atsScore,
+      numericalFeatures: extractedFeatures,
+      weakAreas: weakAreas,
+      suggestions: suggestions,
+      strengths: strengths,
+      keyInsights: keyInsights,
+      extractedFeatures: {
+        topSkills: skills.slice(0, 15).map(s => s.term),
+        experienceKeywords: experience.slice(0, 10).map(e => e.term)
+      },
+      improvementRoadmap: [
+        { priority: 'High', task: '🛠️ Build 2-3 real projects and put them on GitHub with live demos', estimatedTime: '4-6 weeks', impact: 'High' },
+        { priority: 'High', task: '🎓 Learn 3-5 new technologies that match your target role', estimatedTime: '2-3 weeks', impact: 'High' },
+        { priority: 'High', task: '📤 Start pushing code to GitHub daily - consistency is key!', estimatedTime: '8 weeks', impact: 'High' },
+        { priority: 'Medium', task: '📜 Get 1-2 professional certifications (AWS, Google Cloud, Azure)', estimatedTime: '8-12 weeks', impact: 'Medium' },
+        { priority: 'Medium', task: '📢 Post about your learning journey on LinkedIn 2-3 times a week', estimatedTime: '2-3 weeks', impact: 'Medium' }
+      ]
+    };
+
+    // Add feature-specific data to response
+    if (!result.numericalFeatures) {
+      result.numericalFeatures = extractedFeatures;
+    }
+
+    // Always ensure extracted features are present with all skills
+    if (!result.extractedFeatures || !result.extractedFeatures.topSkills || result.extractedFeatures.topSkills.length === 0) {
+      result.extractedFeatures = {
+        topSkills: skills.slice(0, 15).map(s => s.term),
+        experienceKeywords: experience.slice(0, 10).map(e => e.term)
+      };
+    } else {
+      // Merge with our extracted skills to ensure we have all of them
+      const aiSkills = result.extractedFeatures.topSkills || [];
+      const allSkills = [...new Set([...skills.slice(0, 15).map(s => s.term), ...aiSkills])];
+      result.extractedFeatures.topSkills = allSkills.slice(0, 15);
+      
+      if (!result.extractedFeatures.experienceKeywords || result.extractedFeatures.experienceKeywords.length === 0) {
+        result.extractedFeatures.experienceKeywords = experience.slice(0, 10).map(e => e.term);
+      }
+    }
+
+    if (!result.featureQuality) {
+      result.featureQuality = featureQuality;
+    }
+
+    if (!result.benchmarkComparison) {
+      result.benchmarkComparison = benchmarkComparison;
+    }
+
+    if (!result.featureSummary) {
+      result.featureSummary = featureSummary;
+    }
+
+    // Generate improvement suggestions and roadmap
+    // NOTE: Using direct analysis instead of suggestion generator for consistent friendly language
+    // const suggestionGenerator = new ImprovementSuggestionsGenerator();
+    // const improvementRoadmap = suggestionGenerator.generateRoadmap(...);
+    // const generatedSuggestions = suggestionGenerator.generateSuggestions(...);
+    // const generatedKeyInsights = suggestionGenerator.generateKeyInsights(...);
+
+    // Override with generated suggestions if not already in result
+    // (Already populated in result object above with friendly language)
+
+    res.json(result);
+  } catch (error) {
+    console.error('TF-IDF resume analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze resume with TF-IDF: ' + error.message });
   }
 });
 

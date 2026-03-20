@@ -178,4 +178,27 @@ export const aiService = {
       throw error;
     }
   },
+
+  // Analyze resume with TF-IDF feature extraction
+  analyzeResumeWithTFIDF: async (resumeText, targetRole) => {
+    try {
+      const response = await fetch(`${AI_API_ENDPOINT}/analyze-resume-tfidf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ resumeText, targetRole }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to analyze resume with TF-IDF');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

@@ -73,7 +73,7 @@ function AIAnalyser() {
         }
       }
 
-      const res = await fetch('http://localhost:5000/api/ai/analyze-resume-with-dataset', {
+      const res = await fetch('http://localhost:5000/api/ai/analyze-resume-tfidf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeText, targetRole: targetRole.trim() || undefined })
@@ -196,7 +196,7 @@ function AIAnalyser() {
                       <span className="analyser-score-label">/ 100</span>
                     </div>
                     <div className="analyser-score-info">
-                      <h3>Dataset-Calibrated Score</h3>
+                      <h3>Resume Score</h3>
                       <p>{result.resumeLevel || result.summary || 'Resume analysis complete'}</p>
                       {result.datasetComparison && (
                         <p style={{ fontSize: '0.9em', color: '#aaa', marginTop: '8px' }}>
@@ -206,10 +206,74 @@ function AIAnalyser() {
                     </div>
                   </div>
 
+                  {/* Numerical Features */}
+                  {result.numericalFeatures && (
+                    <div className="analyser-section">
+                      <h4 className="analyser-section-title" style={{ color: '#ffd700' }}>📊 Your Profile Scores</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                        <div style={{ padding: '10px', background: 'rgba(255,215,0,0.08)', borderRadius: '6px', border: '1px solid rgba(255,215,0,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>GitHub Score</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#ffd700' }}>{result.numericalFeatures.GitHub_Score || 0}/10</div>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(0,200,150,0.08)', borderRadius: '6px', border: '1px solid rgba(0,200,150,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>LinkedIn Score</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#00c896' }}>{result.numericalFeatures.LinkedIn_Score || 0}/10</div>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(96,165,250,0.08)', borderRadius: '6px', border: '1px solid rgba(96,165,250,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>ATS Score</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#60a5fa' }}>{result.numericalFeatures.ATS_Score || 0}/100</div>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(167,139,250,0.08)', borderRadius: '6px', border: '1px solid rgba(167,139,250,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>Projects</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#a78bfa' }}>{result.numericalFeatures.project_count || 0}</div>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,161,22,0.08)', borderRadius: '6px', border: '1px solid rgba(255,161,22,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>Certifications</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#ffa116' }}>{result.numericalFeatures.cert_count || 0}</div>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(233,69,96,0.08)', borderRadius: '6px', border: '1px solid rgba(233,69,96,0.3)' }}>
+                          <div style={{ fontSize: '0.9em', color: '#aaa' }}>Skills</div>
+                          <div style={{ fontSize: '1.4em', fontWeight: '600', color: '#e94560' }}>{result.numericalFeatures.skill_count || 0}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Extracted Features */}
+                  {result.extractedFeatures && (result.extractedFeatures.topSkills?.length > 0 || result.extractedFeatures.experienceKeywords?.length > 0) && (
+                    <div className="analyser-section">
+                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>🎯 Your Top Skills & Experience</h4>
+                      {result.extractedFeatures.topSkills?.length > 0 && (
+                        <div style={{ marginBottom: '12px' }}>
+                          <div style={{ fontSize: '0.9em', fontWeight: '600', color: '#a78bfa', marginBottom: '6px' }}>
+                            Top Skills: <span style={{ color: '#ffa116' }}>({result.extractedFeatures.topSkills.length})</span>
+                          </div>
+                          <div className="analyser-tags">
+                            {result.extractedFeatures.topSkills.map((skill, i) => (
+                              <span key={i} className="analyser-tag" style={{ borderColor: 'rgba(167,139,250,0.4)', color: '#a78bfa', background: 'rgba(167,139,250,0.08)' }}>{skill}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {result.extractedFeatures.experienceKeywords?.length > 0 && (
+                        <div style={{ marginBottom: '12px' }}>
+                          <div style={{ fontSize: '0.9em', fontWeight: '600', color: '#ffa116', marginBottom: '6px' }}>
+                            Experience Keywords: <span style={{ color: '#a78bfa' }}>({result.extractedFeatures.experienceKeywords.length})</span>
+                          </div>
+                          <div className="analyser-tags">
+                            {result.extractedFeatures.experienceKeywords.map((keyword, i) => (
+                              <span key={i} className="analyser-tag" style={{ borderColor: 'rgba(255,161,22,0.4)', color: '#ffa116', background: 'rgba(255,161,22,0.08)' }}>{keyword}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Weak Areas */}
                   {(result.weakAreas || result.weaknesses)?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title weaknesses">⚠️ Areas to Improve</h4>
+                      <h4 className="analyser-section-title weaknesses">💡 Things to Work On</h4>
                       <ul className="analyser-list">
                         {(result.weakAreas || result.weaknesses).map((w, i) => <li key={i}>{w}</li>)}
                       </ul>
@@ -219,7 +283,7 @@ function AIAnalyser() {
                   {/* Strengths */}
                   {result.strengths?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title strengths">✅ Strengths</h4>
+                      <h4 className="analyser-section-title strengths">⭐ What You're Doing Great</h4>
                       <ul className="analyser-list">
                         {result.strengths.map((s, i) => <li key={i}>{s}</li>)}
                       </ul>
@@ -229,7 +293,7 @@ function AIAnalyser() {
                   {/* Suggestions */}
                   {(result.suggestions || result.recommendedTasks)?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title suggestions">💡 Suggestions</h4>
+                      <h4 className="analyser-section-title suggestions">🎯 Quick Tips to Improve</h4>
                       <ul className="analyser-list">
                         {(result.suggestions || result.recommendedTasks).map((s, i) => <li key={i}>{s}</li>)}
                       </ul>
@@ -239,7 +303,7 @@ function AIAnalyser() {
                   {/* Improvement Roadmap */}
                   {result.improvementRoadmap?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🗺️ Improvement Roadmap</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>📋 Your Growth Plan</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {result.improvementRoadmap.map((item, i) => (
                           <div key={i} style={{
@@ -272,7 +336,7 @@ function AIAnalyser() {
                   {/* Key Insights */}
                   {result.keyInsights?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>💭 Key Insights</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>📊 Your Resume Summary</h4>
                       <ul className="analyser-list">
                         {result.keyInsights.map((insight, i) => <li key={i}>{insight}</li>)}
                       </ul>
