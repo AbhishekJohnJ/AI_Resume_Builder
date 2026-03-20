@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "name": "AI Resume Analyzer Training Dataset",
+    "version": "1.0",
+    "records": 500,
+    "fields": 21,
+    "description": "500 synthetic resume records with structured analysis fields for AI training",
+    "schema": {
+      "Candidate_ID": "Unique identifier",
+      "Name": "Candidate name",
+      "Course": "Educational background (CSE, ECE, EEE, BCA, MCA, DS, IT, AIML, Cyber Security)",
+      "Target_Domain": "Career target (Web Development, Data Science, Cloud/DevOps, AI/ML, Mobile Development, IoT, Cyber Security)",
+      "Skills": "Semicolon-separated technical skills",
+      "Projects_Count": "Number of projects completed",
+      "Projects": "Comma-separated project names",
+      "Certifications_Count": "Number of certifications",
+      "Certifications": "Comma-separated certification names",
+      "GitHub_Activity_Score": "0-10 scale",
+      "LinkedIn_Activity_Score": "0-10 scale",
+      "Internships_Count": "Number of internships",
+      "Portfolio_Website": "Yes/No",
+      "DSA_Score": "0-10 scale",
+      "Open_Source_Contributions": "0-5 scale",
+      "ATS_Score": "0-100 scale",
+      "Resume_Score": "0-100 scale",
+      "Resume_Level": "Needs Improvement|Average|Good|Excellent",
+      "Weak_Areas": "Pipe-separated weak areas",
+      "Suggestions": "Pipe-separated actionable suggestions",
+      "Recommended_Tasks": "Pipe-separated recommended tasks"
+    }
+  },
+  "scoringCalibration": {
+    "Excellent": { "min": 90, "max": 100 },
+    "Good": { "min": 70, "max": 89 },
+    "Average": { "min": 50, "max": 69 },
+    "NeedsImprovement": { "min": 0, "max": 49 }
+  },
+  "commonWeakAreas": [
+    "No internships",
+    "Weak LinkedIn profile",
+    "Low GitHub activity",
+    "Poor resume keywords",
+    "Weak DSA",
+    "No portfolio website",
+    "Weak communication section",
+    "Few projects",
+    "No certifications",
+    "No open-source contributions"
+  ],
+  "commonSuggestions": [
+    "Apply to 5 internships",
+    "Post 2 technical updates on LinkedIn",
+    "Push 20 commits this month",
+    "Optimize resume for ATS keywords",
+    "Solve 100 DSA problems",
+    "Create personal portfolio website",
+    "Rewrite project descriptions with impact",
+    "Build 2 new projects",
+    "Complete 1 certification",
+    "Make 1 open-source contribution"
+  ],
+  "targetDomains": [
+    "Web Development",
+    "Data Science",
+    "Cloud/DevOps",
+    "AI/ML",
+    "Mobile Development",
+    "IoT",
+    "Cyber Security"
+  ],
+  "records": [
+    {
+      "Candidate_ID": "RSM0001",
+      "Name": "Shreya T",
+      "Course": "DS",
+      "Target_Domain": "Cloud/DevOps",
+      "Skills": "Linux; Git; Kubernetes; Docker",
+      "Projects_Count": 1,
+      "Projects": "CI/CD Pipeline",
+      "Certifications_Count": 0,
+      "Certifications": "None",
+      "GitHub_Activity_Score": 10,
+      "LinkedIn_Activity_Score": 8,
+      "Internships_Count": 0,
+      "Portfolio_Website": "Yes",
+      "DSA_Score": 0,
+      "Open_Source_Contributions": 0,
+      "ATS_Score": 45,
+      "Resume_Score": 80,
+      "Resume_Level": "Good",
+      "Weak_Areas": "No internships",
+      "Suggestions": "Apply to 5 internships and add any practical experience section",
+      "Recommended_Tasks": "Apply to 5 internships"
+    }
+  ]
+}

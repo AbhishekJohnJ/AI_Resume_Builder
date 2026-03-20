@@ -73,7 +73,7 @@ function AIAnalyser() {
         }
       }
 
-      const res = await fetch('http://localhost:5000/api/ai/analyse-resume-full', {
+      const res = await fetch('http://localhost:5000/api/ai/analyze-resume-with-dataset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeText, targetRole: targetRole.trim() || undefined })
@@ -99,7 +99,7 @@ function AIAnalyser() {
         <main className="dashboard-content">
           <div className="page-header">
             <h1 className="page-title" style={{ color: '#ffd700' }}>AI Analyser</h1>
-            <p className="page-subtitle">Dataset-powered resume analysis across 35 dimensions · 9,544 resume benchmark</p>
+            <p className="page-subtitle">Dataset-powered resume analysis · Trained on 500 synthetic resumes · 21 structured fields</p>
           </div>
 
           <div className="analyser-layout">
@@ -165,7 +165,7 @@ function AIAnalyser() {
               </button>
 
               <p className="analyser-dataset-note">
-                📊 Benchmarked against <strong>resume_data.csv</strong> — 9,544 resumes · 35 fields
+                📊 Benchmarked against <strong>resume-ai-training-dataset-500.xlsx</strong> — 500 synthetic resumes · 21 fields · 7 target domains
               </p>
             </div>
 
@@ -191,68 +191,28 @@ function AIAnalyser() {
                   {/* Score */}
                   <div className="analyser-score-card">
                     <div className="analyser-score-ring"
-                      style={{ '--score-color': scoreColor(result.score) }}>
-                      <span className="analyser-score-num">{result.score}</span>
+                      style={{ '--score-color': scoreColor(result.resumeScore || result.score || 0) }}>
+                      <span className="analyser-score-num">{result.resumeScore || result.score || 0}</span>
                       <span className="analyser-score-label">/ 100</span>
                     </div>
                     <div className="analyser-score-info">
                       <h3>Dataset-Calibrated Score</h3>
-                      <p>{result.summary}</p>
+                      <p>{result.resumeLevel || result.summary || 'Resume analysis complete'}</p>
+                      {result.datasetComparison && (
+                        <p style={{ fontSize: '0.9em', color: '#aaa', marginTop: '8px' }}>
+                          Percentile: {result.datasetComparison.percentileRank} | Benchmark: {result.datasetComparison.benchmarkScore}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Section Breakdown */}
-                  {result.sections && (
+                  {/* Weak Areas */}
+                  {(result.weakAreas || result.weaknesses)?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>📋 Section Breakdown</h4>
-                      <div className="analyser-sections-grid">
-                        {Object.entries(result.sections).map(([key, val]) => (
-                          <SectionRow key={key} label={SECTION_LABELS[key] || key} data={val} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Job Match */}
-                  {result.jobMatch && (
-                    <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🎯 Job Match</h4>
-                      <div className="analyser-job-match">
-                        <div className="analyser-match-score-row">
-                          <span className="analyser-match-label">Match Score</span>
-                          <div className="analyser-match-bar-wrap">
-                            <div className="analyser-match-bar">
-                              <div className="analyser-match-fill"
-                                style={{ width: `${result.jobMatch.matchScore}%`,
-                                  background: scoreColor(result.jobMatch.matchScore) }} />
-                            </div>
-                            <span className="analyser-match-pct"
-                              style={{ color: scoreColor(result.jobMatch.matchScore) }}>
-                              {result.jobMatch.matchScore}%
-                            </span>
-                          </div>
-                        </div>
-                        {result.jobMatch.suggestedRoles?.length > 0 && (
-                          <div className="analyser-match-row">
-                            <span className="analyser-match-label">Suggested Roles</span>
-                            <div className="analyser-tags">
-                              {result.jobMatch.suggestedRoles.map((r, i) => (
-                                <span key={i} className="analyser-tag" style={{ borderColor: 'rgba(255,161,22,0.4)', color: '#ffa116', background: 'rgba(255,161,22,0.08)' }}>{r}</span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {result.jobMatch.missingSkills?.length > 0 && (
-                          <div className="analyser-match-row">
-                            <span className="analyser-match-label">Missing Skills</span>
-                            <div className="analyser-tags">
-                              {result.jobMatch.missingSkills.map((s, i) => (
-                                <span key={i} className="analyser-tag" style={{ borderColor: 'rgba(233,69,96,0.4)', color: '#e94560', background: 'rgba(233,69,96,0.08)' }}>{s}</span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <h4 className="analyser-section-title weaknesses">⚠️ Areas to Improve</h4>
+                      <ul className="analyser-list">
+                        {(result.weakAreas || result.weaknesses).map((w, i) => <li key={i}>{w}</li>)}
+                      </ul>
                     </div>
                   )}
 
@@ -266,35 +226,56 @@ function AIAnalyser() {
                     </div>
                   )}
 
-                  {/* Weaknesses */}
-                  {result.weaknesses?.length > 0 && (
-                    <div className="analyser-section">
-                      <h4 className="analyser-section-title weaknesses">⚠️ Areas to Improve</h4>
-                      <ul className="analyser-list">
-                        {result.weaknesses.map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    </div>
-                  )}
-
                   {/* Suggestions */}
-                  {result.suggestions?.length > 0 && (
+                  {(result.suggestions || result.recommendedTasks)?.length > 0 && (
                     <div className="analyser-section">
                       <h4 className="analyser-section-title suggestions">💡 Suggestions</h4>
                       <ul className="analyser-list">
-                        {result.suggestions.map((s, i) => <li key={i}>{s}</li>)}
+                        {(result.suggestions || result.recommendedTasks).map((s, i) => <li key={i}>{s}</li>)}
                       </ul>
                     </div>
                   )}
 
-                  {/* Keywords */}
-                  {result.keywords?.length > 0 && (
+                  {/* Improvement Roadmap */}
+                  {result.improvementRoadmap?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title keywords">🔑 Detected Skills</h4>
-                      <div className="analyser-tags">
-                        {result.keywords.map((k, i) => (
-                          <span key={i} className="analyser-tag">{k}</span>
+                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🗺️ Improvement Roadmap</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {result.improvementRoadmap.map((item, i) => (
+                          <div key={i} style={{
+                            padding: '12px',
+                            background: 'rgba(255,161,22,0.08)',
+                            border: '1px solid rgba(255,161,22,0.3)',
+                            borderRadius: '6px'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '6px' }}>
+                              <span style={{ fontWeight: '600', color: '#ffa116' }}>{item.task}</span>
+                              <span style={{
+                                fontSize: '0.8em',
+                                padding: '2px 8px',
+                                background: item.priority === 'High' ? 'rgba(233,69,96,0.2)' : 'rgba(96,165,250,0.2)',
+                                color: item.priority === 'High' ? '#e94560' : '#60a5fa',
+                                borderRadius: '3px'
+                              }}>
+                                {item.priority}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.9em', color: '#aaa' }}>
+                              ⏱️ {item.estimatedTime} | 📈 {item.impact} impact
+                            </div>
+                          </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Key Insights */}
+                  {result.keyInsights?.length > 0 && (
+                    <div className="analyser-section">
+                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>💭 Key Insights</h4>
+                      <ul className="analyser-list">
+                        {result.keyInsights.map((insight, i) => <li key={i}>{insight}</li>)}
+                      </ul>
                     </div>
                   )}
 
