@@ -90,7 +90,7 @@ function Dashboard() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'ai',
-      text: "Hi Abhishek! 👋 I'm your AI career assistant. Ask me anything about your resume, portfolio, or career growth."
+      text: `Hi ${userName}! 👋 I'm your AI career assistant. Ask me anything about your resume, portfolio, or career growth.`
     }
   ]);
   const [aiInput, setAiInput] = useState('');

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaFileAlt, FaPalette, FaMagic, FaLayerGroup } from 'react-icons/fa';
 import { authAPI } from '../services/api';
+import { showToast } from '../components/Toast';
 import './Login.css';
 
 function Login() {
@@ -37,10 +38,12 @@ function Login() {
       // Store user data in localStorage
       localStorage.setItem('currentUser', JSON.stringify(response.user));
       
-      // Navigate to dashboard
-      navigate('/dashboard');
+      showToast('Login successful! Welcome back.', 'success');
+      setTimeout(() => navigate('/dashboard'), 800);
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      const msg = err.message || 'Login failed. Please try again.';
+      setError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -108,12 +111,6 @@ function Login() {
           <div className="login-card">
             <h2>Welcome Back</h2>
             
-            {error && (
-              <div className="alert alert-error">
-                {error}
-              </div>
-            )}
-
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
