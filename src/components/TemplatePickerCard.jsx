@@ -17,7 +17,7 @@ function ScaledPreview({ children, className, scaleDivisor = 794 }) {
       const s = wrap.offsetWidth / scaleDivisor;
       const contentH = inner.scrollHeight;
       setScale(s);
-      setScaledHeight(Math.min(contentH * s, 360));
+      setScaledHeight(Math.min(contentH * s, 300));
       setReady(true);
     };
 

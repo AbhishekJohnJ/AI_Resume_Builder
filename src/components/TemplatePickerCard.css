@@ -42,6 +42,7 @@
   background: #1a1a1a; border: 2px solid #2d2d2d; border-radius: 12px;
   overflow: hidden; position: relative;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; cursor: pointer;
+  display: flex; flex-direction: column;
 }
 .tpl-card:hover { border-color: var(--accent-alt); box-shadow: 0 8px 28px var(--accent-20); transform: translateY(-3px); }
 .tpl-selected { border-color: var(--accent-alt); box-shadow: 0 8px 32px var(--accent-border); }
@@ -58,11 +59,12 @@
 .tpl-preview-wrap {
   overflow: hidden; background: #fff; cursor: pointer; width: 100%;
   border-bottom: 1px solid #2d2d2d; position: relative;
-  max-height: 360px;
+  height: 300px;
+  flex-shrink: 0;
 }
 
 /* ── Card footer ── */
-.tpl-card-footer { padding: 0.7rem 1rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.tpl-card-footer { padding: 0.7rem 1rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
 .tpl-card-name { font-size: 0.85rem; font-weight: 600; color: #ccc; font-family: 'Inter', sans-serif; }
 
 .tpl-choose-btn {
