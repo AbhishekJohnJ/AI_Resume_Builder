@@ -91,6 +91,10 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const userName = currentUser?.name || currentUser?.username || currentUser?.email?.split('@')[0] || 'User';
+  const userRole = currentUser?.role || currentUser?.title || 'ResumeCraft Member';
+  const resumeScore = parseInt(localStorage.getItem('analyzedResumeScore') || '0', 10);
   const [showThemePicker, setShowThemePicker] = useState(false);
 
   // Apply saved theme on mount
@@ -265,17 +269,25 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
           )}
           <button
             onClick={() => setShowProfileCard(v => !v)}
+            title={userName}
             style={{
-              background: 'none',
-              border: 'none',
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
               cursor: 'pointer',
-              color: 'rgba(255,255,255,0.7)',
+              color: 'rgba(255,255,255,0.9)',
               display: 'flex',
               alignItems: 'center',
-              padding: '0.25rem',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              padding: 0,
+              overflow: 'hidden',
             }}
           >
-            <User size={20} />
+            {userName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
           </button>
 
           <button
@@ -312,10 +324,10 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             zIndex: 1002,
           }}>
             <ProfileSummaryCard
-              name="Abhishek John"
-              role="Full Stack Developer"
-              profileImage="https://ui-avatars.com/api/?name=Abhishek+John&size=200&background=667eea&color=fff&bold=true"
-              resumeScore={78}
+              name={userName}
+              role={userRole}
+              profileImage={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&size=200&background=667eea&color=fff&bold=true`}
+              resumeScore={resumeScore}
               leaderboardRank={24}
               totalPoints={1240}
             />

@@ -443,6 +443,151 @@ function PortfolioTemplate8() {
   );
 }
 
+/* ══════════════════════════════════════
+   Template 9 — Amber Warm
+══════════════════════════════════════ */
+function PortfolioTemplate9() {
+  return (
+    <div className="pt pt9">
+      <div className="pt9-header">
+        <div className="pt9-avatar">AM</div>
+        <div className="pt9-header-text">
+          <h1 className="pt9-name">{pd.name}</h1>
+          <p className="pt9-title">{pd.title}</p>
+          <p className="pt9-tagline">{pd.tagline}</p>
+        </div>
+        <div className="pt9-contacts">
+          <span>{pd.email}</span>
+          <span>{pd.location}</span>
+          <span>{pd.github}</span>
+        </div>
+      </div>
+      <div className="pt9-body">
+        <div className="pt9-left">
+          <div className="pt9-sec-title">About</div>
+          <p className="pt9-text">{pd.about}</p>
+          <div className="pt9-sec-title">Skills</div>
+          <div className="pt9-skills">
+            {pd.skills.map((s, i) => <span key={i} className="pt9-skill">{s}</span>)}
+          </div>
+          <div className="pt9-sec-title">Experience</div>
+          {pd.experience.map((e, i) => (
+            <div key={i} className="pt9-exp">
+              <div className="pt9-exp-period">{e.period}</div>
+              <strong className="pt9-exp-role">{e.role}</strong>
+              <div className="pt9-exp-company">{e.company}</div>
+            </div>
+          ))}
+        </div>
+        <div className="pt9-right">
+          <div className="pt9-sec-title">Projects</div>
+          {pd.projects.map((p, i) => (
+            <div key={i} className="pt9-project">
+              <div className="pt9-project-num">0{i + 1}</div>
+              <div className="pt9-project-body">
+                <h3 className="pt9-project-name">{p.name}</h3>
+                <p className="pt9-project-desc">{p.desc}</p>
+                <div className="pt9-techs">{p.tech.map((t, j) => <span key={j} className="pt9-tech">{t}</span>)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   Template 10 — Slate Professional
+══════════════════════════════════════ */
+function PortfolioTemplate10() {
+  return (
+    <div className="pt pt10">
+      <div className="pt10-nav">
+        <span className="pt10-logo">{pd.name}</span>
+        <div className="pt10-nav-links">
+          <span>About</span><span>Projects</span><span>Contact</span>
+        </div>
+      </div>
+      <div className="pt10-hero">
+        <div className="pt10-hero-left">
+          <p className="pt10-greeting">Hi, I'm</p>
+          <h1 className="pt10-name">{pd.name}</h1>
+          <p className="pt10-role">{pd.title}</p>
+          <p className="pt10-about">{pd.about}</p>
+          <div className="pt10-btns">
+            <button className="pt10-btn-primary">View Work</button>
+            <button className="pt10-btn-ghost">Contact</button>
+          </div>
+        </div>
+        <div className="pt10-hero-right">
+          <div className="pt10-avatar">AM</div>
+          <div className="pt10-skills">
+            {pd.skills.slice(0, 6).map((s, i) => <span key={i} className="pt10-skill">{s}</span>)}
+          </div>
+        </div>
+      </div>
+      <div className="pt10-projects">
+        <h2 className="pt10-sec-title">Featured Projects</h2>
+        <div className="pt10-projects-grid">
+          {pd.projects.map((p, i) => (
+            <div key={i} className="pt10-project-card">
+              <h3 className="pt10-project-name">{p.name}</h3>
+              <p className="pt10-project-desc">{p.desc}</p>
+              <div className="pt10-techs">{p.tech.map((t, j) => <span key={j} className="pt10-tech">{t}</span>)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pt10-footer">
+        <span>{pd.email}</span><span>·</span><span>{pd.github}</span><span>·</span><span>{pd.location}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   Template 11 — Neon Cyberpunk
+══════════════════════════════════════ */
+function PortfolioTemplate11() {
+  return (
+    <div className="pt pt11">
+      <div className="pt11-scanlines" />
+      <div className="pt11-content">
+        <div className="pt11-hero">
+          <div className="pt11-hero-badge">[ ONLINE ]</div>
+          <h1 className="pt11-name">{pd.name}<span className="pt11-cursor">_</span></h1>
+          <p className="pt11-role">&gt; {pd.title}</p>
+          <p className="pt11-tagline">{pd.tagline}</p>
+          <div className="pt11-btns">
+            <button className="pt11-btn">[ VIEW_PROJECTS ]</button>
+            <button className="pt11-btn pt11-btn-alt">[ CONTACT ]</button>
+          </div>
+        </div>
+        <div className="pt11-skills-row">
+          {pd.skills.map((s, i) => <span key={i} className="pt11-skill">&lt;{s}/&gt;</span>)}
+        </div>
+        <div className="pt11-projects">
+          <div className="pt11-sec-title">// PROJECTS</div>
+          {pd.projects.map((p, i) => (
+            <div key={i} className="pt11-project">
+              <div className="pt11-project-id">#{String(i + 1).padStart(3, '0')}</div>
+              <div className="pt11-project-body">
+                <div className="pt11-project-name">{p.name}</div>
+                <p className="pt11-project-desc">{p.desc}</p>
+                <div className="pt11-techs">{p.tech.map((t, j) => <span key={j} className="pt11-tech">{t}</span>)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="pt11-footer">
+          <span>{pd.email}</span><span className="pt11-sep">|</span><span>{pd.github}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ScaledModalPreview({ children }) {
   return (
     <div style={{ width: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
@@ -492,7 +637,10 @@ const portfolioTemplates = [
   { id: 5, name: 'Sunset Bold',     tag: 'Bold',         component: <PortfolioTemplate5 />, recommended: false },
   { id: 6, name: 'Glass Dark',      tag: 'Modern',       component: <PortfolioTemplate6 />, recommended: true  },
   { id: 7, name: 'Rose Minimal',    tag: 'Elegant',      component: <PortfolioTemplate7 />, recommended: false },
-  { id: 8, name: 'Emerald Split',   tag: 'Fresh',        component: <PortfolioTemplate8 />, recommended: false },
+  { id: 8, name: 'Emerald Split',   tag: 'Fresh',        component: <PortfolioTemplate8 />,  recommended: false },
+  { id: 9, name: 'Amber Warm',      tag: 'Warm',         component: <PortfolioTemplate9 />,  recommended: false },
+  { id: 10, name: 'Slate Pro',      tag: 'Professional', component: <PortfolioTemplate10 />, recommended: true  },
+  { id: 11, name: 'Neon Cyberpunk', tag: 'Futuristic',   component: <PortfolioTemplate11 />, recommended: false },
 ];
 
 /* ══════════════════════════════════════

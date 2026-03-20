@@ -17,7 +17,7 @@ function ScaledPreview({ children, className, scaleDivisor = 794 }) {
       const s = wrap.offsetWidth / scaleDivisor;
       const contentH = inner.scrollHeight;
       setScale(s);
-      setScaledHeight(contentH * s);
+      setScaledHeight(Math.min(contentH * s, 360));
       setReady(true);
     };
 
@@ -744,6 +744,170 @@ function Template12() {
   );
 }
 
+/* ══════════════════════════════════════
+   T13 — Cyan Tech
+══════════════════════════════════════ */
+function Template13() {
+  return (
+    <div className="rv rv13">
+      <div className="rv13-header">
+        <div className="rv13-header-left">
+          <div className="rv13-photo"><span>AP</span></div>
+          <div>
+            <div className="rv13-name">{d.name}</div>
+            <div className="rv13-title">{d.title}</div>
+          </div>
+        </div>
+        <div className="rv13-header-right">
+          <span className="rv13-contact">✉ {d.email}</span>
+          <span className="rv13-contact">📞 {d.phone}</span>
+          <span className="rv13-contact">📍 {d.location}</span>
+        </div>
+      </div>
+      <div className="rv13-body">
+        <div className="rv13-left">
+          <div className="rv13-sec-title">SKILLS</div>
+          {d.skills.map((s,i) => (
+            <div key={i} className="rv13-skill-row">
+              <span className="rv13-skill-name">{s}</span>
+              <div className="rv13-skill-bar"><div className="rv13-skill-fill" style={{width:`${90-i*8}%`}}/></div>
+            </div>
+          ))}
+          <div className="rv13-sec-title">EDUCATION</div>
+          {d.education.map((e,i) => (
+            <div key={i} style={{marginBottom:8}}>
+              <strong className="rv13-text">{e.degree}</strong>
+              <div className="rv13-muted">{e.school} · {e.year}</div>
+            </div>
+          ))}
+          <div className="rv13-sec-title">LANGUAGES</div>
+          {d.languages.map((l,i) => <p key={i} className="rv13-text">{l}</p>)}
+        </div>
+        <div className="rv13-right">
+          <div className="rv13-sec-title">PROFILE</div>
+          <p className="rv13-text">{d.summary}</p>
+          <div className="rv13-sec-title">EXPERIENCE</div>
+          {d.experience.map((e,i) => (
+            <div key={i} className="rv13-exp">
+              <div className="rv13-exp-header">
+                <strong className="rv13-text">{e.role}</strong>
+                <span className="rv13-period">{e.period}</span>
+              </div>
+              <div className="rv13-company">{e.company}</div>
+              <p className="rv13-text">{e.desc}</p>
+            </div>
+          ))}
+          <div className="rv13-sec-title">AWARDS</div>
+          {d.awards.map((a,i) => <p key={i} className="rv13-text">▸ {a}</p>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T14 — Coral Modern
+══════════════════════════════════════ */
+function Template14() {
+  return (
+    <div className="rv rv14">
+      <div className="rv14-top">
+        <div className="rv14-name">{d.firstName} <span className="rv14-name-accent">{d.lastName}</span></div>
+        <div className="rv14-title">{d.title}</div>
+        <div className="rv14-contacts">
+          <span>{d.email}</span><span>|</span><span>{d.phone}</span><span>|</span><span>{d.location}</span>
+        </div>
+      </div>
+      <div className="rv14-body">
+        <div className="rv14-left">
+          <div className="rv14-sec-title">About Me</div>
+          <p className="rv14-text">{d.summary}</p>
+          <div className="rv14-sec-title">Skills</div>
+          <div className="rv14-skills-wrap">
+            {d.skills.map((s,i) => <span key={i} className="rv14-skill-tag">{s}</span>)}
+          </div>
+          <div className="rv14-sec-title">Languages</div>
+          {d.languages.map((l,i) => <p key={i} className="rv14-text">{l}</p>)}
+          <div className="rv14-sec-title">Awards</div>
+          {d.awards.map((a,i) => <p key={i} className="rv14-text">🏆 {a}</p>)}
+        </div>
+        <div className="rv14-right">
+          <div className="rv14-sec-title">Experience</div>
+          {d.experience.map((e,i) => (
+            <div key={i} className="rv14-exp">
+              <div className="rv14-exp-period">{e.period}</div>
+              <strong className="rv14-text">{e.role}</strong>
+              <div className="rv14-company">{e.company}</div>
+              <p className="rv14-text">{e.desc}</p>
+            </div>
+          ))}
+          <div className="rv14-sec-title">Education</div>
+          {d.education.map((e,i) => (
+            <div key={i} style={{marginBottom:8}}>
+              <strong className="rv14-text">{e.degree}</strong>
+              <div className="rv14-company">{e.school} · {e.year}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   T15 — Indigo Professional
+══════════════════════════════════════ */
+function Template15() {
+  return (
+    <div className="rv rv15">
+      <div className="rv15-sidebar">
+        <div className="rv15-photo"><span>AP</span></div>
+        <div className="rv15-name">{d.name}</div>
+        <div className="rv15-title">{d.title}</div>
+        <div className="rv15-divider"/>
+        <div className="rv15-sec-title">Contact</div>
+        <p className="rv15-text">✉ {d.email}</p>
+        <p className="rv15-text">📞 {d.phone}</p>
+        <p className="rv15-text">📍 {d.location}</p>
+        <div className="rv15-sec-title">Skills</div>
+        {d.skills.map((s,i) => <span key={i} className="rv15-skill-tag">{s}</span>)}
+        <div className="rv15-sec-title">Languages</div>
+        {d.languages.map((l,i) => <p key={i} className="rv15-text">{l}</p>)}
+      </div>
+      <div className="rv15-main">
+        <div className="rv15-sec-title">Professional Summary</div>
+        <p className="rv15-main-text">{d.summary}</p>
+        <div className="rv15-sec-title">Work Experience</div>
+        {d.experience.map((e,i) => (
+          <div key={i} className="rv15-exp">
+            <div className="rv15-exp-header">
+              <strong className="rv15-main-text">{e.role}</strong>
+              <span className="rv15-period">{e.period}</span>
+            </div>
+            <div className="rv15-company">{e.company}</div>
+            <p className="rv15-main-text">{e.desc}</p>
+          </div>
+        ))}
+        <div className="rv15-two-col">
+          <div>
+            <div className="rv15-sec-title">Education</div>
+            {d.education.map((e,i) => (
+              <div key={i} style={{marginBottom:8}}>
+                <strong className="rv15-main-text">{e.degree}</strong>
+                <div className="rv15-company">{e.school} · {e.year}</div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div className="rv15-sec-title">Awards</div>
+            {d.awards.map((a,i) => <p key={i} className="rv15-main-text">★ {a}</p>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const templates = [
   { id: 1, name: 'Modern Minimalist', tag: 'Popular', component: <Template1 />, recommended: true },
   { id: 2, name: 'Professional Modern', tag: 'Classic', component: <Template2 />, recommended: false },
@@ -756,7 +920,10 @@ const templates = [
   { id: 9, name: 'Minimal White', tag: 'Clean', component: <Template9 />, recommended: false },
   { id: 10, name: 'Red Accent', tag: 'Vibrant', component: <Template10 />, recommended: false },
   { id: 11, name: 'Green Nature', tag: 'Fresh', component: <Template11 />, recommended: false },
-  { id: 12, name: 'Navy Classic', tag: 'Formal', component: <Template12 />, recommended: false },
+  { id: 12, name: 'Navy Classic',        tag: 'Formal',    component: <Template12 />, recommended: false },
+  { id: 13, name: 'Cyan Tech',           tag: 'Tech',      component: <Template13 />, recommended: false },
+  { id: 14, name: 'Coral Modern',        tag: 'Modern',    component: <Template14 />, recommended: true  },
+  { id: 15, name: 'Indigo Professional', tag: 'Premium',   component: <Template15 />, recommended: false },
 ];
 
 function TemplatePickerCard({ onSelect, selected }) {
