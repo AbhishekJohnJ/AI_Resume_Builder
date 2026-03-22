@@ -559,3 +559,287 @@
     margin-left: 0;
   }
 }
+
+/* ── Empty state for widgets ── */
+.dashboard-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px;
+  text-align: center;
+}
+.dashboard-empty-state span {
+  font-size: 2rem;
+}
+.dashboard-empty-state p {
+  color: #666;
+  font-size: 0.88rem;
+  font-style: italic;
+  max-width: 320px;
+  line-height: 1.5;
+  margin: 0;
+}
+.dashboard-cta-btn {
+  background: transparent;
+  border: 1px solid var(--accent, #ffd700);
+  color: var(--accent, #ffd700);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dashboard-cta-btn:hover {
+  background: var(--accent, #ffd700);
+  color: #111;
+}
+.summary-card-empty {
+  color: #555;
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════
+   Career Quest Board — full redesign
+══════════════════════════════════════ */
+.qb-wrap {
+  background: #0d0d0d;
+  border: 1px solid #1e1e1e;
+  border-radius: 16px;
+  padding: 1.6rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.qb-wrap::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--accent-10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Header */
+.qb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.4rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.qb-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.qb-crown { font-size: 1.3rem; }
+.qb-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+.qb-level-badge {
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  color: #111;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.qb-sub {
+  font-size: 0.75rem;
+  color: #444;
+  margin: 0;
+}
+
+/* XP ring */
+.qb-xp-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.qb-xp-ring {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+.qb-ring-svg {
+  width: 52px;
+  height: 52px;
+  transform: rotate(-90deg);
+}
+.qb-ring-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.qb-xp-nums { display: flex; align-items: baseline; gap: 2px; }
+.qb-xp-earned { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+.qb-xp-max { font-size: 0.72rem; color: #444; }
+.qb-xp-label { font-size: 0.7rem; color: #444; margin-top: 2px; }
+
+/* Grid */
+.qb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 960px) { .qb-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .qb-grid { grid-template-columns: 1fr; } }
+
+/* Card base */
+.qb-card {
+  border-radius: 12px;
+  border: 1px solid #1e1e1e;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.18s, border-color 0.2s, box-shadow 0.2s;
+  background: #111;
+}
+.qb-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-border);
+  box-shadow: 0 6px 24px var(--accent-10);
+}
+
+/* Rarity tiers — all use theme accent, just vary opacity/style */
+.qb-epic  { border-color: var(--accent-25); }
+.qb-rare  { border-color: var(--accent-15); }
+.qb-common { border-color: #1e1e1e; }
+
+.qb-card-glow {
+  position: absolute;
+  top: -30px; left: -30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.qb-epic  .qb-card-glow { opacity: 0.18; }
+.qb-rare  .qb-card-glow { opacity: 0.10; }
+.qb-common .qb-card-glow { opacity: 0.04; }
+
+.qb-card-inner {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.qb-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.qb-card-icon { font-size: 1.5rem; line-height: 1; }
+
+/* Rarity pill colors via theme */
+.qb-rarity-pill {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.qb-epic  .qb-rarity-pill { border: 1px solid var(--accent-border); color: var(--accent); background: var(--accent-08); }
+.qb-rare  .qb-rarity-pill { border: 1px solid var(--accent-20);     color: var(--accent-alt); background: var(--accent-05); }
+.qb-common .qb-rarity-pill { border: 1px solid #2a2a2a; color: #555; background: transparent; }
+
+.qb-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #e5e5e5;
+  line-height: 1.2;
+}
+.qb-card-desc {
+  font-size: 0.74rem;
+  color: #555;
+  line-height: 1.45;
+  margin: 0;
+  flex: 1;
+}
+.qb-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  gap: 6px;
+}
+.qb-xp-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-08);
+  border: 1px solid var(--accent-15);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+.qb-btns { display: flex; gap: 5px; align-items: center; }
+.qb-go {
+  background: var(--accent);
+  color: #111;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.qb-go:hover { opacity: 0.85; transform: scale(1.04); }
+.qb-mark {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #333;
+  background: transparent;
+  color: #555;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.qb-mark-done {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+/* Done overlay */
+.qb-done-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #10b981;
+  letter-spacing: 2px;
+  border-radius: 12px;
+  pointer-events: none;
+}
+.qb-done { opacity: 0.6; }

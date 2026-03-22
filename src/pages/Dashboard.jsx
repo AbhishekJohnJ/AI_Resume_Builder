@@ -13,78 +13,92 @@ function Dashboard() {
   const userName = user?.name?.split(' ')[0] || 'there';
   const [appTheme, setAppTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
 
+  // Load AI analysis results from localStorage
+  const loadAnalysis = () => {
+    const raw = localStorage.getItem('analyzedResumeResult');
+    return raw ? JSON.parse(raw) : null;
+  };
+  const [analysis, setAnalysis] = useState(loadAnalysis);
+
+  const resumeScore = analysis?.resumeScore || analysis?.score || 0;
+
+  // Derive skill progress from analysis strengths/skills or fall back to defaults
+  const buildSkills = (a) => {
+    if (!a) return [
+      { name: 'Resume', progress: 0 },
+      { name: 'Skills', progress: 0 },
+      { name: 'Experience', progress: 0 },
+    ];
+    const sections = a.sectionAnalysis || {};
+    const toVal = (key) => {
+      const q = sections[key]?.quality;
+      if (!q) return 0;
+      return q === 'Excellent' ? 95 : q === 'Good' ? 75 : q === 'Fair' ? 50 : 25;
+    };
+    return [
+      { name: '📄 Resume Completion', val: resumeScore, cls: 'resume' },
+      { name: '⚡ Skills Section',    val: toVal('skills'),     cls: 'skill' },
+      { name: '💼 Experience',        val: toVal('experience'), cls: 'github' },
+      { name: '🎓 Education',         val: toVal('education'),  cls: 'linkedin' },
+    ];
+  };
+
+  const [progressBars, setProgressBars] = useState(() => buildSkills(loadAnalysis()));
+
+  // Derive skill cards from analysis
+  const buildSkillCards = (a) => {
+    if (!a?.strengths?.length) return [];
+    return a.strengths.slice(0, 3).map((s, i) => ({
+      name: s.length > 20 ? s.slice(0, 20) + '…' : s,
+      progress: 90 - i * 12,
+    }));
+  };
+  const [skills, setSkills] = useState(() => buildSkillCards(loadAnalysis()));
+
+  // Refresh when returning from AIAnalyser
+  useEffect(() => {
+    const refresh = () => {
+      const a = loadAnalysis();
+      setAnalysis(a);
+      setProgressBars(buildSkills(a));
+      setSkills(buildSkillCards(a));
+    };
+    window.addEventListener('focus', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('focus', refresh); window.removeEventListener('storage', refresh); };
+  }, []);
+
   useEffect(() => {
     const onStorage = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
     window.addEventListener('storage', onStorage);
-    // also poll on focus in case theme changed in same tab
     const onFocus = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
     window.addEventListener('focus', onFocus);
     return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
   }, []);
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: 'Add GitHub project',
-      desc: 'Link a real project to showcase your coding skills.',
-      why: 'Recruiters check GitHub to verify your technical ability.',
-      points: 20,
-      difficulty: 'Easy',
-      category: 'GitHub',
-      completed: false
-    },
-    {
-      id: 2,
-      name: 'Update LinkedIn profile',
-      desc: 'Add your latest role, skills, and a professional photo.',
-      why: '87% of recruiters use LinkedIn to find candidates.',
-      points: 15,
-      difficulty: 'Medium',
-      category: 'LinkedIn',
-      completed: false
-    },
-    {
-      id: 3,
-      name: 'Add portfolio project',
-      desc: 'Showcase a project with description, tech stack, and live link.',
-      why: 'A strong portfolio increases interview chances by 3x.',
-      points: 10,
-      difficulty: 'Easy',
-      category: 'Portfolio',
-      completed: false
-    },
-    {
-      id: 4,
-      name: 'Complete resume summary',
-      desc: 'Write a 2–3 sentence professional summary at the top of your resume.',
-      why: 'Summaries help recruiters quickly understand your value.',
-      points: 25,
-      difficulty: 'Hard',
-      category: 'Resume',
-      completed: false
-    }
-  ]);
-
-  const skills = [
-    { name: 'React', progress: 80 },
-    { name: 'Node.js', progress: 65 },
-    { name: 'MongoDB', progress: 40 }
+  const QUESTS = [
+    { id: 1, icon: '🎯', title: 'Resume Sniper',      desc: 'Analyse your resume with AI and score above 70.',           xp: 50, rarity: 'epic',   action: () => navigate('/ai-analyser') },
+    { id: 2, icon: '🏗️', title: 'Portfolio Architect', desc: 'Generate a portfolio using any template.',                  xp: 40, rarity: 'rare',   action: () => navigate('/portfolio') },
+    { id: 3, icon: '📄', title: 'Resume Crafter',      desc: 'Build a resume using the Resume Builder.',                  xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 4, icon: '🗺️', title: 'Template Explorer',   desc: 'Preview at least 5 different resume templates.',            xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 5, icon: '📈', title: 'Score Chaser',        desc: 'Re-analyse your resume after edits to improve your score.', xp: 60, rarity: 'epic',   action: () => navigate('/ai-analyser') },
+    { id: 6, icon: '💼', title: 'Portfolio Pro',       desc: 'Save and view your generated portfolio.',                   xp: 35, rarity: 'rare',   action: () => navigate('/my-portfolios') },
   ];
 
-
-  const handleLogout = () => {
-    navigate('/');
+  const [completedQuests, setCompletedQuests] = useState(
+    () => JSON.parse(localStorage.getItem('questsCompleted') || '[]')
+  );
+  const toggleQuest = (id) => {
+    setCompletedQuests(prev => {
+      const next = prev.includes(id) ? prev.filter(q => q !== id) : [...prev, id];
+      localStorage.setItem('questsCompleted', JSON.stringify(next));
+      return next;
+    });
   };
-
-  const toggleTask = (taskId) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const completedTasksCount = tasks.filter(t => t.completed).length;
+  const totalXP  = completedQuests.reduce((s, id) => s + (QUESTS.find(q => q.id === id)?.xp || 0), 0);
+  const maxXP    = QUESTS.reduce((s, q) => s + q.xp, 0);
+  const xpPct    = Math.round((totalXP / maxXP) * 100);
+  const careerLevel = totalXP < 50 ? 'Rookie' : totalXP < 120 ? 'Builder' : totalXP < 200 ? 'Pro' : 'Elite';
 
   const [aiOpen, setAiOpen] = useState(false);
   const [aiMessages, setAiMessages] = useState([
@@ -194,93 +208,121 @@ function Dashboard() {
             <div className="summary-cards-grid">
               <div className="summary-card">
                 <h3 className="summary-card-title">Resume Score</h3>
-                <p className="summary-card-value">
-                  78 <span className="value-suffix">/ 100</span>
-                </p>
+                {resumeScore > 0 ? (
+                  <p className="summary-card-value">{resumeScore} <span className="value-suffix">/ 100</span></p>
+                ) : (
+                  <p className="summary-card-empty">Analyse your resume to see your score</p>
+                )}
               </div>
               <div className="summary-card">
-                <h3 className="summary-card-title">Portfolio Strength</h3>
-                <p className="summary-card-value">
-                  85 <span className="value-suffix">/ 100</span>
-                </p>
+                <h3 className="summary-card-title">Resume Level</h3>
+                {analysis?.resumeLevel ? (
+                  <p className="summary-card-value" style={{ fontSize: '1.1rem' }}>{analysis.resumeLevel}</p>
+                ) : (
+                  <p className="summary-card-empty">No analysis yet</p>
+                )}
               </div>
               <div className="summary-card">
-                <h3 className="summary-card-title">Total Points / XP</h3>
-                <p className="summary-card-value">
-                  1,240 <span className="value-suffix">XP</span>
-                </p>
+                <h3 className="summary-card-title">Strengths Found</h3>
+                {analysis?.strengths?.length > 0 ? (
+                  <p className="summary-card-value">{analysis.strengths.length} <span className="value-suffix">areas</span></p>
+                ) : (
+                  <p className="summary-card-empty">Run AI Analyser first</p>
+                )}
               </div>
               <div className="summary-card">
-                <h3 className="summary-card-title">Leaderboard Rank</h3>
-                <p className="summary-card-value">#24</p>
+                <h3 className="summary-card-title">Improvements</h3>
+                {analysis?.weakAreas?.length > 0 ? (
+                  <p className="summary-card-value">{analysis.weakAreas.length} <span className="value-suffix">to fix</span></p>
+                ) : (
+                  <p className="summary-card-empty">No analysis yet</p>
+                )}
               </div>
             </div>
 
             <div className="progress-area">
               <h2 className="progress-area-title">Profile Strength</h2>
-              <div className="progress-bars">
-                {[
-                  { label: '📄 Resume Completion', val: 78, cls: 'resume' },
-                  { label: '🔗 LinkedIn Strength', val: 65, cls: 'linkedin' },
-                  { label: '🐙 GitHub Strength', val: 82, cls: 'github' },
-                  { label: '🚀 Skill Growth', val: 55, cls: 'skill' }
-                ].map((b) => (
-                  <div key={b.cls} className="progress-item">
-                    <div className="progress-label">
-                      <span className="progress-name">{b.label}</span>
-                      <span className="progress-value">{b.val}%</span>
-                    </div>
-                    <div className="progress-track">
-                      <div
-                        className={`progress-fill ${b.cls}`}
-                        style={{ width: `${b.val}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="tasks-card">
-              <div className="tasks-card-header">
-                <h2 className="tasks-card-title">Daily Tasks</h2>
-                <span className="tasks-count">
-                  {completedTasksCount}/{tasks.length}
-                </span>
-              </div>
-
-              <div className="tasks-list">
-                {tasks.map(task => (
-                  <div
-                    key={task.id}
-                    className={`task-item ${task.completed ? 'completed' : ''}`}
-                    onClick={() => toggleTask(task.id)}
-                  >
-                    <div className="task-top">
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => toggleTask(task.id)}
-                        className="task-checkbox"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <div className="task-body">
-                        <div className="task-header-row">
-                          <span className="task-name">{task.name}</span>
-                          <div className="task-meta">
-                            <span className={`task-difficulty diff-${task.difficulty.toLowerCase()}`}>
-                              {task.difficulty}
-                            </span>
-                            <span className="task-category">{task.category}</span>
-                            <span className="task-points">+{task.points} XP</span>
-                          </div>
-                        </div>
-                        <p className="task-desc">{task.desc}</p>
-                        <p className="task-why">💡 {task.why}</p>
+              {analysis ? (
+                <div className="progress-bars">
+                  {progressBars.map((b) => (
+                    <div key={b.cls} className="progress-item">
+                      <div className="progress-label">
+                        <span className="progress-name">{b.label}</span>
+                        <span className="progress-value">{b.val}%</span>
+                      </div>
+                      <div className="progress-track">
+                        <div className={`progress-fill ${b.cls}`} style={{ width: `${b.val}%` }} />
                       </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="dashboard-empty-state">
+                  <span>📊</span>
+                  <p>"Your profile strength will appear here after you analyse your resume in the AI Analyser."</p>
+                  <button className="dashboard-cta-btn" onClick={() => navigate('/ai-analyser')}>Go to AI Analyser →</button>
+                </div>
+              )}
+            </div>
+
+            {/* ── Career Quest Board ── */}
+            <div className="qb-wrap">
+              {/* Header */}
+              <div className="qb-header">
+                <div className="qb-header-left">
+                  <div className="qb-title-row">
+                    <span className="qb-crown">⚔️</span>
+                    <h2 className="qb-title">Career Quest Board</h2>
+                    <span className="qb-level-badge">{careerLevel}</span>
                   </div>
-                ))}
+                  <p className="qb-sub">Complete quests · Earn XP · Level up your career</p>
+                </div>
+                <div className="qb-xp-block">
+                  <div className="qb-xp-ring">
+                    <svg viewBox="0 0 44 44" className="qb-ring-svg">
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="#222" strokeWidth="4"/>
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="var(--accent,#ffd700)" strokeWidth="4"
+                        strokeDasharray={`${xpPct * 1.131} 113.1`}
+                        strokeLinecap="round" strokeDashoffset="28.3"
+                        style={{transition:'stroke-dasharray 0.6s ease'}}/>
+                    </svg>
+                    <span className="qb-ring-pct">{xpPct}%</span>
+                  </div>
+                  <div>
+                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
+                    <div className="qb-xp-label">{completedQuests.length}/{QUESTS.length} quests done</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quest Grid */}
+              <div className="qb-grid">
+                {QUESTS.map(q => {
+                  const done = completedQuests.includes(q.id);
+                  return (
+                    <div key={q.id} className={`qb-card qb-${q.rarity} ${done ? 'qb-done' : ''}`}>
+                      <div className="qb-card-glow"/>
+                      <div className="qb-card-inner">
+                        <div className="qb-card-top">
+                          <span className="qb-card-icon">{q.icon}</span>
+                          <span className="qb-rarity-pill">{q.rarity}</span>
+                        </div>
+                        <div className="qb-card-title">{q.title}</div>
+                        <p className="qb-card-desc">{q.desc}</p>
+                        <div className="qb-card-bottom">
+                          <span className="qb-xp-pill">+{q.xp} XP</span>
+                          <div className="qb-btns">
+                            <button className="qb-go" onClick={q.action}>Launch →</button>
+                            <button className={`qb-mark ${done ? 'qb-mark-done' : ''}`} onClick={() => toggleQuest(q.id)}>
+                              {done ? '✓' : '○'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      {done && <div className="qb-done-overlay">✓ COMPLETED</div>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -288,22 +330,27 @@ function Dashboard() {
               <div className="skills-card-header">
                 <h2 className="skills-card-title">Skill Progress</h2>
               </div>
-              <div className="skills-list">
-                {skills.map(skill => (
-                  <div key={skill.name} className="skill-item">
-                    <div className="skill-header">
-                      <span className="skill-name">{skill.name}</span>
-                      <span className="skill-percentage">{skill.progress}%</span>
+              {skills.length > 0 ? (
+                <div className="skills-list">
+                  {skills.map(skill => (
+                    <div key={skill.name} className="skill-item">
+                      <div className="skill-header">
+                        <span className="skill-name">{skill.name}</span>
+                        <span className="skill-percentage">{skill.progress}%</span>
+                      </div>
+                      <div className="skill-progress-bar">
+                        <div className="skill-progress-fill" style={{ width: `${skill.progress}%` }} />
+                      </div>
                     </div>
-                    <div className="skill-progress-bar">
-                      <div
-                        className="skill-progress-fill"
-                        style={{ width: `${skill.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="dashboard-empty-state">
+                  <span>💡</span>
+                  <p>"Analyse your resume to unlock skill insights and track your growth."</p>
+                  <button className="dashboard-cta-btn" onClick={() => navigate('/ai-analyser')}>Analyse Now →</button>
+                </div>
+              )}
             </div>
           </main>
         </div>

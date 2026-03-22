@@ -82,6 +82,10 @@ function AIAnalyser() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Analysis failed');
       setResult(data);
+
+      // Save analysis to localStorage so Dashboard can read it
+      localStorage.setItem('analyzedResumeScore', String(data.resumeScore || data.score || 0));
+      localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
     } catch (err) {
       setError(err.message);
     } finally {
