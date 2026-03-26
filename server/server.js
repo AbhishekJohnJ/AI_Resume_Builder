@@ -4,7 +4,6 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const multer = require('multer');
-const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 const XLSX = require('xlsx');
 const { createWorker } = require('tesseract.js');
@@ -24,10 +23,9 @@ async function extractTextFromFile(file) {
   const { mimetype, originalname, buffer } = file;
   const ext = path.extname(originalname).toLowerCase();
 
-  // PDF
+  // PDF - Note: PDF extraction is now handled by AI routes using Python PyMuPDF
   if (mimetype === 'application/pdf' || ext === '.pdf') {
-    const result = await pdfParse(buffer);
-    return result.text;
+    throw new Error('PDF extraction should use AI routes with Python PyMuPDF');
   }
 
   // Word DOCX
@@ -75,6 +73,10 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Import AI routes
+const aiRoutes = require('./routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -503,8 +505,12 @@ app.post('/api/ai/generate-portfolio', async (req, res) => {
     const { prompt, templateId, existingData } = req.body;
     if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
 
-    const apiKey = process.env.AI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
+
+    if (!apiKey) {
+      return res.status(500).json({ error: 'OpenRouter API key not configured' });
+    }
 
     const isEnhancement = !!existingData;
 
@@ -619,10 +625,12 @@ If any field is not mentioned, make a reasonable professional inference. Always 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'Portfolio Builder'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
@@ -674,8 +682,12 @@ app.post('/api/ai/generate-resume', upload.array('files', 5), async (req, res) =
 
     const isEnhancement = !!existingData && !extractedContent;
 
-    const apiKey = process.env.AI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     const url = 'https://openrouter.ai/api/v1/chat/completions';
+
+    if (!apiKey) {
+      return res.status(500).json({ error: 'OpenRouter API key not configured' });
+    }
 
     const systemPrompt = isEnhancement
       ? `You are an expert resume writer, career coach, and UI designer. The user already has a generated resume and wants to enhance, modify, or redesign sections of it.
@@ -837,10 +849,12 @@ If any field is not mentioned, make a reasonable professional inference. Always 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'Resume Builder'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
