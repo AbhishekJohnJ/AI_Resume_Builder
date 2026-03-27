@@ -172,4 +172,29 @@ router.get('/health', (req, res) => {
   });
 });
 
+/**
+ * GET /api/ai/cache/stats
+ * Get cache statistics
+ */
+router.get('/cache/stats', (req, res) => {
+  const stats = openrouterService.getCacheStats();
+  res.json({
+    status: 'success',
+    cache: stats,
+    message: `Cache contains ${stats.size} analyses`
+  });
+});
+
+/**
+ * POST /api/ai/cache/clear
+ * Clear all cached analyses
+ */
+router.post('/cache/clear', (req, res) => {
+  openrouterService.clearCache();
+  res.json({
+    status: 'success',
+    message: 'Cache cleared successfully'
+  });
+});
+
 module.exports = router;
