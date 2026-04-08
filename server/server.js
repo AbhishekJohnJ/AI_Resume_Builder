@@ -456,7 +456,7 @@ app.post('/api/ai/chat', async (req, res) => {
         'X-Title': 'Career Assistant'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are a helpful AI career assistant for a portfolio and resume builder platform. Give concise, actionable advice about resumes, portfolios, LinkedIn, GitHub, and career growth. Keep responses short and friendly.' },
           { role: 'user', content: message }
