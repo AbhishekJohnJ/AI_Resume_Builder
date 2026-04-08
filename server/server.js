@@ -452,8 +452,10 @@ app.post('/api/ai/chat', async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': 'http://localhost:3000',
-        'X-Title': 'Career Assistant'
+        'X-Title': 'ResumeCraft AI Chat'
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
@@ -501,7 +503,12 @@ app.post('/api/ai/analyse-resume-full', async (req, res) => {
     const apiKey = process.env.AI_API_KEY;
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'ResumeCraft Portfolio Builder'
+      },
       body: JSON.stringify({
         model: 'deepseek/deepseek-chat',
         messages: [
@@ -612,41 +619,93 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
     "background": "solid"
   }
 }`
-      : `You are a professional portfolio writer. Based on the user's description, extract and generate structured portfolio data as a JSON object.
+      : `You are a professional portfolio writer and creative content strategist. Based on the user's description, generate a COMPREHENSIVE, IMPRESSIVE portfolio with rich, engaging content.
 
-The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer... make project descriptions very detailed and impactful").
-You MUST follow ALL such instructions when generating the portfolio — apply them to the relevant sections.
+CRITICAL REQUIREMENTS:
+1. Generate AT LEAST 4-6 diverse, impressive projects showcasing different skills
+2. Each project MUST have a detailed 2-3 sentence description highlighting impact, technologies, and outcomes
+3. Include 10-15 relevant technical skills
+4. Write a compelling 3-4 sentence "about" section that tells a story and shows personality
+5. Add 2-3 work experience entries with achievement-focused descriptions
+6. Create an inspiring, memorable tagline (not generic)
+7. Include realistic contact details and social links
 
-For project descriptions: if the user asks for detailed/defined points, write rich, specific descriptions that highlight impact, technologies used, and outcomes.
-For experience descriptions: if the user asks for detailed points, write achievement-focused, quantified descriptions.
+CONTENT GENERATION RULES:
+- If user says "UI/UX Designer", create 4-6 design projects (mobile apps, websites, branding, etc.)
+- If user says "Full Stack Developer", create projects like: E-commerce platform, Social media app, Dashboard, API service, etc.
+- Each project description should include: What it does, technologies used, impact/results
+- Use engaging language: "Crafted", "Designed", "Built", "Engineered", "Created"
+- Include metrics when possible: "serving 10K+ users", "99.9% uptime", "50% faster performance"
+- Make the "about" section personal and compelling, not generic
+- Tagline should be unique and memorable, reflecting the person's specialty
 
-If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background"), set the appropriate designStyle fields:
+EXAMPLE - User says: "UI/UX Designer specializing in mobile apps"
+You should generate:
+- 5-6 projects: Fitness tracking app, E-commerce mobile app, Social networking app, Banking app redesign, Food delivery app, Travel booking app
+- Skills: Figma, Adobe XD, Sketch, Prototyping, User Research, Wireframing, UI Design, UX Design, Mobile Design, Design Systems, Interaction Design, Usability Testing
+- About: "Passionate UI/UX designer with 5+ years of experience crafting intuitive mobile experiences that users love. I believe great design is invisible – it just works. Specialized in mobile-first design, I've helped startups and enterprises create apps that delight users and drive business results. When I'm not designing, you'll find me exploring the latest design trends or mentoring aspiring designers."
+- Tagline: "Crafting mobile experiences that users love"
+- Projects like: "FitTrack Pro - Comprehensive fitness tracking app with personalized workout plans and nutrition tracking. Designed intuitive UI that increased user engagement by 60% and achieved 4.8★ rating. Built with Figma, featuring custom illustrations and smooth micro-interactions."
+
+DESIGN PREFERENCES:
+If the user mentions design preferences (e.g. "pill buttons", "glass cards"), set the appropriate designStyle fields:
 - designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
 - designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
 - designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
 
-Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
   "initials": "AB",
-  "title": "Job Title",
-  "tagline": "A short inspiring tagline",
+  "title": "Professional Job Title",
+  "tagline": "A unique, memorable tagline that captures their specialty and passion",
   "email": "email@example.com",
   "phone": "+1 (555) 000-0000",
   "location": "City, Country",
   "github": "github.com/username",
   "linkedin": "linkedin.com/in/username",
-  "website": "www.website.com",
-  "about": "2-3 sentence personal bio",
-  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
+  "website": "www.portfolio-site.com",
+  "about": "3-4 sentence compelling personal bio that tells a story, shows personality, highlights expertise, and includes passion/interests. Make it engaging and memorable, not generic.",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10", "Skill 11", "Skill 12"],
   "projects": [
-    { "name": "Project Name", "desc": "Short description of the project.", "tech": ["Tech1", "Tech2", "Tech3"], "link": "#" },
-    { "name": "Project Name 2", "desc": "Short description.", "tech": ["Tech1", "Tech2"], "link": "#" },
-    { "name": "Project Name 3", "desc": "Short description.", "tech": ["Tech1", "Tech2"], "link": "#" }
+    { 
+      "name": "Impressive Project Name 1", 
+      "desc": "Detailed 2-3 sentence description explaining what it does, technologies used, and impact/results achieved. Include metrics when possible.", 
+      "tech": ["Tech1", "Tech2", "Tech3", "Tech4"], 
+      "link": "#" 
+    },
+    { 
+      "name": "Impressive Project Name 2", 
+      "desc": "Detailed description highlighting the problem solved, approach taken, and outcomes delivered.", 
+      "tech": ["Tech1", "Tech2", "Tech3"], 
+      "link": "#" 
+    },
+    { 
+      "name": "Impressive Project Name 3", 
+      "desc": "Compelling description showcasing technical skills, creativity, and business impact.", 
+      "tech": ["Tech1", "Tech2", "Tech3", "Tech4"], 
+      "link": "#" 
+    },
+    { 
+      "name": "Impressive Project Name 4", 
+      "desc": "Engaging description that demonstrates expertise and results.", 
+      "tech": ["Tech1", "Tech2", "Tech3"], 
+      "link": "#" 
+    }
   ],
   "experience": [
-    { "role": "Job Title", "company": "Company Name", "period": "2021 – Present", "desc": "Achievement-focused description." },
-    { "role": "Job Title 2", "company": "Company 2", "period": "2019 – 2021", "desc": "Description." }
+    { 
+      "role": "Senior Job Title", 
+      "company": "Company Name", 
+      "period": "2022 – Present", 
+      "desc": "Achievement-focused description highlighting key responsibilities, impact, and results. Include metrics and specific accomplishments." 
+    },
+    { 
+      "role": "Mid-Level Job Title", 
+      "company": "Previous Company", 
+      "period": "2020 – 2022", 
+      "desc": "Compelling description of role, contributions, and achievements that demonstrate growth and expertise." 
+    }
   ],
   "designStyle": {
     "button": "default",
@@ -654,7 +713,8 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation, n
     "background": "solid"
   }
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
+
+REMEMBER: Generate RICH, DETAILED, IMPRESSIVE content. A professional portfolio should showcase expertise and personality, not be minimal or generic!`;
 
     const userMessage = isEnhancement
       ? `Here is my current portfolio data:\n${JSON.stringify(existingData, null, 2)}\n\nPlease apply this change: ${prompt}`
@@ -830,19 +890,38 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
     "background": "solid"
   }
 }`
-      : `You are a professional resume writer. Based on the user's description, extract and generate structured resume data as a JSON object.
+      : `You are a professional resume writer and career coach. Based on the user's description, generate a COMPREHENSIVE, DETAILED resume with rich professional content.
 
-The user may include both their profile information AND specific instructions in the same message (e.g. "I am a developer with 3 years experience... in work experience, make every point very detailed and defined").
-You MUST follow ALL such instructions when generating the resume — apply them to the relevant sections.
+CRITICAL REQUIREMENTS:
+1. Generate AT LEAST 2-3 work experience entries (even if user mentions only 1 role)
+2. Each experience MUST have 4-6 detailed bullet points showing achievements, metrics, and impact
+3. Include 8-12 relevant technical and soft skills
+4. Write a compelling 3-4 sentence professional summary highlighting key strengths
+5. Add 2-3 relevant awards, certifications, or achievements
+6. Include 2-3 languages (at minimum English)
+7. Make content achievement-focused with quantifiable results when possible
 
-For experience descriptions: if the user asks for detailed/defined points, write 3-5 specific, achievement-focused bullet-style sentences in the "desc" field, or populate the "bullets" array with detailed points.
+CONTENT GENERATION RULES:
+- If user says "3 years experience", infer 2-3 relevant job positions
+- If user mentions technologies, create realistic projects using those technologies
+- Add industry-standard skills related to the user's role
+- Use action verbs: Led, Developed, Implemented, Architected, Optimized, Delivered
+- Include metrics: "Improved performance by 40%", "Reduced costs by $50K", "Led team of 5"
+- Make descriptions specific and impactful, not generic
 
-If the user mentions any design preferences (e.g. "pill buttons", "glass cards", "gradient background", "bordered cards"), set the appropriate designStyle fields:
+EXAMPLE - User says: "Full Stack Developer with React and Node.js"
+You should generate:
+- 2-3 work experiences with 4-6 bullets each
+- Skills: React, Node.js, JavaScript, TypeScript, MongoDB, PostgreSQL, AWS, Docker, Git, REST APIs, GraphQL, CI/CD
+- Summary: "Results-driven Full Stack Developer with 3+ years of experience building scalable web applications. Expertise in React and Node.js ecosystems, with proven track record of delivering high-performance solutions. Passionate about clean code, user experience, and continuous learning."
+- Experience bullets like: "Architected and deployed microservices-based e-commerce platform serving 100K+ users, resulting in 40% improvement in page load times"
+
+If the user mentions any design preferences (e.g. "pill buttons", "glass cards"), set the appropriate designStyle fields:
 - designStyle.button: "default" | "outline" | "pill" | "gradient" | "ghost" | "sharp"
 - designStyle.card: "default" | "bordered" | "shadowed" | "glass" | "elevated"
 - designStyle.background: "solid" | "gradient" | "mesh" | "dots" | "lines"
 
-Return ONLY valid JSON with this exact structure (no markdown, no explanation, no extra text):
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "name": "Full Name",
   "initials": "AB",
@@ -852,16 +931,39 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation, n
   "location": "City, Country",
   "linkedin": "linkedin.com/in/username",
   "website": "www.website.com",
-  "summary": "2-3 sentence professional summary",
-  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6"],
+  "summary": "3-4 sentence compelling professional summary with key achievements and strengths",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10"],
   "experience": [
-    { "role": "Job Title", "company": "Company Name", "period": "2020 – 2024", "desc": "Achievement-focused description.", "bullets": ["Point 1", "Point 2"] }
+    { 
+      "role": "Senior Job Title", 
+      "company": "Company Name", 
+      "period": "2022 – Present", 
+      "desc": "", 
+      "bullets": [
+        "Led development of X resulting in Y% improvement in Z",
+        "Architected and implemented scalable solution that reduced costs by $X",
+        "Mentored team of X developers and improved code quality by Y%",
+        "Optimized system performance achieving X% faster response times"
+      ]
+    },
+    { 
+      "role": "Mid-Level Job Title", 
+      "company": "Previous Company", 
+      "period": "2020 – 2022", 
+      "desc": "", 
+      "bullets": [
+        "Developed and deployed X features used by Y users daily",
+        "Collaborated with cross-functional teams to deliver Z on time",
+        "Implemented automated testing reducing bugs by X%",
+        "Contributed to architecture decisions improving scalability"
+      ]
+    }
   ],
   "education": [
-    { "degree": "Degree Name", "school": "University Name", "year": "2020" }
+    { "degree": "Bachelor of Science in Computer Science", "school": "University Name", "year": "2020" }
   ],
   "languages": ["English – Native", "Spanish – Intermediate"],
-  "awards": ["Award 1", "Award 2"],
+  "awards": ["Best Developer Award 2023", "Hackathon Winner 2022", "AWS Certified Solutions Architect"],
   "sectionStyle": {
     "skills": "bars",
     "experience": "default"
@@ -872,7 +974,8 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation, n
     "background": "solid"
   }
 }
-If any field is not mentioned, make a reasonable professional inference. Always return valid JSON only — never include explanatory text outside the JSON.`;
+
+REMEMBER: Generate RICH, DETAILED content. A professional resume should be comprehensive, not minimal!`;
 
     // Build user message
     let userMessage = '';
