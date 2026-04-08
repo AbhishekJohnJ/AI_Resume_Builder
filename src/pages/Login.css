@@ -127,70 +127,119 @@
   gap: 1.25rem;
   align-items: flex-start;
   padding: 1.25rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, var(--accent-soft) 100%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.9) 100%);
   border-radius: 12px;
   backdrop-filter: blur(20px);
-  border: 1px solid var(--accent-border);
-  border-left: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
-  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 215, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
 }
 
+/* Animated gradient background for each card */
 .feature-item::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 100%;
-  background: linear-gradient(180deg, var(--accent), #000000);
-  border-radius: 12px 0 0 12px;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: rotateGradient 8s linear infinite;
+}
+
+@keyframes rotateGradient {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.feature-item:hover::before {
+  opacity: 1;
+}
+
+/* Glow border effect */
+.feature-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 2px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.feature-item:hover::after {
+  opacity: 1;
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 .feature-item:hover {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.75) 0%, var(--accent-12) 100%);
-  transform: translateX(10px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-20);
-  border-color: var(--accent-50);
-  border-left-color: var(--accent);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(20, 20, 20, 0.95) 100%);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.6);
+  transform: translateX(10px) scale(1.02);
 }
 
 .feature-icon {
   font-size: 2.5rem;
   flex-shrink: 0;
-  color: var(--accent);
+  color: #ffd700;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 12px;
-  transition: all 0.3s ease;
-  border: 1px solid var(--accent-border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .feature-item:hover .feature-icon {
-  background: var(--accent-25);
-  transform: scale(1.1) rotate(5deg);
-  color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-50);
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
+  animation: pulseGold 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
 }
 
 .feature-text h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .feature-text p {
   margin: 0;
   opacity: 0.9;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Right Side - Login Card */
