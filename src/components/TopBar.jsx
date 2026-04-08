@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
+import XPCounter from './XPCounter';
 import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
 
@@ -162,6 +163,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <XPCounter />
           {/* Theme picker */}
           <div style={{ position: 'relative' }}>
             <button

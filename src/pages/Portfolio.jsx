@@ -5,7 +5,10 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
+import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
+import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
+import { showToast } from '../components/Toast';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -679,6 +682,7 @@ function Portfolio() {
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
+  const [showLockModal, setShowLockModal] = useState(false);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const outputRef = useRef(null);
@@ -693,6 +697,13 @@ function Portfolio() {
   const handleGenerate = async () => {
     if (!prompt.trim() && files.length === 0) return;
     if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+
+    // Check if feature is locked
+    if (isFeatureLocked('portfolio')) {
+      setShowLockModal(true);
+      return;
+    }
+
     setError('');
 
     // Parse theme color from prompt
@@ -711,6 +722,7 @@ function Portfolio() {
     }
 
     setLoading(true);
+    const isNewPortfolio = !portfolioData;
     if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
       const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
@@ -725,6 +737,13 @@ function Portfolio() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
       setPortfolioData(data.portfolioData);
+
+      // Increment usage and award XP
+      incrementFeatureUsage('portfolio');
+      if (isNewPortfolio) {
+        const xpResult = awardXP('portfolioCreated');
+        showToast(`Portfolio created! +${xpResult.earned} XP 🎨`, 'success');
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -957,8 +976,10 @@ ${markup}
                 className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
                 disabled={loading || (!prompt.trim() && files.length === 0)}
+                title={`${getRemainingUses('portfolio')} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}
+                <span className="pf-uses-badge">{getRemainingUses('portfolio')} left</span>
               </button>
             </div>
 
@@ -1051,6 +1072,14 @@ ${markup}
             </div>
           </div>
         </div>
+      )}
+
+      {showLockModal && (
+        <FeatureLockModal
+          featureName="portfolio"
+          onClose={() => setShowLockModal(false)}
+          onUnlock={() => setShowLockModal(false)}
+        />
       )}
     </div>
   );

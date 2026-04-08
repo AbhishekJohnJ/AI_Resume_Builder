@@ -7,7 +7,10 @@ import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
+import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
+import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
+import { showToast } from '../components/Toast';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -22,6 +25,7 @@ function ResumeBuilder() {
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
+  const [showLockModal, setShowLockModal] = useState(false);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
@@ -43,6 +47,13 @@ function ResumeBuilder() {
       setError('Please select a template first.');
       return;
     }
+
+    // Check if feature is locked
+    if (isFeatureLocked('resume')) {
+      setShowLockModal(true);
+      return;
+    }
+
     setError('');
 
     // Parse theme color from prompt
@@ -56,6 +67,7 @@ function ResumeBuilder() {
     }
 
     setLoading(true);
+    const isNewResume = !resumeData;
     if (!resumeData) setResumeData(null); // only clear on fresh generation
     try {
       const formData = new FormData();
@@ -71,6 +83,16 @@ function ResumeBuilder() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
+
+      // Increment usage and award XP
+      incrementFeatureUsage('resume');
+      if (isNewResume) {
+        const xpResult = awardXP('resumeCreated');
+        showToast(`Resume created! +${xpResult.earned} XP 🎉`, 'success');
+      } else {
+        const xpResult = awardXP('resumeImproved');
+        showToast(`Resume improved! +${xpResult.earned} XP ✨`, 'success');
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -178,8 +200,10 @@ function ResumeBuilder() {
                   className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
                   onClick={handleSubmit}
                   disabled={loading || (!prompt.trim() && files.length === 0)}
+                  title={`${getRemainingUses('resume')} uses remaining`}
                 >
                   {loading ? <span className="rb-spinner" /> : <Send size={16} />}
+                  <span className="rb-uses-count">{getRemainingUses('resume')}</span>
                 </button>
               </div>
 
@@ -225,6 +249,14 @@ function ResumeBuilder() {
           </div>
         </main>
       </div>
+
+      {showLockModal && (
+        <FeatureLockModal
+          featureName="resume"
+          onClose={() => setShowLockModal(false)}
+          onUnlock={() => setShowLockModal(false)}
+        />
+      )}
     </div>
   );
 }

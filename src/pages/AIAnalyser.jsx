@@ -2,6 +2,9 @@ import { useState, useRef } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
+import FeatureLockModal from '../components/FeatureLockModal';
+import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
+import { showToast } from '../components/Toast';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -42,6 +45,7 @@ function AIAnalyser() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [showLockModal, setShowLockModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFile = (e) => {
@@ -56,6 +60,13 @@ function AIAnalyser() {
 
   const handleAnalyse = async () => {
     if (!file && !text.trim()) return;
+
+    // Check if feature is locked
+    if (isFeatureLocked('aiAnalysis')) {
+      setShowLockModal(true);
+      return;
+    }
+
     setLoading(true);
     setError('');
     setResult(null);
@@ -109,6 +120,17 @@ function AIAnalyser() {
       setResult(data);
       localStorage.setItem('analyzedResumeScore', String(data.resume_score || 0));
       localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
+
+      // Increment usage and award XP
+      incrementFeatureUsage('aiAnalysis');
+      const xpResult = awardXP('aiAnalysisCompleted');
+      showToast(`Analysis complete! +${xpResult.earned} XP 🎯`, 'success');
+
+      // Award bonus XP if uploaded new resume
+      if (file) {
+        const bonusXP = awardXP('resumeUploaded');
+        showToast(`Resume uploaded! +${bonusXP.earned} bonus XP 📄`, 'success');
+      }
 
     } catch (err) {
       console.error('❌ [FRONTEND] Error:', err.message);
@@ -197,9 +219,11 @@ function AIAnalyser() {
                 className={`analyser-btn ${(file || text.trim()) && !loading ? 'active' : ''}`}
                 onClick={handleAnalyse}
                 disabled={(!file && !text.trim()) || loading}
+                title={`${getRemainingUses('aiAnalysis')} uses remaining`}
               >
                 {loading ? <span className="analyser-spinner" /> : <ScanSearch size={18} />}
                 {loading ? 'Analysing...' : 'Analyse Resume'}
+                <span className="analyser-uses-badge">{getRemainingUses('aiAnalysis')} left</span>
               </button>
 
               <p className="analyser-dataset-note">
@@ -601,6 +625,14 @@ function AIAnalyser() {
           </div>
         </main>
       </div>
+
+      {showLockModal && (
+        <FeatureLockModal
+          featureName="aiAnalysis"
+          onClose={() => setShowLockModal(false)}
+          onUnlock={() => setShowLockModal(false)}
+        />
+      )}
     </div>
   );
 }
