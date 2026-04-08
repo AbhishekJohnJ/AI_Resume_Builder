@@ -78,7 +78,19 @@ function ResumeBuilder() {
       return;
     }
 
-    // Check if feature is locked (no uses left)
+    setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    if (detectedColor) setThemeColor(detectedColor);
+
+    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
+    if (isColorChangeOnly(prompt)) {
+      if (!resumeData) setError('Generate a resume first, then change the colour.');
+      return;
+    }
+
+    // Check if feature is locked (no uses left) - ONLY for actual generation
     const locked = await isFeatureLocked('resume');
     if (locked) {
       // Try to auto-unlock with XP
@@ -90,18 +102,6 @@ function ResumeBuilder() {
       // Successfully unlocked! Update UI and continue
       const uses = await getRemainingUses('resume');
       setRemainingUses(uses);
-    }
-
-    setError('');
-
-    // Parse theme color from prompt
-    const detectedColor = parseThemeColor(prompt);
-    if (detectedColor) setThemeColor(detectedColor);
-
-    // If it's only a color-change request, just recolor — no AI call needed
-    if (isColorChangeOnly(prompt)) {
-      if (!resumeData) setError('Generate a resume first, then change the colour.');
-      return;
     }
 
     setLoading(true);

@@ -729,7 +729,24 @@ function Portfolio() {
       return; 
     }
 
-    // Check if feature is locked (no uses left)
+    setError('');
+
+    // Parse theme color from prompt
+    const detectedColor = parseThemeColor(prompt);
+    const replaceColor = parseColorReplace(prompt, selectedTemplate);
+    // Merge: replace-mode overrides take priority over single/multi-target
+    const mergedColor = (detectedColor || replaceColor)
+      ? { ...(detectedColor || {}), ...(replaceColor || {}) }
+      : null;
+    if (mergedColor) setThemeColor(mergedColor);
+
+    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
+    if (isColorChangeOnly(prompt)) {
+      if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
+      return;
+    }
+
+    // Check if feature is locked (no uses left) - ONLY for actual generation
     const locked = await isFeatureLocked('portfolio');
     if (locked) {
       // Try to auto-unlock with XP
@@ -743,23 +760,6 @@ function Portfolio() {
       const newLocked = await isFeatureLocked('portfolio');
       setRemainingUses(uses);
       setIsLocked(newLocked);
-    }
-
-    setError('');
-
-    // Parse theme color from prompt
-    const detectedColor = parseThemeColor(prompt);
-    const replaceColor = parseColorReplace(prompt, selectedTemplate);
-    // Merge: replace-mode overrides take priority over single/multi-target
-    const mergedColor = (detectedColor || replaceColor)
-      ? { ...(detectedColor || {}), ...(replaceColor || {}) }
-      : null;
-    if (mergedColor) setThemeColor(mergedColor);
-
-    // If it's only a color-change request, just recolor — no AI call needed
-    if (isColorChangeOnly(prompt)) {
-      if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
-      return;
     }
 
     setLoading(true);
