@@ -84,18 +84,24 @@ function Dashboard() {
     { id: 3, icon: FileText, title: 'Resume Crafter', desc: 'Build a resume using the Resume Builder', xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
     { id: 4, icon: Map, title: 'Template Explorer', desc: 'Preview at least 5 different resume templates', xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
     { id: 5, icon: TrendingUp, title: 'Score Chaser', desc: 'Re-analyse your resume after edits to improve your score', xp: 60, rarity: 'epic', action: () => navigate('/ai-analyser') },
-    { id: 6, icon: Briefcase, title: 'Portfolio Pro', desc: 'Save and view your generated portfolio', xp: 35, rarity: 'rare', action: () => navigate('/my-portfolios') },
+    { id: 6, icon: Briefcase, title: 'Portfolio Explorer', desc: 'Preview at least 3 different portfolio templates', xp: 25, rarity: 'rare', action: () => navigate('/portfolio') },
   ];
 
-  const [completedQuests, setCompletedQuests] = useState(() => {
-    const data = getGamificationData();
-    return data.completedQuests || [];
-  });
+  const [completedQuests, setCompletedQuests] = useState([]);
+  
+  // Load gamification data on mount
+  useEffect(() => {
+    const loadGamificationData = async () => {
+      const data = await getGamificationData();
+      setCompletedQuests(data.completedQuests || []);
+    };
+    loadGamificationData();
+  }, []);
   
   // Listen for quest completion events
   useEffect(() => {
-    const handleQuestComplete = (e) => {
-      const data = getGamificationData();
+    const handleQuestComplete = async (e) => {
+      const data = await getGamificationData();
       setCompletedQuests(data.completedQuests || []);
       
       // Show toast if quest was just completed
@@ -113,8 +119,20 @@ function Dashboard() {
     };
   }, []);
   
-  const data = getGamificationData();
-  const totalXP = data.userXP || 0;
+  // Get total XP and calculate progress
+  const [totalXP, setTotalXP] = useState(0);
+  useEffect(() => {
+    const loadXP = async () => {
+      const data = await getGamificationData();
+      setTotalXP(data.userXP || 0);
+    };
+    loadXP();
+    
+    const handleUpdate = () => loadXP();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
+  
   const maxXP = QUESTS.reduce((s, q) => s + q.xp, 0);
   const xpPct = Math.round((totalXP / maxXP) * 100);
   const careerLevel = totalXP < 50 ? 'Rookie' : totalXP < 120 ? 'Builder' : totalXP < 200 ? 'Pro' : 'Elite';
@@ -241,9 +259,10 @@ function Dashboard() {
                     <svg viewBox="0 0 44 44" className="qb-ring-svg">
                       <circle cx="22" cy="22" r="18" fill="none" stroke="#222" strokeWidth="4"/>
                       <circle cx="22" cy="22" r="18" fill="none" stroke="var(--accent,#ffd700)" strokeWidth="4"
-                        strokeDasharray={`${xpPct * 1.131} 113.1`}
-                        strokeLinecap="round" strokeDashoffset="28.3"
-                        style={{transition:'stroke-dasharray 0.6s ease'}}/>
+                        strokeDasharray="113.1"
+                        strokeDashoffset={113.1 - (xpPct * 1.131)}
+                        strokeLinecap="round"
+                        style={{transition:'stroke-dashoffset 0.6s ease', transform: 'rotate(-90deg)', transformOrigin: '50% 50%'}}/>
                     </svg>
                     <span className="qb-ring-pct">{xpPct}%</span>
                   </div>

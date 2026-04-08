@@ -7,8 +7,8 @@ function XPCounter() {
   const [xp, setXP] = useState(0);
 
   useEffect(() => {
-    const updateXP = () => {
-      const data = getGamificationData();
+    const updateXP = async () => {
+      const data = await getGamificationData();
       setXP(data.userXP || 0);
     };
 

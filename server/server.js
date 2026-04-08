@@ -113,6 +113,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  gamification: {
+    type: Object,
+    default: {
+      userXP: 0,
+      resumeUses: 0,
+      aiAnalysisUses: 0,
+      portfolioUses: 0,
+      resumeLimit: 3,
+      aiAnalysisLimit: 3,
+      portfolioLimit: 3,
+      completedQuests: [],
+      lastQuestReset: null,
+      questActions: {}
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -242,6 +257,67 @@ app.get('/api/users/:id', async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error('Get user error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── Gamification API Endpoints ──────────────────────────────────────────────
+
+// Get gamification data for a user
+app.get('/api/gamification/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Initialize gamification if not exists
+    if (!user.gamification) {
+      user.gamification = {
+        userXP: 0,
+        resumeUses: 0,
+        aiAnalysisUses: 0,
+        portfolioUses: 0,
+        resumeLimit: 3,
+        aiAnalysisLimit: 3,
+        portfolioLimit: 3,
+        completedQuests: [],
+        lastQuestReset: new Date().toDateString(),
+        questActions: {}
+      };
+      await user.save();
+    }
+
+    // Check if we need to reset daily quests
+    const today = new Date().toDateString();
+    if (user.gamification.lastQuestReset !== today) {
+      user.gamification.completedQuests = [];
+      user.gamification.lastQuestReset = today;
+      await user.save();
+    }
+
+    res.json(user.gamification);
+  } catch (error) {
+    console.error('Get gamification error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update gamification data for a user
+app.put('/api/gamification/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update gamification data
+    user.gamification = { ...user.gamification, ...req.body };
+    await user.save();
+
+    res.json(user.gamification);
+  } catch (error) {
+    console.error('Update gamification error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

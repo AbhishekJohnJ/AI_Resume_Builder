@@ -9,7 +9,7 @@ import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
 import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -25,11 +25,29 @@ function ResumeBuilder() {
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [remainingUses, setRemainingUses] = useState(3);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
 
+  // Load remaining uses on mount and when gamification updates
+  useEffect(() => {
+    const loadRemainingUses = async () => {
+      const uses = await getRemainingUses('resume');
+      setRemainingUses(uses);
+    };
+    loadRemainingUses();
+    
+    const handleUpdate = () => loadRemainingUses();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
+
   const handleLogout = () => navigate('/');
+
+  const handleTemplateSelect = (templateId) => {
+    setSelectedTemplate(templateId);
+  };
 
   const handleFileChange = (e) => {
     const picked = Array.from(e.target.files);
@@ -48,7 +66,8 @@ function ResumeBuilder() {
     }
 
     // Check if feature is locked - MUST be first check
-    if (isFeatureLocked('resume')) {
+    const locked = await isFeatureLocked('resume');
+    if (locked) {
       setShowLockModal(true);
       setError(''); // Clear any previous errors
       return; // Stop execution immediately
@@ -85,7 +104,7 @@ function ResumeBuilder() {
       setResumeData(data.resumeData);
 
       // Increment usage and auto-complete quest
-      incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
+      await incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -134,7 +153,7 @@ function ResumeBuilder() {
           </div>
 
           <div className="resume-builder-content">
-            <TemplatePickerCard selected={selectedTemplate} onSelect={setSelectedTemplate} />
+            <TemplatePickerCard selected={selectedTemplate} onSelect={handleTemplateSelect} />
 
             {/* ── AI Prompt Box ── */}
             <div className="rb-prompt-section">
@@ -193,10 +212,10 @@ function ResumeBuilder() {
                   className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
                   onClick={handleSubmit}
                   disabled={loading || (!prompt.trim() && files.length === 0)}
-                  title={`${getRemainingUses('resume')} uses remaining`}
+                  title={`${remainingUses} uses remaining`}
                 >
                   {loading ? <span className="rb-spinner" /> : <Send size={16} />}
-                  <span className="rb-uses-count">{getRemainingUses('resume')}</span>
+                  <span className="rb-uses-count">{remainingUses}</span>
                 </button>
               </div>
 

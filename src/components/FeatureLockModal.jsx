@@ -10,7 +10,7 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
   const handleUnlock = () => {
     const result = unlockFeature(featureName);
     if (result.success) {
-      showToast(`Unlocked ${info.unlockAmount} more uses! 🎉`, 'success');
+      showToast(`Unlocked 1 more use! 🎉`, 'success');
       onUnlock?.();
       onClose();
     } else {
@@ -49,14 +49,14 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
           <div className="unlock-offer">
             <Zap size={20} className="unlock-icon" />
             <div className="unlock-text">
-              <p className="unlock-title">Unlock {info.unlockAmount} More Uses</p>
+              <p className="unlock-title">Unlock 1 More Use</p>
               <p className="unlock-cost">Cost: {info.unlockCost} XP</p>
             </div>
           </div>
 
           {info.canUnlock ? (
             <button className="unlock-btn" onClick={handleUnlock}>
-              Unlock Now
+              Spend {info.unlockCost} XP to Unlock
             </button>
           ) : (
             <div className="unlock-blocked">
@@ -66,9 +66,11 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
               <p className="unlock-hint">
                 Complete daily quests to earn XP:
                 <br />• Resume Sniper (+50 XP)
-                <br />• Portfolio Architect (+40 XP)
-                <br />• Resume Crafter (+30 XP)
                 <br />• Score Chaser (+60 XP)
+                <br />• Portfolio Architect (+40 XP)
+                <br />• Portfolio Pro (+35 XP)
+                <br />• Resume Crafter (+30 XP)
+                <br />• Template Explorer (+20 XP)
               </p>
             </div>
           )}

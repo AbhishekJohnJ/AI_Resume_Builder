@@ -3,7 +3,7 @@ import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import FeatureLockModal from '../components/FeatureLockModal';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -45,7 +45,24 @@ function AIAnalyser() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [showLockModal, setShowLockModal] = useState(false);
+  const [remainingUses, setRemainingUses] = useState(3);
+  const [isLocked, setIsLocked] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Load remaining uses and lock status on mount
+  useEffect(() => {
+    const loadGamificationStatus = async () => {
+      const uses = await getRemainingUses('aiAnalysis');
+      const locked = await isFeatureLocked('aiAnalysis');
+      setRemainingUses(uses);
+      setIsLocked(locked);
+    };
+    loadGamificationStatus();
+    
+    const handleUpdate = () => loadGamificationStatus();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
 
   const handleFile = (e) => {
     const f = e.target.files[0];
@@ -61,7 +78,8 @@ function AIAnalyser() {
     if (!file && !text.trim()) return;
 
     // Check if feature is locked - MUST be first check
-    if (isFeatureLocked('aiAnalysis')) {
+    const locked = await isFeatureLocked('aiAnalysis');
+    if (locked) {
       setShowLockModal(true);
       setError(''); // Clear any previous errors
       return; // Stop execution immediately
@@ -122,7 +140,10 @@ function AIAnalyser() {
       localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
 
       // Increment usage and auto-complete quest
-      incrementFeatureUsage('aiAnalysis', 1); // Quest ID 1: Resume Sniper
+      await incrementFeatureUsage('aiAnalysis', 1); // Quest ID 1: Resume Sniper
+      
+      // Track for Quest 5: Score Chaser (re-analyze after edits)
+      await trackQuestAction(5, { analysisCount: true });
 
     } catch (err) {
       console.error('❌ [FRONTEND] Error:', err.message);
@@ -208,14 +229,14 @@ function AIAnalyser() {
               )}
 
               <button
-                className={`analyser-btn ${(file || text.trim()) && !loading && !isFeatureLocked('aiAnalysis') ? 'active' : ''}`}
+                className={`analyser-btn ${(file || text.trim()) && !loading && !isLocked ? 'active' : ''}`}
                 onClick={handleAnalyse}
-                disabled={(!file && !text.trim()) || loading || isFeatureLocked('aiAnalysis')}
-                title={isFeatureLocked('aiAnalysis') ? 'Feature locked - click to unlock' : `${getRemainingUses('aiAnalysis')} uses remaining`}
+                disabled={(!file && !text.trim()) || loading || isLocked}
+                title={isLocked ? 'Feature locked - click to unlock' : `${remainingUses} uses remaining`}
               >
                 {loading ? <span className="analyser-spinner" /> : <ScanSearch size={18} />}
                 {loading ? 'Analysing...' : 'Analyse Resume'}
-                <span className="analyser-uses-badge">{getRemainingUses('aiAnalysis')} left</span>
+                <span className="analyser-uses-badge">{remainingUses} left</span>
               </button>
 
               <p className="analyser-dataset-note">

@@ -7,7 +7,7 @@ import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
 import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -682,9 +682,26 @@ function Portfolio() {
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [remainingUses, setRemainingUses] = useState(3);
+  const [isLocked, setIsLocked] = useState(false);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const outputRef = useRef(null);
+
+  // Load remaining uses and lock status on mount
+  useEffect(() => {
+    const loadGamificationStatus = async () => {
+      const uses = await getRemainingUses('portfolio');
+      const locked = await isFeatureLocked('portfolio');
+      setRemainingUses(uses);
+      setIsLocked(locked);
+    };
+    loadGamificationStatus();
+    
+    const handleUpdate = () => loadGamificationStatus();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
 
   const handleFileChange = (e) => {
     setFiles(prev => [...prev, ...Array.from(e.target.files)]);
@@ -701,7 +718,8 @@ function Portfolio() {
     }
 
     // Check if feature is locked - MUST be first check
-    if (isFeatureLocked('portfolio')) {
+    const locked = await isFeatureLocked('portfolio');
+    if (locked) {
       setShowLockModal(true);
       setError(''); // Clear any previous errors
       return; // Stop execution immediately
@@ -742,7 +760,7 @@ function Portfolio() {
       setPortfolioData(data.portfolioData);
 
       // Increment usage and auto-complete quest
-      incrementFeatureUsage('portfolio', 2); // Quest ID 2: Portfolio Architect
+      await incrementFeatureUsage('portfolio', 2); // Quest ID 2: Portfolio Architect
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -874,7 +892,11 @@ ${markup}
                             <div
                               key={tpl.id}
                               className={`pf-card ${selectedTemplate === tpl.id ? 'pf-card-selected' : ''}`}
-                              onClick={() => setPreviewTemplate(tpl)}
+                              onClick={() => {
+                                setPreviewTemplate(tpl);
+                                // Track template preview for Quest 6: Portfolio Explorer
+                                trackQuestAction(6, { uniqueId: tpl.id });
+                              }}
                             >
                               {tpl.recommended && <span className="pf-badge">Recommended</span>}
                               <div className="pf-card-preview">
@@ -972,13 +994,13 @@ ${markup}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
               />
               <button
-                className={`rb-send-btn${(prompt.trim() || files.length) && !loading && !isFeatureLocked('portfolio') ? ' rb-send-active' : ''}`}
+                className={`rb-send-btn${(prompt.trim() || files.length) && !loading && !isLocked ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
-                disabled={loading || (!prompt.trim() && files.length === 0) || isFeatureLocked('portfolio')}
-                title={isFeatureLocked('portfolio') ? 'Feature locked - click to unlock' : `${getRemainingUses('portfolio')} uses remaining`}
+                disabled={loading || (!prompt.trim() && files.length === 0) || isLocked}
+                title={isLocked ? 'Feature locked - click to unlock' : `${remainingUses} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}
-                <span className="pf-uses-badge">{getRemainingUses('portfolio')} left</span>
+                <span className="pf-uses-badge">{remainingUses} left</span>
               </button>
             </div>
 
