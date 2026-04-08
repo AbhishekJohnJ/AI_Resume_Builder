@@ -70,7 +70,7 @@ function Login() {
                 </div>
                 <div className="feature-text">
                   <h3>AI Resume Builder</h3>
-                  <p>Describe yourself in plain text — AI generates a full resume instantly</p>
+                  <p>Generate professional resumes from text prompts or uploaded files with AI assistance</p>
                 </div>
               </div>
               
@@ -80,7 +80,7 @@ function Login() {
                 </div>
                 <div className="feature-text">
                   <h3>Portfolio Generator</h3>
-                  <p>Turn your experience into a stunning portfolio with one prompt</p>
+                  <p>Create stunning portfolios with multiple templates — AI generates projects, skills & experience</p>
                 </div>
               </div>
               
@@ -89,8 +89,8 @@ function Login() {
                   <FaMagic />
                 </div>
                 <div className="feature-text">
-                  <h3>Smart Design Control</h3>
-                  <p>Change button styles, card designs, and backgrounds just by asking</p>
+                  <h3>AI Resume Analyzer</h3>
+                  <p>Get detailed analysis with scoring, strengths, weaknesses, and personalized improvement tips</p>
                 </div>
               </div>
               
@@ -99,8 +99,8 @@ function Login() {
                   <FaLayerGroup />
                 </div>
                 <div className="feature-text">
-                  <h3>Resume &amp; Portfolio Templates</h3>
-                  <p>Pick a template, describe your story — AI fills in the rest</p>
+                  <h3>Gamified Career Growth</h3>
+                  <p>Complete daily quests to earn XP, level up your career, and unlock premium features</p>
                 </div>
               </div>
             </div>
