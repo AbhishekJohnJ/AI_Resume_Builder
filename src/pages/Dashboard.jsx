@@ -13,7 +13,6 @@ function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const userName = user?.name?.split(' ')[0] || 'there';
-  const [appTheme, setAppTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
 
   // Load AI analysis results from localStorage
   const loadAnalysis = () => {
@@ -68,14 +67,6 @@ function Dashboard() {
     window.addEventListener('focus', refresh);
     window.addEventListener('storage', refresh);
     return () => { window.removeEventListener('focus', refresh); window.removeEventListener('storage', refresh); };
-  }, []);
-
-  useEffect(() => {
-    const onStorage = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
-    window.addEventListener('storage', onStorage);
-    const onFocus = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
-    window.addEventListener('focus', onFocus);
-    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
   }, []);
 
   const QUESTS = [
@@ -245,7 +236,7 @@ function Dashboard() {
             <h1 className="dashboard-title">Dashboard</h1>
 
             {/* ── Career Quest Board ── */}
-            <div className="qb-wrap">
+            <div className="qb-wrap qb-fullpage">
               {/* Header */}
               <div className="qb-header">
                 <div className="qb-header-left">
@@ -308,40 +299,13 @@ function Dashboard() {
                 })}
               </div>
             </div>
-
-            <div className="skills-card">
-              <div className="skills-card-header">
-                <h2 className="skills-card-title">Skill Progress</h2>
-              </div>
-              {skills.length > 0 ? (
-                <div className="skills-list">
-                  {skills.map(skill => (
-                    <div key={skill.name} className="skill-item">
-                      <div className="skill-header">
-                        <span className="skill-name">{skill.name}</span>
-                        <span className="skill-percentage">{skill.progress}%</span>
-                      </div>
-                      <div className="skill-progress-bar">
-                        <div className="skill-progress-fill" style={{ width: `${skill.progress}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="dashboard-empty-state">
-                  <span>💡</span>
-                  <p>"Analyse your resume to unlock skill insights and track your growth."</p>
-                  <button className="dashboard-cta-btn" onClick={() => navigate('/ai-analyser')}>Analyse Now →</button>
-                </div>
-              )}
-            </div>
           </main>
         </div>
 
         <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
           <div className="ai-panel-title">
             <div className="ai-panel-title-icon">
-              <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+              <img src={chatbotIcon} alt="AI" className="chatbot-img" style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
             </div>
             AI Assistant
           </div>
@@ -350,7 +314,7 @@ function Dashboard() {
               <div key={i} className={`ai-msg ${msg.role}`}>
                 {msg.role === 'ai' && (
                   <div className="ai-avatar">
-                    <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+                    <img src={chatbotIcon} alt="AI" className="chatbot-img" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                   </div>
                 )}
                 {msg.role === 'user' && (
