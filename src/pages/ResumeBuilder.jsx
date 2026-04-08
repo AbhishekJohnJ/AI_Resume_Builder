@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -22,11 +23,46 @@ function ResumeBuilder() {
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
+  const [remainingUses, setRemainingUses] = useState('...');
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
 
+  // Load remaining uses on mount and when gamification updates
+  useEffect(() => {
+    const loadRemainingUses = async () => {
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('resume');
+        const locked = await isFeatureLocked('resume');
+        
+        console.log('Resume Builder - Loaded uses:', uses, 'Locked:', locked);
+        
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
+          setRemainingUses('20 XP');
+        } else {
+          setRemainingUses(0);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('...'); // Show loading state on error
+      }
+    };
+    loadRemainingUses();
+    
+    const handleUpdate = () => loadRemainingUses();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
+
   const handleLogout = () => navigate('/');
+
+  const handleTemplateSelect = (templateId) => {
+    setSelectedTemplate(templateId);
+  };
 
   const handleFileChange = (e) => {
     const picked = Array.from(e.target.files);
@@ -43,19 +79,35 @@ function ResumeBuilder() {
       setError('Please select a template first.');
       return;
     }
+
     setError('');
 
     // Parse theme color from prompt
     const detectedColor = parseThemeColor(prompt);
     if (detectedColor) setThemeColor(detectedColor);
 
-    // If it's only a color-change request, just recolor — no AI call needed
+    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
     if (isColorChangeOnly(prompt)) {
       if (!resumeData) setError('Generate a resume first, then change the colour.');
       return;
     }
 
+    // Check if feature is locked (no uses left) - ONLY for actual generation
+    const locked = await isFeatureLocked('resume');
+    if (locked) {
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('resume');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('resume');
+      setRemainingUses(uses);
+    }
+
     setLoading(true);
+    const isNewResume = !resumeData;
     if (!resumeData) setResumeData(null); // only clear on fresh generation
     try {
       const formData = new FormData();
@@ -71,6 +123,17 @@ function ResumeBuilder() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
+
+      // Increment usage and auto-complete quest
+      await incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
+
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('resume');
+      if (newUses === 0) {
+        setRemainingUses('20 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -119,7 +182,7 @@ function ResumeBuilder() {
           </div>
 
           <div className="resume-builder-content">
-            <TemplatePickerCard selected={selectedTemplate} onSelect={setSelectedTemplate} />
+            <TemplatePickerCard selected={selectedTemplate} onSelect={handleTemplateSelect} />
 
             {/* ── AI Prompt Box ── */}
             <div className="rb-prompt-section">
@@ -178,8 +241,10 @@ function ResumeBuilder() {
                   className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
                   onClick={handleSubmit}
                   disabled={loading || (!prompt.trim() && files.length === 0)}
+                  title={`${remainingUses} uses remaining`}
                 >
                   {loading ? <span className="rb-spinner" /> : <Send size={16} />}
+                  <span className="rb-uses-count">{remainingUses}</span>
                 </button>
               </div>
 

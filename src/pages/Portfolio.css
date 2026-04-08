@@ -1117,3 +1117,23 @@
 .pt11-tech { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); border-radius: 3px; padding: 1px 6px; font-size: 9px; }
 .pt11-footer { padding: 14px 32px; border-top: 1px solid rgba(0,255,200,0.1); display: flex; gap: 12px; font-size: 10px; color: #374151; }
 .pt11-sep { color: #00ffc8; opacity: 0.4; }
+
+/* Usage counter badge */
+.pf-uses-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, #ffd700, #ffb700);
+  color: #1a1a2e;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.pf-send-btn {
+  position: relative;
+}

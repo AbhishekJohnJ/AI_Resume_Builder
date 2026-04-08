@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
+import XPCounter from './XPCounter';
 import chatbotIcon from '../assets/chatbot.jpg';
 import finalLogo from '../assets/finalized_logo.png';
 
@@ -25,9 +26,9 @@ const logoStyles = `
     height: 1px;
     background: linear-gradient(90deg,
       transparent 0%,
-      var(--accent) 30%,
-      var(--accent-alt) 50%,
-      var(--accent) 70%,
+      #ffd700 30%,
+      #ffed4e 50%,
+      #ffd700 70%,
       transparent 100%
     );
     background-size: 200% 100%;
@@ -66,19 +67,9 @@ const logoStyles = `
     height: 54px;
     object-fit: contain;
     display: block;
-    transition: filter 0.4s ease;
   }
-  .chatbot-img.theme-gold   { filter: none; }
-  .chatbot-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
-  .chatbot-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
-  .chatbot-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
-  .chatbot-img { transition: filter 0.4s ease; }
-  .logo-img.theme-gold   { filter: none; }
-  .logo-img.theme-purple { filter: hue-rotate(195deg) saturate(1.4) brightness(1.1); }
-  .logo-img.theme-green  { filter: hue-rotate(85deg)  saturate(1.3) brightness(1.05); }
-  .logo-img.theme-cyan   { filter: hue-rotate(155deg) saturate(1.3) brightness(1.1); }
   .brand-craft {
-    background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 40%, var(--accent) 60%, var(--accent-alt) 100%);
+    background: linear-gradient(90deg, #ffd700 0%, #ffed4e 40%, #ffd700 60%, #ffc700 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -90,35 +81,10 @@ const logoStyles = `
 function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
   const navigate = useNavigate();
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const userName = currentUser?.name || currentUser?.username || currentUser?.email?.split('@')[0] || 'User';
   const userRole = currentUser?.role || currentUser?.title || 'ResumeCraft Member';
   const resumeScore = parseInt(localStorage.getItem('analyzedResumeScore') || '0', 10);
-  const [showThemePicker, setShowThemePicker] = useState(false);
-
-  // Apply saved theme on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('appTheme') || 'gold';
-    document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
-  }, []);
-
-  const themes = [
-    { id: 'gold',   label: 'Gold',   dot: '#ffd700' },
-    { id: 'purple', label: 'Purple', dot: '#a855f7' },
-    { id: 'green',  label: 'Green',  dot: '#22c55e' },
-    { id: 'cyan',   label: 'Cyan',   dot: '#06b6d4' },
-  ];
-
-  const applyTheme = (id) => {
-    setTheme(id);
-    setShowThemePicker(false);
-    localStorage.setItem('appTheme', id);
-    document.body.setAttribute('data-theme', id === 'gold' ? '' : id);
-    window.dispatchEvent(new Event('focus'));
-  };
-
-  const currentTheme = themes.find(t => t.id === theme);
 
   return (
     <>
@@ -142,7 +108,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             <img
               src={finalLogo}
               alt="ResumeCraft logo"
-              className={`logo-img theme-${theme}`}
+              className="logo-img"
             />
           </div>
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>
@@ -162,89 +128,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {/* Theme picker */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setShowThemePicker(v => !v)}
-              title="Switch theme"
-              style={{
-                background: showThemePicker ? 'rgba(255,255,255,0.08)' : 'transparent',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: '8px',
-                width: '36px',
-                height: '36px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                gap: '0',
-              }}
-            >
-              <span style={{
-                width: '14px', height: '14px', borderRadius: '50%',
-                background: currentTheme.dot,
-                display: 'block',
-                boxShadow: `0 0 6px ${currentTheme.dot}`,
-              }} />
-            </button>
-
-            {showThemePicker && (
-              <>
-                <div
-                  style={{ position: 'fixed', inset: 0, zIndex: 999 }}
-                  onClick={() => setShowThemePicker(false)}
-                />
-                <div style={{
-                  position: 'absolute',
-                  top: '44px',
-                  right: 0,
-                  background: '#1a1a1a',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '10px',
-                  padding: '0.4rem',
-                  zIndex: 1000,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.2rem',
-                  minWidth: '120px',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                }}>
-                  {themes.map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => applyTheme(t.id)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.6rem',
-                        padding: '0.5rem 0.75rem',
-                        background: theme === t.id ? 'rgba(255,255,255,0.07)' : 'transparent',
-                        border: 'none',
-                        borderRadius: '7px',
-                        cursor: 'pointer',
-                        color: theme === t.id ? '#fff' : 'rgba(255,255,255,0.6)',
-                        fontSize: '0.82rem',
-                        fontWeight: theme === t.id ? 600 : 400,
-                        transition: 'all 0.15s',
-                        textAlign: 'left',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-                      onMouseLeave={e => e.currentTarget.style.background = theme === t.id ? 'rgba(255,255,255,0.07)' : 'transparent'}
-                    >
-                      <span style={{
-                        width: '10px', height: '10px', borderRadius: '50%',
-                        background: t.dot, flexShrink: 0,
-                        boxShadow: `0 0 5px ${t.dot}`,
-                      }} />
-                      {t.label}
-                      {theme === t.id && <span style={{ marginLeft: 'auto', color: t.dot, fontSize: '0.7rem' }}>✓</span>}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          <XPCounter />
           {onAiToggle && (
             <button
               onClick={onAiToggle}
