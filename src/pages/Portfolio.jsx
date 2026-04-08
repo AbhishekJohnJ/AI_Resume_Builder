@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
+import { User, Menu, Send, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
@@ -674,16 +674,12 @@ function Portfolio() {
   const [codeTab, setCodeTab] = useState('html');
   const [copied, setCopied] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [files, setFiles] = useState([]);
-  const [showUploadMenu, setShowUploadMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
   const [remainingUses, setRemainingUses] = useState('...');
   const [isLocked, setIsLocked] = useState(false);
-  const fileInputRef = useRef(null);
-  const docInputRef = useRef(null);
   const outputRef = useRef(null);
 
   // Load remaining uses and lock status on mount
@@ -717,15 +713,8 @@ function Portfolio() {
     return () => window.removeEventListener('gamificationUpdate', handleUpdate);
   }, []);
 
-  const handleFileChange = (e) => {
-    setFiles(prev => [...prev, ...Array.from(e.target.files)]);
-    e.target.value = '';
-    setShowUploadMenu(false);
-  };
-  const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
-
   const handleGenerate = async () => {
-    if (!prompt.trim() && files.length === 0) return;
+    if (!prompt.trim()) return;
     if (!selectedTemplate) { 
       setError('Please select a template above before generating.'); 
       return; 
@@ -972,42 +961,10 @@ ${markup}
 
           {/* ── Portfolio Prompt Section ── */}
           <div className="rb-prompt-section">
-            <h3 className="rb-prompt-title">Describe your portfolio or upload your existing one</h3>
-            <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting — or upload a file to get started.</p>
+            <h3 className="rb-prompt-title">Describe your portfolio</h3>
+            <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting.</p>
 
-            <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
-            <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple style={{ display: 'none' }} onChange={handleFileChange} />
-
-            {files.length > 0 && (
-              <div className="rb-file-chips">
-                {files.map((f, i) => (
-                  <div key={i} className="rb-file-chip">
-                    {f.type.startsWith('image/') ? <Image size={13} /> : <FileText size={13} />}
-                    <span>{f.name}</span>
-                    <button onClick={() => removeFile(i)}><X size={11} /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-
-
-            <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
-              <div className="rb-plus-wrap">
-                <button className="rb-plus-btn" onClick={() => setShowUploadMenu(v => !v)}>
-                  <Plus size={18} />
-                </button>
-                {showUploadMenu && (
-                  <div className="rb-upload-menu">
-                    <button className="rb-upload-option" onClick={() => fileInputRef.current.click()}>
-                      <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
-                    </button>
-                    <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
-                      <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+            <div className={`rb-bar rb-bar-no-upload${prompt.trim() ? ' rb-bar-active' : ''}`}>
               <textarea
                 className="rb-input"
                 placeholder={portfolioData ? 'e.g. Make the about section more bold, add a new project, improve my tagline...' : 'e.g. Designer, React, portfolio...'}
@@ -1024,9 +981,9 @@ ${markup}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
               />
               <button
-                className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
+                className={`rb-send-btn${prompt.trim() && !loading ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
-                disabled={loading || (!prompt.trim() && files.length === 0)}
+                disabled={loading || !prompt.trim()}
                 title={isLocked ? 'Will spend 30 XP to generate' : `${remainingUses} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}

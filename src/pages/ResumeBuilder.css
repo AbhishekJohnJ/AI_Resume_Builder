@@ -148,6 +148,15 @@
   box-shadow: 0 0 0 3px var(--accent-12);
 }
 
+/* No upload variant - cleaner padding without + button */
+.rb-bar-no-upload {
+  padding: 6px 8px;
+}
+
+.rb-bar-no-upload .rb-input {
+  padding: 6px 16px;
+}
+
 /* + button */
 .rb-plus-wrap { position: relative; flex-shrink: 0; align-self: flex-end; }
 

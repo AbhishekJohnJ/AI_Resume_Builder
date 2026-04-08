@@ -18,14 +18,23 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 // Multer: store files in memory
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
+// Import PDF extractor
+const PDFExtractor = require('./utils/pdfExtractor');
+
 // Extract text from uploaded file buffer
 async function extractTextFromFile(file) {
   const { mimetype, originalname, buffer } = file;
   const ext = path.extname(originalname).toLowerCase();
 
-  // PDF - Note: PDF extraction is now handled by AI routes using Python PyMuPDF
+  // PDF - Use Python PyMuPDF extractor
   if (mimetype === 'application/pdf' || ext === '.pdf') {
-    throw new Error('PDF extraction should use AI routes with Python PyMuPDF');
+    try {
+      const result = await PDFExtractor.extractText(file);
+      return result.text;
+    } catch (error) {
+      console.error('PDF extraction error:', error);
+      return `[PDF file: ${originalname} - extraction failed: ${error.message}]`;
+    }
   }
 
   // Word DOCX
