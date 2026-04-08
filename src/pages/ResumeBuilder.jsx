@@ -8,7 +8,7 @@ import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, unlockFeature } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -38,15 +38,17 @@ function ResumeBuilder() {
         
         console.log('Resume Builder - Loaded uses:', uses, 'Locked:', locked);
         
-        // If no uses left, show XP cost instead of 0
-        if (uses === 0) {
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
           setRemainingUses('20 XP');
         } else {
-          setRemainingUses(uses);
+          setRemainingUses(0);
         }
       } catch (error) {
         console.error('Error loading gamification status:', error);
-        setRemainingUses('20 XP'); // Fallback
+        setRemainingUses('...'); // Show loading state on error
       }
     };
     loadRemainingUses();

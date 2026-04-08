@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, Palette, Zap, FileText, Globe, Save, Share2, Layout, ChevronDown, ChevronUp, MousePointer, Type, Paperclip, Wand2, Download, RefreshCw } from 'lucide-react';
+import { Bot, Palette, Zap, FileText, Globe, Save, Share2, Layout, ChevronDown, ChevronUp, MousePointer, Type, Paperclip, Wand2, Download, RefreshCw, Target, TrendingUp } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import './About.css';
@@ -91,8 +91,8 @@ function About() {
               </div>
               <div className="about-card">
                 <Zap size={32} className="about-card-icon" />
-                <h3>Fast & Easy</h3>
-                <p>Go from blank page to polished resume in minutes, not hours. No design skills required.</p>
+                <h3>Gamified Experience</h3>
+                <p>Complete quests, earn XP, and level up your career. Get 3 free uses for each feature to start your journey.</p>
               </div>
             </div>
 
@@ -101,6 +101,7 @@ function About() {
               <ul className="about-features">
                 <li><Bot size={16} /><span>Build and customize resumes with AI assistance</span></li>
                 <li><Globe size={16} /><span>Create portfolio pages to showcase your work</span></li>
+                <li><Zap size={16} /><span>Complete quests and earn XP to level up your career</span></li>
                 <li><Save size={16} /><span>Save and manage multiple resume versions</span></li>
                 <li><Share2 size={16} /><span>Export and share your resumes easily</span></li>
                 <li><Layout size={16} /><span>Pick from multiple color themes and layouts</span></li>
@@ -121,6 +122,19 @@ function About() {
                 icon={Layout}
                 steps={portfolioSteps}
                 color="var(--accent-alt)"
+              />
+              <HelpAccordion
+                title="Free Trial & XP System"
+                icon={Zap}
+                steps={[
+                  { icon: Target, title: 'Free Trial Limits', desc: 'Every new user gets 3 free uses each for Resume Builder, Portfolio Builder, and AI Resume Analyzer. Use them wisely to explore all features!' },
+                  { icon: Zap, title: 'Earn XP', desc: 'Complete quests on your Dashboard to earn XP points. Each quest rewards you with XP based on difficulty: Common (20-30 XP), Rare (40 XP), Epic (50-60 XP).' },
+                  { icon: TrendingUp, title: 'Level Up', desc: 'As you earn XP, you progress through career levels: Rookie (0-49 XP), Builder (50-119 XP), Pro (120-199 XP), and Elite (200+ XP).' },
+                  { icon: Bot, title: 'Quest Examples', desc: 'Analyse your resume with AI (50 XP), Generate a portfolio (40 XP), Build a resume (30 XP), Preview templates (20-25 XP), and improve your resume score (60 XP).' },
+                  { icon: RefreshCw, title: 'Daily Reset', desc: 'Quests reset daily, giving you fresh opportunities to earn XP and level up your career profile every day.' },
+                  { icon: Save, title: 'Track Progress', desc: 'Monitor your XP progress, completed quests, and career level on the Dashboard. Your progress ring shows how close you are to completing all quests.' },
+                ]}
+                color="#10b981"
               />
             </div>
 

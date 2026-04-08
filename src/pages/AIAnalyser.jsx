@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -58,15 +58,17 @@ function AIAnalyser() {
         
         console.log('AI Analyser - Loaded uses:', uses, 'Locked:', locked);
         
-        // If no uses left, show XP cost instead of 0
-        if (uses === 0) {
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
           setRemainingUses('50 XP');
         } else {
-          setRemainingUses(uses);
+          setRemainingUses(0);
         }
       } catch (error) {
         console.error('Error loading gamification status:', error);
-        setRemainingUses('50 XP'); // Fallback
+        setRemainingUses('...'); // Show loading state on error
       }
     };
     loadGamificationStatus();

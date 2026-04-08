@@ -697,15 +697,17 @@ function Portfolio() {
         
         console.log('Portfolio - Loaded uses:', uses, 'Locked:', locked);
         
-        // If no uses left, show XP cost instead of 0
-        if (uses === 0) {
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
           setRemainingUses('30 XP');
         } else {
-          setRemainingUses(uses);
+          setRemainingUses(0);
         }
       } catch (error) {
         console.error('Error loading gamification status:', error);
-        setRemainingUses('30 XP'); // Fallback
+        setRemainingUses('...'); // Show loading state on error
       }
     };
     loadGamificationStatus();

@@ -92,7 +92,8 @@ async function saveGamificationData(data) {
 // ── Get Default Data ───────────────────────────────────────────────────────
 function getDefaultData() {
   return {
-    userXP: 0,
+    userXP: 0,              // Available XP (can be spent)
+    totalEarnedXP: 0,       // Lifetime earned XP (never decreases)
     resumeUses: 0,
     aiAnalysisUses: 0,
     portfolioUses: 0,
@@ -151,6 +152,7 @@ export async function incrementFeatureUsage(featureName, questId = null) {
     const quest = DAILY_QUESTS.find(q => q.id === questId);
     if (quest && !data.completedQuests.includes(questId)) {
       data.userXP = (data.userXP || 0) + quest.xp;
+      data.totalEarnedXP = (data.totalEarnedXP || 0) + quest.xp;  // Track lifetime earnings
       data.completedQuests.push(questId);
       
       await saveGamificationData(data);
@@ -186,6 +188,7 @@ export async function completeQuest(questId) {
   
   // Award XP and mark as completed
   data.userXP = (data.userXP || 0) + quest.xp;
+  data.totalEarnedXP = (data.totalEarnedXP || 0) + quest.xp;  // Track lifetime earnings
   data.completedQuests.push(questId);
   
   await saveGamificationData(data);
@@ -229,7 +232,8 @@ export async function unlockFeature(featureName) {
   }
 
   // Deduct XP and increase limit
-  data.userXP -= feature.unlockCost;
+  data.userXP -= feature.unlockCost;  // Only deduct from available XP
+  // totalEarnedXP stays the same (never decreases)
   const limitKey = feature.limitKey;
   data[limitKey] = (data[limitKey] || feature.initialLimit) + feature.unlockAmount;
   
@@ -341,6 +345,7 @@ async function checkQuestCompletion(questId, data = null) {
   
   if (shouldComplete) {
     data.userXP = (data.userXP || 0) + quest.xp;
+    data.totalEarnedXP = (data.totalEarnedXP || 0) + quest.xp;  // Track lifetime earnings
     data.completedQuests.push(questId);
     await saveGamificationData(data);
     

@@ -121,10 +121,12 @@ function Dashboard() {
   
   // Get total XP and calculate progress
   const [totalXP, setTotalXP] = useState(0);
+  const [totalEarnedXP, setTotalEarnedXP] = useState(0);
   useEffect(() => {
     const loadXP = async () => {
       const data = await getGamificationData();
-      setTotalXP(data.userXP || 0);
+      setTotalXP(data.userXP || 0);  // Available XP (for spending)
+      setTotalEarnedXP(data.totalEarnedXP || 0);  // Lifetime earned XP (for quest board)
     };
     loadXP();
     
@@ -134,8 +136,8 @@ function Dashboard() {
   }, []);
   
   const maxXP = QUESTS.reduce((s, q) => s + q.xp, 0);
-  const xpPct = Math.round((totalXP / maxXP) * 100);
-  const careerLevel = totalXP < 50 ? 'Rookie' : totalXP < 120 ? 'Builder' : totalXP < 200 ? 'Pro' : 'Elite';
+  const xpPct = Math.round((totalEarnedXP / maxXP) * 100);  // Use totalEarnedXP for percentage
+  const careerLevel = totalEarnedXP < 50 ? 'Rookie' : totalEarnedXP < 120 ? 'Builder' : totalEarnedXP < 200 ? 'Pro' : 'Elite';
 
   const [aiOpen, setAiOpen] = useState(false);
   const [aiMessages, setAiMessages] = useState([
@@ -267,7 +269,7 @@ function Dashboard() {
                     <span className="qb-ring-pct">{xpPct}%</span>
                   </div>
                   <div>
-                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
+                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalEarnedXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
                     <div className="qb-xp-label">{completedQuests.length}/{QUESTS.length} quests done</div>
                   </div>
                 </div>

@@ -116,7 +116,8 @@ const userSchema = new mongoose.Schema({
   gamification: {
     type: Object,
     default: {
-      userXP: 0,
+      userXP: 0,              // Available XP (can be spent)
+      totalEarnedXP: 0,       // Lifetime earned XP (never decreases)
       resumeUses: 0,
       aiAnalysisUses: 0,
       portfolioUses: 0,
@@ -275,6 +276,7 @@ app.get('/api/gamification/:userId', async (req, res) => {
     if (!user.gamification) {
       user.gamification = {
         userXP: 0,
+        totalEarnedXP: 0,
         resumeUses: 0,
         aiAnalysisUses: 0,
         portfolioUses: 0,
@@ -285,6 +287,17 @@ app.get('/api/gamification/:userId', async (req, res) => {
         lastQuestReset: new Date().toDateString(),
         questActions: {}
       };
+      await user.save();
+    }
+    
+    // Ensure totalEarnedXP exists and is accurate (for existing users)
+    if (user.gamification.totalEarnedXP === undefined || user.gamification.totalEarnedXP === 0) {
+      // Recalculate based on completed quests
+      const QUEST_XP = { 1: 50, 2: 40, 3: 30, 4: 20, 5: 60, 6: 25 };
+      const earnedFromQuests = (user.gamification.completedQuests || [])
+        .reduce((sum, questId) => sum + (QUEST_XP[questId] || 0), 0);
+      
+      user.gamification.totalEarnedXP = earnedFromQuests;
       await user.save();
     }
 
