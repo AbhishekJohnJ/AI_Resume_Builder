@@ -696,12 +696,16 @@ function Portfolio() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() && files.length === 0) return;
-    if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+    if (!selectedTemplate) { 
+      setError('Please select a template above before generating.'); 
+      return; 
+    }
 
-    // Check if feature is locked
+    // Check if feature is locked - MUST be first check
     if (isFeatureLocked('portfolio')) {
       setShowLockModal(true);
-      return;
+      setError(''); // Clear any previous errors
+      return; // Stop execution immediately
     }
 
     setError('');
@@ -973,10 +977,10 @@ ${markup}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
               />
               <button
-                className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
+                className={`rb-send-btn${(prompt.trim() || files.length) && !loading && !isFeatureLocked('portfolio') ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
-                disabled={loading || (!prompt.trim() && files.length === 0)}
-                title={`${getRemainingUses('portfolio')} uses remaining`}
+                disabled={loading || (!prompt.trim() && files.length === 0) || isFeatureLocked('portfolio')}
+                title={isFeatureLocked('portfolio') ? 'Feature locked - click to unlock' : `${getRemainingUses('portfolio')} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}
                 <span className="pf-uses-badge">{getRemainingUses('portfolio')} left</span>

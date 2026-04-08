@@ -61,10 +61,11 @@ function AIAnalyser() {
   const handleAnalyse = async () => {
     if (!file && !text.trim()) return;
 
-    // Check if feature is locked
+    // Check if feature is locked - MUST be first check
     if (isFeatureLocked('aiAnalysis')) {
       setShowLockModal(true);
-      return;
+      setError(''); // Clear any previous errors
+      return; // Stop execution immediately
     }
 
     setLoading(true);
@@ -216,10 +217,10 @@ function AIAnalyser() {
               )}
 
               <button
-                className={`analyser-btn ${(file || text.trim()) && !loading ? 'active' : ''}`}
+                className={`analyser-btn ${(file || text.trim()) && !loading && !isFeatureLocked('aiAnalysis') ? 'active' : ''}`}
                 onClick={handleAnalyse}
-                disabled={(!file && !text.trim()) || loading}
-                title={`${getRemainingUses('aiAnalysis')} uses remaining`}
+                disabled={(!file && !text.trim()) || loading || isFeatureLocked('aiAnalysis')}
+                title={isFeatureLocked('aiAnalysis') ? 'Feature locked - click to unlock' : `${getRemainingUses('aiAnalysis')} uses remaining`}
               >
                 {loading ? <span className="analyser-spinner" /> : <ScanSearch size={18} />}
                 {loading ? 'Analysing...' : 'Analyse Resume'}

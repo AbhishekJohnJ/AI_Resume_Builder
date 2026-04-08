@@ -48,10 +48,11 @@ function ResumeBuilder() {
       return;
     }
 
-    // Check if feature is locked
+    // Check if feature is locked - MUST be first check
     if (isFeatureLocked('resume')) {
       setShowLockModal(true);
-      return;
+      setError(''); // Clear any previous errors
+      return; // Stop execution immediately
     }
 
     setError('');
