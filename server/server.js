@@ -81,9 +81,21 @@ app.use('/api/ai', aiRoutes);
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.log('\n⚠️  MongoDB Connection Failed!');
+    console.log('📋 Possible solutions:');
+    console.log('   1. Add your IP address to MongoDB Atlas whitelist');
+    console.log('   2. Go to: https://cloud.mongodb.com/');
+    console.log('   3. Navigate to: Network Access → Add IP Address');
+    console.log('   4. Click "Add Current IP Address" or "Allow Access from Anywhere (0.0.0.0/0)"\n');
+    console.log('⚠️  Server will continue running, but database features will not work.\n');
+  });
 
 // User Schema
 const userSchema = new mongoose.Schema({
@@ -426,14 +438,25 @@ app.post('/api/ai/chat', async (req, res) => {
     if (!message) return res.status(400).json({ error: 'Message is required' });
 
     const apiKey = process.env.AI_API_KEY;
+    
+    if (!apiKey) {
+      return res.json({ 
+        reply: '⚠️ AI service not configured. Please add your OpenRouter API key to the server/.env file.'
+      });
+    }
+
+    console.log('🤖 AI Chat request:', message.substring(0, 50) + '...');
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'Career Assistant'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat',
+        model: 'google/gemini-2.0-flash-exp:free',
         messages: [
           { role: 'system', content: 'You are a helpful AI career assistant for a portfolio and resume builder platform. Give concise, actionable advice about resumes, portfolios, LinkedIn, GitHub, and career growth. Keep responses short and friendly.' },
           { role: 'user', content: message }
@@ -444,12 +467,28 @@ app.post('/api/ai/chat', async (req, res) => {
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || 'AI API error');
+    
+    if (!response.ok) {
+      console.error('❌ OpenRouter API error:', data);
+      
+      // Handle specific error cases
+      if (data.error?.code === 401 || data.error?.message?.includes('User not found')) {
+        return res.json({ 
+          reply: '⚠️ The OpenRouter API key is invalid or expired.\n\nPlease:\n1. Go to https://openrouter.ai/keys\n2. Generate a new API key\n3. Update it in server/.env file as AI_API_KEY\n4. Restart the server'
+        });
+      }
+      
+      return res.json({ reply: `AI service error: ${data.error?.message || 'Unknown error'}` });
+    }
+    
     const reply = data.choices?.[0]?.message?.content || 'No response.';
+    console.log('✅ AI response received');
     res.json({ reply });
   } catch (error) {
-    console.error('Chat error:', error);
-    res.status(500).json({ error: 'Failed to get AI response' });
+    console.error('❌ Chat error:', error.message);
+    res.json({ 
+      reply: `I'm having trouble connecting to the AI service. Error: ${error.message}`
+    });
   }
 });
 
