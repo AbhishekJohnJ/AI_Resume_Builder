@@ -1,10 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import FeatureLockModal from '../components/FeatureLockModal';
-import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
-import { showToast } from '../components/Toast';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -122,16 +121,8 @@ function AIAnalyser() {
       localStorage.setItem('analyzedResumeScore', String(data.resume_score || 0));
       localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
 
-      // Increment usage and award XP
-      incrementFeatureUsage('aiAnalysis');
-      const xpResult = awardXP('aiAnalysisCompleted');
-      showToast(`Analysis complete! +${xpResult.earned} XP 🎯`, 'success');
-
-      // Award bonus XP if uploaded new resume
-      if (file) {
-        const bonusXP = awardXP('resumeUploaded');
-        showToast(`Resume uploaded! +${bonusXP.earned} bonus XP 📄`, 'success');
-      }
+      // Increment usage and auto-complete quest
+      incrementFeatureUsage('aiAnalysis', 1); // Quest ID 1: Resume Sniper
 
     } catch (err) {
       console.error('❌ [FRONTEND] Error:', err.message);

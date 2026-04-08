@@ -1,38 +1,39 @@
 /**
- * Gamification System - Usage Limits & XP Unlocks
- * Manages feature usage tracking, XP rewards, and unlock system
+ * Gamification System - Quest-Based XP & Feature Unlocks
+ * Users complete daily quests to earn XP, then spend XP to unlock feature uses
  */
 
 // ── Feature Limits & Unlock Costs ──────────────────────────────────────────
 const FEATURES = {
   resumeUses: {
-    initialLimit: 5,
+    initialLimit: 3,  // 3 free trials
     unlockCost: 50,
     unlockAmount: 3,
     label: 'Resume Builder'
   },
   aiAnalysisUses: {
-    initialLimit: 3,
+    initialLimit: 3,  // 3 free trials
     unlockCost: 40,
     unlockAmount: 2,
     label: 'AI Analysis'
   },
   portfolioUses: {
-    initialLimit: 2,
+    initialLimit: 3,  // 3 free trials
     unlockCost: 60,
     unlockAmount: 2,
     label: 'Portfolio Builder'
   }
 };
 
-// ── XP Rewards ─────────────────────────────────────────────────────────────
-const XP_REWARDS = {
-  resumeCreated: 10,
-  resumeImproved: 15,
-  resumeUploaded: 20,
-  portfolioCreated: 15,
-  aiAnalysisCompleted: 12
-};
+// ── Daily Quests (6 quests, each completable once per day) ─────────────────
+const DAILY_QUESTS = [
+  { id: 1, name: 'Resume Sniper', desc: 'Analyse your resume with AI and score above 70', xp: 50 },
+  { id: 2, name: 'Portfolio Architect', desc: 'Generate a portfolio using any template', xp: 40 },
+  { id: 3, name: 'Resume Crafter', desc: 'Build a resume using the Resume Builder', xp: 30 },
+  { id: 4, name: 'Template Explorer', desc: 'Preview at least 5 different resume templates', xp: 20 },
+  { id: 5, name: 'Score Chaser', desc: 'Re-analyse your resume after edits to improve your score', xp: 60 },
+  { id: 6, name: 'Portfolio Pro', desc: 'Save and view your generated portfolio', xp: 35 }
+];
 
 // ── Initialize User Data ───────────────────────────────────────────────────
 export function initializeGamification() {
@@ -45,12 +46,25 @@ export function initializeGamification() {
       portfolioUses: 0,
       resumeLimit: FEATURES.resumeUses.initialLimit,
       aiAnalysisLimit: FEATURES.aiAnalysisUses.initialLimit,
-      portfolioLimit: FEATURES.portfolioUses.initialLimit
+      portfolioLimit: FEATURES.portfolioUses.initialLimit,
+      completedQuests: [], // Quest IDs completed today
+      lastQuestReset: new Date().toDateString() // Track daily reset
     };
     localStorage.setItem('gamificationData', JSON.stringify(data));
     return data;
   }
-  return JSON.parse(existing);
+  
+  const data = JSON.parse(existing);
+  
+  // Check if we need to reset daily quests
+  const today = new Date().toDateString();
+  if (data.lastQuestReset !== today) {
+    data.completedQuests = [];
+    data.lastQuestReset = today;
+    localStorage.setItem('gamificationData', JSON.stringify(data));
+  }
+  
+  return data;
 }
 
 // ── Get Current Data ───────────────────────────────────────────────────────
@@ -80,25 +94,79 @@ export function getRemainingUses(featureName) {
   return Math.max(0, data[limitKey] - data[usesKey]);
 }
 
-// ── Increment Feature Usage ────────────────────────────────────────────────
-export function incrementFeatureUsage(featureName) {
+// ── Increment Feature Usage & Auto-Complete Quest ─────────────────────────
+export function incrementFeatureUsage(featureName, questId = null) {
   const data = getGamificationData();
   const usesKey = `${featureName}Uses`;
   data[usesKey] = (data[usesKey] || 0) + 1;
+  
+  // Auto-complete associated quest on first use
+  if (questId && data[usesKey] === 1) {
+    const quest = DAILY_QUESTS.find(q => q.id === questId);
+    if (quest && !data.completedQuests.includes(questId)) {
+      data.userXP = (data.userXP || 0) + quest.xp;
+      data.completedQuests.push(questId);
+      
+      saveGamificationData(data);
+      
+      // Dispatch event to update UI
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('questCompleted', { 
+          detail: { questName: quest.name, xp: quest.xp } 
+        }));
+      }, 500);
+      
+      return data;
+    }
+  }
+  
   saveGamificationData(data);
   return data;
 }
 
-// ── Award XP ───────────────────────────────────────────────────────────────
-export function awardXP(action) {
+// ── Complete Quest & Award XP ──────────────────────────────────────────────
+export function completeQuest(questId) {
   const data = getGamificationData();
-  const xpAmount = XP_REWARDS[action] || 0;
-  data.userXP = (data.userXP || 0) + xpAmount;
+  const quest = DAILY_QUESTS.find(q => q.id === questId);
+  
+  if (!quest) {
+    return { success: false, error: 'Invalid quest' };
+  }
+  
+  // Check if already completed today
+  if (data.completedQuests.includes(questId)) {
+    return { success: false, error: 'Quest already completed today' };
+  }
+  
+  // Award XP and mark as completed
+  data.userXP = (data.userXP || 0) + quest.xp;
+  data.completedQuests.push(questId);
+  
   saveGamificationData(data);
-  return { newXP: data.userXP, earned: xpAmount };
+  return { 
+    success: true, 
+    xpEarned: quest.xp,
+    newXP: data.userXP,
+    questName: quest.name
+  };
 }
 
-// ── Unlock More Uses ───────────────────────────────────────────────────────
+// ── Check if Quest is Completed ────────────────────────────────────────────
+export function isQuestCompleted(questId) {
+  const data = getGamificationData();
+  return data.completedQuests.includes(questId);
+}
+
+// ── Get All Quests with Status ─────────────────────────────────────────────
+export function getAllQuests() {
+  const data = getGamificationData();
+  return DAILY_QUESTS.map(quest => ({
+    ...quest,
+    completed: data.completedQuests.includes(quest.id)
+  }));
+}
+
+// ── Unlock More Uses (Spend XP) ────────────────────────────────────────────
 export function unlockFeature(featureName) {
   const data = getGamificationData();
   const feature = FEATURES[featureName];
@@ -136,7 +204,7 @@ export function getLockMessage(featureName) {
   const needed = Math.max(0, feature.unlockCost - data.userXP);
   
   if (needed > 0) {
-    return `Earn ${needed} more XP to unlock ${feature.unlockAmount} more uses`;
+    return `Complete quests to earn ${needed} more XP`;
   }
   return `Unlock ${feature.unlockAmount} more uses for ${feature.unlockCost} XP`;
 }
@@ -160,5 +228,31 @@ export function getFeatureInfo(featureName) {
   };
 }
 
-// ── Export Constants ───────────────────────────────────────────────────────
-export { FEATURES, XP_REWARDS };
+// ── Track Quest Actions ───────────────────────────────────────────────────
+export function trackQuestAction(questId, actionData = {}) {
+  const data = getGamificationData();
+  
+  // Initialize action tracking if not exists
+  if (!data.questActions) {
+    data.questActions = {};
+  }
+  
+  // Track the action
+  const actionKey = `quest_${questId}`;
+  if (!data.questActions[actionKey]) {
+    data.questActions[actionKey] = { count: 0, data: {} };
+  }
+  
+  data.questActions[actionKey].count += 1;
+  data.questActions[actionKey].data = { ...data.questActions[actionKey].data, ...actionData };
+  
+  saveGamificationData(data);
+  return data.questActions[actionKey];
+}
+
+// ── Get Quest Action Count ─────────────────────────────────────────────────
+export function getQuestActionCount(questId) {
+  const data = getGamificationData();
+  const actionKey = `quest_${questId}`;
+  return data.questActions?.[actionKey]?.count || 0;
+}

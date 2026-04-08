@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +9,7 @@ import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
 import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
-import { showToast } from '../components/Toast';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -85,15 +84,8 @@ function ResumeBuilder() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
 
-      // Increment usage and award XP
-      incrementFeatureUsage('resume');
-      if (isNewResume) {
-        const xpResult = awardXP('resumeCreated');
-        showToast(`Resume created! +${xpResult.earned} XP 🎉`, 'success');
-      } else {
-        const xpResult = awardXP('resumeImproved');
-        showToast(`Resume improved! +${xpResult.earned} XP ✨`, 'success');
-      }
+      // Increment usage and auto-complete quest
+      incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');

@@ -64,10 +64,11 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
                 Need {info.unlockCost - data.userXP} more XP
               </p>
               <p className="unlock-hint">
-                Complete tasks to earn XP:
-                <br />• Create resume (+10 XP)
-                <br />• Improve resume (+15 XP)
-                <br />• Upload new resume (+20 XP)
+                Complete daily quests to earn XP:
+                <br />• Resume Sniper (+50 XP)
+                <br />• Portfolio Architect (+40 XP)
+                <br />• Resume Crafter (+30 XP)
+                <br />• Score Chaser (+60 XP)
               </p>
             </div>
           )}

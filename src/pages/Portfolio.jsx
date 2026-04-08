@@ -7,8 +7,7 @@ import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
 import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, awardXP, getRemainingUses } from '../utils/gamification';
-import { showToast } from '../components/Toast';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses } from '../utils/gamification';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -742,12 +741,8 @@ function Portfolio() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
       setPortfolioData(data.portfolioData);
 
-      // Increment usage and award XP
-      incrementFeatureUsage('portfolio');
-      if (isNewPortfolio) {
-        const xpResult = awardXP('portfolioCreated');
-        showToast(`Portfolio created! +${xpResult.earned} XP 🎨`, 'success');
-      }
+      // Increment usage and auto-complete quest
+      incrementFeatureUsage('portfolio', 2); // Quest ID 2: Portfolio Architect
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');

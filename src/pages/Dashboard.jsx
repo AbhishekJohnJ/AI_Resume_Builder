@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Send, User2, Target, Building2, FileText, Map, TrendingUp, Briefcase } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
+import { getGamificationData } from '../utils/gamification';
+import { showToast } from '../components/Toast';
 import chatbotIcon from '../assets/chatbot.jpg';
 import './Dashboard.css';
 import './DashboardMain.css';
@@ -77,27 +79,44 @@ function Dashboard() {
   }, []);
 
   const QUESTS = [
-    { id: 2, icon: Building2, title: 'Portfolio Architect', desc: 'Generate a portfolio using any template.',                  xp: 40, rarity: 'rare',   action: () => navigate('/portfolio') },
-    { id: 3, icon: FileText, title: 'Resume Crafter',      desc: 'Build a resume using the Resume Builder.',                  xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 4, icon: Map, title: 'Template Explorer',   desc: 'Preview at least 5 different resume templates.',            xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 5, icon: TrendingUp, title: 'Score Chaser',        desc: 'Re-analyse your resume after edits to improve your score.', xp: 60, rarity: 'epic',   action: () => navigate('/ai-analyser') },
-    { id: 6, icon: Briefcase, title: 'Portfolio Pro',       desc: 'Save and view your generated portfolio.',                   xp: 35, rarity: 'rare',   action: () => navigate('/my-portfolios') },
-    { id: 1, icon: Target, title: 'Resume Sniper',      desc: 'Analyse your resume with AI and score above 70.',           xp: 50, rarity: 'epic',   action: () => navigate('/ai-analyser') },
+    { id: 1, icon: Target, title: 'Resume Sniper', desc: 'Analyse your resume with AI and score above 70', xp: 50, rarity: 'epic', action: () => navigate('/ai-analyser') },
+    { id: 2, icon: Building2, title: 'Portfolio Architect', desc: 'Generate a portfolio using any template', xp: 40, rarity: 'rare', action: () => navigate('/portfolio') },
+    { id: 3, icon: FileText, title: 'Resume Crafter', desc: 'Build a resume using the Resume Builder', xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 4, icon: Map, title: 'Template Explorer', desc: 'Preview at least 5 different resume templates', xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 5, icon: TrendingUp, title: 'Score Chaser', desc: 'Re-analyse your resume after edits to improve your score', xp: 60, rarity: 'epic', action: () => navigate('/ai-analyser') },
+    { id: 6, icon: Briefcase, title: 'Portfolio Pro', desc: 'Save and view your generated portfolio', xp: 35, rarity: 'rare', action: () => navigate('/my-portfolios') },
   ];
 
-  const [completedQuests, setCompletedQuests] = useState(
-    () => JSON.parse(localStorage.getItem('questsCompleted') || '[]')
-  );
-  const toggleQuest = (id) => {
-    setCompletedQuests(prev => {
-      const next = prev.includes(id) ? prev.filter(q => q !== id) : [...prev, id];
-      localStorage.setItem('questsCompleted', JSON.stringify(next));
-      return next;
-    });
-  };
-  const totalXP  = completedQuests.reduce((s, id) => s + (QUESTS.find(q => q.id === id)?.xp || 0), 0);
-  const maxXP    = QUESTS.reduce((s, q) => s + q.xp, 0);
-  const xpPct    = Math.round((totalXP / maxXP) * 100);
+  const [completedQuests, setCompletedQuests] = useState(() => {
+    const data = getGamificationData();
+    return data.completedQuests || [];
+  });
+  
+  // Listen for quest completion events
+  useEffect(() => {
+    const handleQuestComplete = (e) => {
+      const data = getGamificationData();
+      setCompletedQuests(data.completedQuests || []);
+      
+      // Show toast if quest was just completed
+      if (e?.detail) {
+        showToast(`Quest completed! +${e.detail.xp} XP 🎉`, 'success');
+      }
+    };
+    
+    window.addEventListener('gamificationUpdate', handleQuestComplete);
+    window.addEventListener('questCompleted', handleQuestComplete);
+    
+    return () => {
+      window.removeEventListener('gamificationUpdate', handleQuestComplete);
+      window.removeEventListener('questCompleted', handleQuestComplete);
+    };
+  }, []);
+  
+  const data = getGamificationData();
+  const totalXP = data.userXP || 0;
+  const maxXP = QUESTS.reduce((s, q) => s + q.xp, 0);
+  const xpPct = Math.round((totalXP / maxXP) * 100);
   const careerLevel = totalXP < 50 ? 'Rookie' : totalXP < 120 ? 'Builder' : totalXP < 200 ? 'Pro' : 'Elite';
 
   const [aiOpen, setAiOpen] = useState(false);
@@ -252,15 +271,17 @@ function Dashboard() {
                         <p className="qb-card-desc">{q.desc}</p>
                         <div className="qb-card-bottom">
                           <span className="qb-xp-pill">+{q.xp} XP</span>
-                          <div className="qb-btns">
-                            <button className="qb-go" onClick={q.action}>Launch →</button>
-                            <button className={`qb-mark ${done ? 'qb-mark-done' : ''}`} onClick={() => toggleQuest(q.id)}>
-                              {done ? '✓' : '○'}
+                          {done ? (
+                            <button className="qb-completed" disabled>
+                              ✓ COMPLETED
                             </button>
-                          </div>
+                          ) : (
+                            <button className="qb-go" onClick={q.action}>
+                              Launch →
+                            </button>
+                          )}
                         </div>
                       </div>
-                      {done && <div className="qb-done-overlay">✓ COMPLETED</div>}
                     </div>
                   );
                 })}
