@@ -1,14 +1,34 @@
+import { useState, useEffect } from 'react';
 import { X, Lock, Trophy, Zap } from 'lucide-react';
 import { getFeatureInfo, unlockFeature, getGamificationData } from '../utils/gamification';
 import { showToast } from './Toast';
 import './FeatureLockModal.css';
 
 function FeatureLockModal({ featureName, onClose, onUnlock }) {
-  const info = getFeatureInfo(featureName);
-  const data = getGamificationData();
+  const [info, setInfo] = useState({
+    label: '',
+    used: 0,
+    limit: 3,
+    remaining: 0,
+    locked: true,
+    unlockCost: 20,
+    unlockAmount: 1,
+    canUnlock: false
+  });
+  const [userXP, setUserXP] = useState(0);
 
-  const handleUnlock = () => {
-    const result = unlockFeature(featureName);
+  useEffect(() => {
+    const loadData = async () => {
+      const featureInfo = await getFeatureInfo(featureName);
+      const data = await getGamificationData();
+      setInfo(featureInfo);
+      setUserXP(data.userXP || 0);
+    };
+    loadData();
+  }, [featureName]);
+
+  const handleUnlock = async () => {
+    const result = await unlockFeature(featureName);
     if (result.success) {
       showToast(`Unlocked 1 more use! 🎉`, 'success');
       onUnlock?.();
@@ -40,7 +60,7 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
           <div className="feature-lock-stat">
             <span className="stat-label">Your XP</span>
             <span className="stat-value xp-highlight">
-              <Trophy size={16} /> {data.userXP}
+              <Trophy size={16} /> {userXP}
             </span>
           </div>
         </div>
@@ -61,15 +81,15 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
           ) : (
             <div className="unlock-blocked">
               <p className="unlock-need">
-                Need {info.unlockCost - data.userXP} more XP
+                Need {info.unlockCost - userXP} more XP
               </p>
               <p className="unlock-hint">
                 Complete daily quests to earn XP:
                 <br />• Resume Sniper (+50 XP)
                 <br />• Score Chaser (+60 XP)
                 <br />• Portfolio Architect (+40 XP)
-                <br />• Portfolio Pro (+35 XP)
                 <br />• Resume Crafter (+30 XP)
+                <br />• Portfolio Explorer (+25 XP)
                 <br />• Template Explorer (+20 XP)
               </p>
             </div>

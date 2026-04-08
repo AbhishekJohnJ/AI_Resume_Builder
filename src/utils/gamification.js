@@ -6,23 +6,29 @@
 
 // ── Feature Limits & Unlock Costs ──────────────────────────────────────────
 const FEATURES = {
-  resumeUses: {
+  resume: {
     initialLimit: 3,  // 3 free trials
     unlockCost: 20,   // 20 XP per use after free trials
     unlockAmount: 1,  // Unlock 1 use at a time
-    label: 'Resume Builder'
+    label: 'Resume Builder',
+    usesKey: 'resumeUses',
+    limitKey: 'resumeLimit'
   },
-  aiAnalysisUses: {
+  aiAnalysis: {
     initialLimit: 3,  // 3 free trials
     unlockCost: 50,   // 50 XP per use after free trials
     unlockAmount: 1,  // Unlock 1 use at a time
-    label: 'AI Analysis'
+    label: 'AI Analysis',
+    usesKey: 'aiAnalysisUses',
+    limitKey: 'aiAnalysisLimit'
   },
-  portfolioUses: {
+  portfolio: {
     initialLimit: 3,  // 3 free trials
     unlockCost: 30,   // 30 XP per use after free trials
     unlockAmount: 1,  // Unlock 1 use at a time
-    label: 'Portfolio Builder'
+    label: 'Portfolio Builder',
+    usesKey: 'portfolioUses',
+    limitKey: 'portfolioLimit'
   }
 };
 
@@ -112,23 +118,32 @@ export async function getGamificationData() {
 // ── Check if Feature is Locked ─────────────────────────────────────────────
 export async function isFeatureLocked(featureName) {
   const data = await getGamificationData();
-  const usesKey = `${featureName}Uses`;
-  const limitKey = `${featureName}Limit`;
+  const feature = FEATURES[featureName];
+  if (!feature) return true;
+  
+  const usesKey = feature.usesKey;
+  const limitKey = feature.limitKey;
   return data[usesKey] >= data[limitKey];
 }
 
 // ── Get Remaining Uses ─────────────────────────────────────────────────────
 export async function getRemainingUses(featureName) {
   const data = await getGamificationData();
-  const usesKey = `${featureName}Uses`;
-  const limitKey = `${featureName}Limit`;
+  const feature = FEATURES[featureName];
+  if (!feature) return 0;
+  
+  const usesKey = feature.usesKey;
+  const limitKey = feature.limitKey;
   return Math.max(0, data[limitKey] - data[usesKey]);
 }
 
 // ── Increment Feature Usage & Auto-Complete Quest ─────────────────────────
 export async function incrementFeatureUsage(featureName, questId = null) {
   const data = await getGamificationData();
-  const usesKey = `${featureName}Uses`;
+  const feature = FEATURES[featureName];
+  if (!feature) return data;
+  
+  const usesKey = feature.usesKey;
   data[usesKey] = (data[usesKey] || 0) + 1;
   
   // Auto-complete associated quest on first use
@@ -215,7 +230,7 @@ export async function unlockFeature(featureName) {
 
   // Deduct XP and increase limit
   data.userXP -= feature.unlockCost;
-  const limitKey = `${featureName}Limit`;
+  const limitKey = feature.limitKey;
   data[limitKey] = (data[limitKey] || feature.initialLimit) + feature.unlockAmount;
   
   await saveGamificationData(data);
@@ -243,9 +258,11 @@ export async function getLockMessage(featureName) {
 // ── Get Feature Info ───────────────────────────────────────────────────────
 export async function getFeatureInfo(featureName) {
   const feature = FEATURES[featureName];
+  if (!feature) return null;
+  
   const data = await getGamificationData();
-  const usesKey = `${featureName}Uses`;
-  const limitKey = `${featureName}Limit`;
+  const usesKey = feature.usesKey;
+  const limitKey = feature.limitKey;
   
   return {
     label: feature.label,

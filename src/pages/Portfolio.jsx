@@ -5,9 +5,8 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
-import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -681,8 +680,7 @@ function Portfolio() {
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
-  const [showLockModal, setShowLockModal] = useState(false);
-  const [remainingUses, setRemainingUses] = useState(3);
+  const [remainingUses, setRemainingUses] = useState('...');
   const [isLocked, setIsLocked] = useState(false);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
@@ -691,10 +689,24 @@ function Portfolio() {
   // Load remaining uses and lock status on mount
   useEffect(() => {
     const loadGamificationStatus = async () => {
-      const uses = await getRemainingUses('portfolio');
-      const locked = await isFeatureLocked('portfolio');
-      setRemainingUses(uses);
-      setIsLocked(locked);
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('portfolio');
+        const locked = await isFeatureLocked('portfolio');
+        setIsLocked(locked);
+        
+        console.log('Portfolio - Loaded uses:', uses, 'Locked:', locked);
+        
+        // If no uses left, show XP cost instead of 0
+        if (uses === 0) {
+          setRemainingUses('30 XP');
+        } else {
+          setRemainingUses(uses);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('30 XP'); // Fallback
+      }
     };
     loadGamificationStatus();
     
@@ -717,12 +729,20 @@ function Portfolio() {
       return; 
     }
 
-    // Check if feature is locked - MUST be first check
+    // Check if feature is locked (no uses left)
     const locked = await isFeatureLocked('portfolio');
     if (locked) {
-      setShowLockModal(true);
-      setError(''); // Clear any previous errors
-      return; // Stop execution immediately
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('portfolio');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('portfolio');
+      const newLocked = await isFeatureLocked('portfolio');
+      setRemainingUses(uses);
+      setIsLocked(newLocked);
     }
 
     setError('');
@@ -761,6 +781,14 @@ function Portfolio() {
 
       // Increment usage and auto-complete quest
       await incrementFeatureUsage('portfolio', 2); // Quest ID 2: Portfolio Architect
+
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('portfolio');
+      if (newUses === 0) {
+        setRemainingUses('30 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -994,13 +1022,13 @@ ${markup}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
               />
               <button
-                className={`rb-send-btn${(prompt.trim() || files.length) && !loading && !isLocked ? ' rb-send-active' : ''}`}
+                className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
-                disabled={loading || (!prompt.trim() && files.length === 0) || isLocked}
-                title={isLocked ? 'Feature locked - click to unlock' : `${remainingUses} uses remaining`}
+                disabled={loading || (!prompt.trim() && files.length === 0)}
+                title={isLocked ? 'Will spend 30 XP to generate' : `${remainingUses} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}
-                <span className="pf-uses-badge">{remainingUses} left</span>
+                <span className="pf-uses-badge">{remainingUses}</span>
               </button>
             </div>
 
@@ -1093,14 +1121,6 @@ ${markup}
             </div>
           </div>
         </div>
-      )}
-
-      {showLockModal && (
-        <FeatureLockModal
-          featureName="portfolio"
-          onClose={() => setShowLockModal(false)}
-          onUnlock={() => setShowLockModal(false)}
-        />
       )}
     </div>
   );

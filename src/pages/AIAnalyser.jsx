@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
-import FeatureLockModal from '../components/FeatureLockModal';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature } from '../utils/gamification';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -44,18 +43,31 @@ function AIAnalyser() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
-  const [showLockModal, setShowLockModal] = useState(false);
-  const [remainingUses, setRemainingUses] = useState(3);
+  const [remainingUses, setRemainingUses] = useState('...');
   const [isLocked, setIsLocked] = useState(false);
   const fileInputRef = useRef(null);
 
   // Load remaining uses and lock status on mount
   useEffect(() => {
     const loadGamificationStatus = async () => {
-      const uses = await getRemainingUses('aiAnalysis');
-      const locked = await isFeatureLocked('aiAnalysis');
-      setRemainingUses(uses);
-      setIsLocked(locked);
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('aiAnalysis');
+        const locked = await isFeatureLocked('aiAnalysis');
+        setIsLocked(locked);
+        
+        console.log('AI Analyser - Loaded uses:', uses, 'Locked:', locked);
+        
+        // If no uses left, show XP cost instead of 0
+        if (uses === 0) {
+          setRemainingUses('50 XP');
+        } else {
+          setRemainingUses(uses);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('50 XP'); // Fallback
+      }
     };
     loadGamificationStatus();
     
@@ -77,12 +89,19 @@ function AIAnalyser() {
   const handleAnalyse = async () => {
     if (!file && !text.trim()) return;
 
-    // Check if feature is locked - MUST be first check
+    // Check if feature is locked (no uses left)
     const locked = await isFeatureLocked('aiAnalysis');
     if (locked) {
-      setShowLockModal(true);
-      setError(''); // Clear any previous errors
-      return; // Stop execution immediately
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('aiAnalysis');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('aiAnalysis');
+      setRemainingUses(uses);
+      setIsLocked(false);
     }
 
     setLoading(true);
@@ -141,6 +160,14 @@ function AIAnalyser() {
 
       // Increment usage and auto-complete quest
       await incrementFeatureUsage('aiAnalysis', 1); // Quest ID 1: Resume Sniper
+      
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('aiAnalysis');
+      if (newUses === 0) {
+        setRemainingUses('50 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
       
       // Track for Quest 5: Score Chaser (re-analyze after edits)
       await trackQuestAction(5, { analysisCount: true });
@@ -229,14 +256,14 @@ function AIAnalyser() {
               )}
 
               <button
-                className={`analyser-btn ${(file || text.trim()) && !loading && !isLocked ? 'active' : ''}`}
+                className={`analyser-btn ${(file || text.trim()) && !loading ? 'active' : ''}`}
                 onClick={handleAnalyse}
-                disabled={(!file && !text.trim()) || loading || isLocked}
-                title={isLocked ? 'Feature locked - click to unlock' : `${remainingUses} uses remaining`}
+                disabled={(!file && !text.trim()) || loading}
+                title={`${remainingUses} uses remaining`}
               >
                 {loading ? <span className="analyser-spinner" /> : <ScanSearch size={18} />}
                 {loading ? 'Analysing...' : 'Analyse Resume'}
-                <span className="analyser-uses-badge">{remainingUses} left</span>
+                <span className="analyser-uses-badge">{remainingUses}</span>
               </button>
 
               <p className="analyser-dataset-note">
@@ -638,14 +665,6 @@ function AIAnalyser() {
           </div>
         </main>
       </div>
-
-      {showLockModal && (
-        <FeatureLockModal
-          featureName="aiAnalysis"
-          onClose={() => setShowLockModal(false)}
-          onUnlock={() => setShowLockModal(false)}
-        />
-      )}
     </div>
   );
 }

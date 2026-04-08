@@ -7,9 +7,8 @@ import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import TemplatePickerCard from '../components/TemplatePickerCard';
 import GeneratedResume from '../components/GeneratedResume';
-import FeatureLockModal from '../components/FeatureLockModal';
 import { parseThemeColor, isColorChangeOnly } from '../utils/parseThemeColor';
-import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction } from '../utils/gamification';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, unlockFeature } from '../utils/gamification';
 import './Dashboard.css';
 import './ResumeBuilder.css';
 import '../components/GeneratedResume.css';
@@ -24,8 +23,7 @@ function ResumeBuilder() {
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
-  const [showLockModal, setShowLockModal] = useState(false);
-  const [remainingUses, setRemainingUses] = useState(3);
+  const [remainingUses, setRemainingUses] = useState('...');
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
@@ -33,8 +31,23 @@ function ResumeBuilder() {
   // Load remaining uses on mount and when gamification updates
   useEffect(() => {
     const loadRemainingUses = async () => {
-      const uses = await getRemainingUses('resume');
-      setRemainingUses(uses);
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('resume');
+        const locked = await isFeatureLocked('resume');
+        
+        console.log('Resume Builder - Loaded uses:', uses, 'Locked:', locked);
+        
+        // If no uses left, show XP cost instead of 0
+        if (uses === 0) {
+          setRemainingUses('20 XP');
+        } else {
+          setRemainingUses(uses);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('20 XP'); // Fallback
+      }
     };
     loadRemainingUses();
     
@@ -65,12 +78,18 @@ function ResumeBuilder() {
       return;
     }
 
-    // Check if feature is locked - MUST be first check
+    // Check if feature is locked (no uses left)
     const locked = await isFeatureLocked('resume');
     if (locked) {
-      setShowLockModal(true);
-      setError(''); // Clear any previous errors
-      return; // Stop execution immediately
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('resume');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('resume');
+      setRemainingUses(uses);
     }
 
     setError('');
@@ -105,6 +124,14 @@ function ResumeBuilder() {
 
       // Increment usage and auto-complete quest
       await incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
+
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('resume');
+      if (newUses === 0) {
+        setRemainingUses('20 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -261,14 +288,6 @@ function ResumeBuilder() {
           </div>
         </main>
       </div>
-
-      {showLockModal && (
-        <FeatureLockModal
-          featureName="resume"
-          onClose={() => setShowLockModal(false)}
-          onUnlock={() => setShowLockModal(false)}
-        />
-      )}
     </div>
   );
 }
