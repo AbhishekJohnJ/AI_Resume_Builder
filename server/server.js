@@ -13,6 +13,7 @@ const { StandardScaler } = require('./utils/featureExtractor');
 const { GradientBoostingRegressor, RandomForestRegressor } = require('./utils/mlModels');
 const { GridSearchCV, RandomizedSearchCV } = require('./utils/hyperparameterTuning');
 const ImprovementSuggestionsGenerator = require('./utils/improvementSuggestions');
+const aiConfig = require('./config/ai-models');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Multer: store files in memory
@@ -886,7 +887,7 @@ REMEMBER: Generate RICH, DETAILED, IMPRESSIVE content. A professional portfolio 
           { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
-        max_tokens: 2048
+        max_tokens: 1200
       })
     });
 
@@ -1153,7 +1154,7 @@ REMEMBER: Generate RICH, DETAILED content. A professional resume should be compr
           { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
-        max_tokens: 2048
+        max_tokens: 1200
       })
     });
 
