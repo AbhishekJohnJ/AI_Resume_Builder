@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Send, User2, Target, Building2, FileText, Map, TrendingUp, Briefcase } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
+import { getGamificationData } from '../utils/gamification';
+import { showToast } from '../components/Toast';
 import chatbotIcon from '../assets/chatbot.jpg';
 import './Dashboard.css';
 import './DashboardMain.css';
@@ -11,7 +13,6 @@ function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const userName = user?.name?.split(' ')[0] || 'there';
-  const [appTheme, setAppTheme] = useState(() => localStorage.getItem('appTheme') || 'gold');
 
   // Load AI analysis results from localStorage
   const loadAnalysis = () => {
@@ -68,37 +69,66 @@ function Dashboard() {
     return () => { window.removeEventListener('focus', refresh); window.removeEventListener('storage', refresh); };
   }, []);
 
-  useEffect(() => {
-    const onStorage = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
-    window.addEventListener('storage', onStorage);
-    const onFocus = () => setAppTheme(localStorage.getItem('appTheme') || 'gold');
-    window.addEventListener('focus', onFocus);
-    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
-  }, []);
-
   const QUESTS = [
-    { id: 2, icon: Building2, title: 'Portfolio Architect', desc: 'Generate a portfolio using any template.',                  xp: 40, rarity: 'rare',   action: () => navigate('/portfolio') },
-    { id: 3, icon: FileText, title: 'Resume Crafter',      desc: 'Build a resume using the Resume Builder.',                  xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 4, icon: Map, title: 'Template Explorer',   desc: 'Preview at least 5 different resume templates.',            xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 5, icon: TrendingUp, title: 'Score Chaser',        desc: 'Re-analyse your resume after edits to improve your score.', xp: 60, rarity: 'epic',   action: () => navigate('/ai-analyser') },
-    { id: 6, icon: Briefcase, title: 'Portfolio Pro',       desc: 'Save and view your generated portfolio.',                   xp: 35, rarity: 'rare',   action: () => navigate('/my-portfolios') },
-    { id: 1, icon: Target, title: 'Resume Sniper',      desc: 'Analyse your resume with AI and score above 70.',           xp: 50, rarity: 'epic',   action: () => navigate('/ai-analyser') },
+    { id: 1, icon: Target, title: 'Resume Sniper', desc: 'Analyse your resume with AI and score above 70', xp: 50, rarity: 'epic', action: () => navigate('/ai-analyser') },
+    { id: 2, icon: Building2, title: 'Portfolio Architect', desc: 'Generate a portfolio using any template', xp: 40, rarity: 'rare', action: () => navigate('/portfolio') },
+    { id: 3, icon: FileText, title: 'Resume Crafter', desc: 'Build a resume using the Resume Builder', xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 4, icon: Map, title: 'Template Explorer', desc: 'Preview at least 5 different resume templates', xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 5, icon: TrendingUp, title: 'Score Chaser', desc: 'Re-analyse your resume after edits to improve your score', xp: 60, rarity: 'epic', action: () => navigate('/ai-analyser') },
+    { id: 6, icon: Briefcase, title: 'Portfolio Explorer', desc: 'Preview at least 3 different portfolio templates', xp: 25, rarity: 'rare', action: () => navigate('/portfolio') },
   ];
 
-  const [completedQuests, setCompletedQuests] = useState(
-    () => JSON.parse(localStorage.getItem('questsCompleted') || '[]')
-  );
-  const toggleQuest = (id) => {
-    setCompletedQuests(prev => {
-      const next = prev.includes(id) ? prev.filter(q => q !== id) : [...prev, id];
-      localStorage.setItem('questsCompleted', JSON.stringify(next));
-      return next;
-    });
-  };
-  const totalXP  = completedQuests.reduce((s, id) => s + (QUESTS.find(q => q.id === id)?.xp || 0), 0);
-  const maxXP    = QUESTS.reduce((s, q) => s + q.xp, 0);
-  const xpPct    = Math.round((totalXP / maxXP) * 100);
-  const careerLevel = totalXP < 50 ? 'Rookie' : totalXP < 120 ? 'Builder' : totalXP < 200 ? 'Pro' : 'Elite';
+  const [completedQuests, setCompletedQuests] = useState([]);
+  
+  // Load gamification data on mount
+  useEffect(() => {
+    const loadGamificationData = async () => {
+      const data = await getGamificationData();
+      setCompletedQuests(data.completedQuests || []);
+    };
+    loadGamificationData();
+  }, []);
+  
+  // Listen for quest completion events
+  useEffect(() => {
+    const handleQuestComplete = async (e) => {
+      const data = await getGamificationData();
+      setCompletedQuests(data.completedQuests || []);
+      
+      // Show toast if quest was just completed
+      if (e?.detail) {
+        showToast(`Quest completed! +${e.detail.xp} XP 🎉`, 'success');
+      }
+    };
+    
+    window.addEventListener('gamificationUpdate', handleQuestComplete);
+    window.addEventListener('questCompleted', handleQuestComplete);
+    
+    return () => {
+      window.removeEventListener('gamificationUpdate', handleQuestComplete);
+      window.removeEventListener('questCompleted', handleQuestComplete);
+    };
+  }, []);
+  
+  // Get total XP and calculate progress
+  const [totalXP, setTotalXP] = useState(0);
+  const [totalEarnedXP, setTotalEarnedXP] = useState(0);
+  useEffect(() => {
+    const loadXP = async () => {
+      const data = await getGamificationData();
+      setTotalXP(data.userXP || 0);  // Available XP (for spending)
+      setTotalEarnedXP(data.totalEarnedXP || 0);  // Lifetime earned XP (for quest board)
+    };
+    loadXP();
+    
+    const handleUpdate = () => loadXP();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
+  
+  const maxXP = QUESTS.reduce((s, q) => s + q.xp, 0);
+  const xpPct = Math.round((totalEarnedXP / maxXP) * 100);  // Use totalEarnedXP for percentage
+  const careerLevel = totalEarnedXP < 50 ? 'Rookie' : totalEarnedXP < 120 ? 'Builder' : totalEarnedXP < 200 ? 'Pro' : 'Elite';
 
   const [aiOpen, setAiOpen] = useState(false);
   const [aiMessages, setAiMessages] = useState([
@@ -206,7 +236,7 @@ function Dashboard() {
             <h1 className="dashboard-title">Dashboard</h1>
 
             {/* ── Career Quest Board ── */}
-            <div className="qb-wrap">
+            <div className="qb-wrap qb-fullpage">
               {/* Header */}
               <div className="qb-header">
                 <div className="qb-header-left">
@@ -222,14 +252,15 @@ function Dashboard() {
                     <svg viewBox="0 0 44 44" className="qb-ring-svg">
                       <circle cx="22" cy="22" r="18" fill="none" stroke="#222" strokeWidth="4"/>
                       <circle cx="22" cy="22" r="18" fill="none" stroke="var(--accent,#ffd700)" strokeWidth="4"
-                        strokeDasharray={`${xpPct * 1.131} 113.1`}
-                        strokeLinecap="round" strokeDashoffset="28.3"
-                        style={{transition:'stroke-dasharray 0.6s ease'}}/>
+                        strokeDasharray="113.1"
+                        strokeDashoffset={113.1 - (xpPct * 1.131)}
+                        strokeLinecap="round"
+                        style={{transition:'stroke-dashoffset 0.6s ease', transform: 'rotate(-90deg)', transformOrigin: '50% 50%'}}/>
                     </svg>
                     <span className="qb-ring-pct">{xpPct}%</span>
                   </div>
                   <div>
-                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
+                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalEarnedXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
                     <div className="qb-xp-label">{completedQuests.length}/{QUESTS.length} quests done</div>
                   </div>
                 </div>
@@ -252,46 +283,21 @@ function Dashboard() {
                         <p className="qb-card-desc">{q.desc}</p>
                         <div className="qb-card-bottom">
                           <span className="qb-xp-pill">+{q.xp} XP</span>
-                          <div className="qb-btns">
-                            <button className="qb-go" onClick={q.action}>Launch →</button>
-                            <button className={`qb-mark ${done ? 'qb-mark-done' : ''}`} onClick={() => toggleQuest(q.id)}>
-                              {done ? '✓' : '○'}
+                          {done ? (
+                            <button className="qb-completed" disabled>
+                              ✓ COMPLETED
                             </button>
-                          </div>
+                          ) : (
+                            <button className="qb-go" onClick={q.action}>
+                              Launch →
+                            </button>
+                          )}
                         </div>
                       </div>
-                      {done && <div className="qb-done-overlay">✓ COMPLETED</div>}
                     </div>
                   );
                 })}
               </div>
-            </div>
-
-            <div className="skills-card">
-              <div className="skills-card-header">
-                <h2 className="skills-card-title">Skill Progress</h2>
-              </div>
-              {skills.length > 0 ? (
-                <div className="skills-list">
-                  {skills.map(skill => (
-                    <div key={skill.name} className="skill-item">
-                      <div className="skill-header">
-                        <span className="skill-name">{skill.name}</span>
-                        <span className="skill-percentage">{skill.progress}%</span>
-                      </div>
-                      <div className="skill-progress-bar">
-                        <div className="skill-progress-fill" style={{ width: `${skill.progress}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="dashboard-empty-state">
-                  <span>💡</span>
-                  <p>"Analyse your resume to unlock skill insights and track your growth."</p>
-                  <button className="dashboard-cta-btn" onClick={() => navigate('/ai-analyser')}>Analyse Now →</button>
-                </div>
-              )}
             </div>
           </main>
         </div>
@@ -299,7 +305,7 @@ function Dashboard() {
         <div className={`ai-panel${aiOpen ? ' ai-panel-open' : ''}`}>
           <div className="ai-panel-title">
             <div className="ai-panel-title-icon">
-              <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+              <img src={chatbotIcon} alt="AI" className="chatbot-img" style={{ width: '30px', height: '30px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
             </div>
             AI Assistant
           </div>
@@ -308,7 +314,7 @@ function Dashboard() {
               <div key={i} className={`ai-msg ${msg.role}`}>
                 {msg.role === 'ai' && (
                   <div className="ai-avatar">
-                    <img src={chatbotIcon} alt="AI" className={`chatbot-img theme-${appTheme}`} style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
+                    <img src={chatbotIcon} alt="AI" className="chatbot-img" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'lighten' }} />
                   </div>
                 )}
                 {msg.role === 'user' && (
@@ -341,11 +347,19 @@ function Dashboard() {
               placeholder="Ask me anything..."
               value={aiInput}
               onChange={(e) => setAiInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAiSend()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAiSend();
+                }
+              }}
             />
             <button
               className="ai-send-btn"
-              onClick={handleAiSend}
+              onClick={(e) => {
+                e.preventDefault();
+                handleAiSend();
+              }}
               disabled={aiLoading}
               type="button"
             >

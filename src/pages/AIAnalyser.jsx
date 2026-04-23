@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './AIAnalyser.css';
 
@@ -42,7 +43,40 @@ function AIAnalyser() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [remainingUses, setRemainingUses] = useState('...');
+  const [isLocked, setIsLocked] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Load remaining uses and lock status on mount
+  useEffect(() => {
+    const loadGamificationStatus = async () => {
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('aiAnalysis');
+        const locked = await isFeatureLocked('aiAnalysis');
+        setIsLocked(locked);
+        
+        console.log('AI Analyser - Loaded uses:', uses, 'Locked:', locked);
+        
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
+          setRemainingUses('50 XP');
+        } else {
+          setRemainingUses(0);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('...'); // Show loading state on error
+      }
+    };
+    loadGamificationStatus();
+    
+    const handleUpdate = () => loadGamificationStatus();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
 
   const handleFile = (e) => {
     const f = e.target.files[0];
@@ -56,6 +90,22 @@ function AIAnalyser() {
 
   const handleAnalyse = async () => {
     if (!file && !text.trim()) return;
+
+    // Check if feature is locked (no uses left)
+    const locked = await isFeatureLocked('aiAnalysis');
+    if (locked) {
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('aiAnalysis');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('aiAnalysis');
+      setRemainingUses(uses);
+      setIsLocked(false);
+    }
+
     setLoading(true);
     setError('');
     setResult(null);
@@ -109,6 +159,20 @@ function AIAnalyser() {
       setResult(data);
       localStorage.setItem('analyzedResumeScore', String(data.resume_score || 0));
       localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
+
+      // Increment usage and auto-complete quest
+      await incrementFeatureUsage('aiAnalysis', 1); // Quest ID 1: Resume Sniper
+      
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('aiAnalysis');
+      if (newUses === 0) {
+        setRemainingUses('50 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
+      
+      // Track for Quest 5: Score Chaser (re-analyze after edits)
+      await trackQuestAction(5, { analysisCount: true });
 
     } catch (err) {
       console.error('❌ [FRONTEND] Error:', err.message);
@@ -197,9 +261,11 @@ function AIAnalyser() {
                 className={`analyser-btn ${(file || text.trim()) && !loading ? 'active' : ''}`}
                 onClick={handleAnalyse}
                 disabled={(!file && !text.trim()) || loading}
+                title={`${remainingUses} uses remaining`}
               >
                 {loading ? <span className="analyser-spinner" /> : <ScanSearch size={18} />}
                 {loading ? 'Analysing...' : 'Analyse Resume'}
+                <span className="analyser-uses-badge">{remainingUses}</span>
               </button>
 
               <p className="analyser-dataset-note">

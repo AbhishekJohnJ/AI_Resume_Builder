@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
-import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
+import { User, Menu, Send, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
+import { isFeatureLocked, incrementFeatureUsage, getRemainingUses, trackQuestAction, unlockFeature, getGamificationData } from '../utils/gamification';
 import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
@@ -673,26 +674,52 @@ function Portfolio() {
   const [codeTab, setCodeTab] = useState('html');
   const [copied, setCopied] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [files, setFiles] = useState([]);
-  const [showUploadMenu, setShowUploadMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
-  const fileInputRef = useRef(null);
-  const docInputRef = useRef(null);
+  const [remainingUses, setRemainingUses] = useState('...');
+  const [isLocked, setIsLocked] = useState(false);
   const outputRef = useRef(null);
 
-  const handleFileChange = (e) => {
-    setFiles(prev => [...prev, ...Array.from(e.target.files)]);
-    e.target.value = '';
-    setShowUploadMenu(false);
-  };
-  const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
+  // Load remaining uses and lock status on mount
+  useEffect(() => {
+    const loadGamificationStatus = async () => {
+      try {
+        const data = await getGamificationData();
+        const uses = await getRemainingUses('portfolio');
+        const locked = await isFeatureLocked('portfolio');
+        setIsLocked(locked);
+        
+        console.log('Portfolio - Loaded uses:', uses, 'Locked:', locked);
+        
+        // Show actual number of uses, or XP cost if locked
+        if (uses > 0) {
+          setRemainingUses(uses);
+        } else if (locked) {
+          setRemainingUses('30 XP');
+        } else {
+          setRemainingUses(0);
+        }
+      } catch (error) {
+        console.error('Error loading gamification status:', error);
+        setRemainingUses('...'); // Show loading state on error
+      }
+    };
+    loadGamificationStatus();
+    
+    const handleUpdate = () => loadGamificationStatus();
+    window.addEventListener('gamificationUpdate', handleUpdate);
+    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+  }, []);
 
   const handleGenerate = async () => {
-    if (!prompt.trim() && files.length === 0) return;
-    if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+    if (!prompt.trim()) return;
+    if (!selectedTemplate) { 
+      setError('Please select a template above before generating.'); 
+      return; 
+    }
+
     setError('');
 
     // Parse theme color from prompt
@@ -704,13 +731,30 @@ function Portfolio() {
       : null;
     if (mergedColor) setThemeColor(mergedColor);
 
-    // If it's only a color-change request, just recolor — no AI call needed
+    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
     if (isColorChangeOnly(prompt)) {
       if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
       return;
     }
 
+    // Check if feature is locked (no uses left) - ONLY for actual generation
+    const locked = await isFeatureLocked('portfolio');
+    if (locked) {
+      // Try to auto-unlock with XP
+      const unlockResult = await unlockFeature('portfolio');
+      if (!unlockResult.success) {
+        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+        return;
+      }
+      // Successfully unlocked! Update UI and continue
+      const uses = await getRemainingUses('portfolio');
+      const newLocked = await isFeatureLocked('portfolio');
+      setRemainingUses(uses);
+      setIsLocked(newLocked);
+    }
+
     setLoading(true);
+    const isNewPortfolio = !portfolioData;
     if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
       const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
@@ -725,6 +769,17 @@ function Portfolio() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
       setPortfolioData(data.portfolioData);
+
+      // Increment usage and auto-complete quest
+      await incrementFeatureUsage('portfolio', 2); // Quest ID 2: Portfolio Architect
+
+      // Reload remaining uses to update UI
+      const newUses = await getRemainingUses('portfolio');
+      if (newUses === 0) {
+        setRemainingUses('30 XP');
+      } else {
+        setRemainingUses(newUses);
+      }
 
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -856,7 +911,11 @@ ${markup}
                             <div
                               key={tpl.id}
                               className={`pf-card ${selectedTemplate === tpl.id ? 'pf-card-selected' : ''}`}
-                              onClick={() => setPreviewTemplate(tpl)}
+                              onClick={() => {
+                                setPreviewTemplate(tpl);
+                                // Track template preview for Quest 6: Portfolio Explorer
+                                trackQuestAction(6, { uniqueId: tpl.id });
+                              }}
                             >
                               {tpl.recommended && <span className="pf-badge">Recommended</span>}
                               <div className="pf-card-preview">
@@ -902,42 +961,10 @@ ${markup}
 
           {/* ── Portfolio Prompt Section ── */}
           <div className="rb-prompt-section">
-            <h3 className="rb-prompt-title">Describe your portfolio or upload your existing one</h3>
-            <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting — or upload a file to get started.</p>
+            <h3 className="rb-prompt-title">Describe your portfolio</h3>
+            <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting.</p>
 
-            <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
-            <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple style={{ display: 'none' }} onChange={handleFileChange} />
-
-            {files.length > 0 && (
-              <div className="rb-file-chips">
-                {files.map((f, i) => (
-                  <div key={i} className="rb-file-chip">
-                    {f.type.startsWith('image/') ? <Image size={13} /> : <FileText size={13} />}
-                    <span>{f.name}</span>
-                    <button onClick={() => removeFile(i)}><X size={11} /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-
-
-            <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
-              <div className="rb-plus-wrap">
-                <button className="rb-plus-btn" onClick={() => setShowUploadMenu(v => !v)}>
-                  <Plus size={18} />
-                </button>
-                {showUploadMenu && (
-                  <div className="rb-upload-menu">
-                    <button className="rb-upload-option" onClick={() => fileInputRef.current.click()}>
-                      <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
-                    </button>
-                    <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
-                      <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+            <div className={`rb-bar rb-bar-no-upload${prompt.trim() ? ' rb-bar-active' : ''}`}>
               <textarea
                 className="rb-input"
                 placeholder={portfolioData ? 'e.g. Make the about section more bold, add a new project, improve my tagline...' : 'e.g. Designer, React, portfolio...'}
@@ -954,11 +981,13 @@ ${markup}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
               />
               <button
-                className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
+                className={`rb-send-btn${prompt.trim() && !loading ? ' rb-send-active' : ''}`}
                 onClick={handleGenerate}
-                disabled={loading || (!prompt.trim() && files.length === 0)}
+                disabled={loading || !prompt.trim()}
+                title={isLocked ? 'Will spend 30 XP to generate' : `${remainingUses} uses remaining`}
               >
                 {loading ? <span className="rb-spinner" /> : <Send size={16} />}
+                <span className="pf-uses-badge">{remainingUses}</span>
               </button>
             </div>
 

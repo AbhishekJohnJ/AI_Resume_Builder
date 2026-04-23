@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { trackQuestAction } from '../utils/gamification';
 import './TemplatePickerCard.css';
 
 function ScaledPreview({ children, className, scaleDivisor = 794 }) {
@@ -971,7 +972,11 @@ function TemplatePickerCard({ onSelect, selected }) {
             <div
               key={tpl.id}
               className={`tpl-card ${selected === tpl.id ? 'tpl-selected' : ''}`}
-              onClick={() => setPreview(tpl)}
+              onClick={() => {
+                setPreview(tpl);
+                // Track template preview for Quest 4: Template Explorer
+                trackQuestAction(4, { uniqueId: tpl.id });
+              }}
             >
               {tpl.recommended && <div className="tpl-recommended">Recommended</div>}
               <ScaledPreview className="tpl-preview-wrap" scaleDivisor={540}>{tpl.component}</ScaledPreview>

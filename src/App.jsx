@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
@@ -9,6 +10,7 @@ import MyPortfolios from './pages/MyPortfolios';
 import About from './pages/About';
 import AIAnalyser from './pages/AIAnalyser';
 import { ToastContainer } from './components/Toast';
+import { initializeGamification } from './utils/gamification';
 
 function ProtectedRoute({ children }) {
   const user = localStorage.getItem('currentUser');
@@ -16,6 +18,11 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
+  // Initialize gamification system on app load
+  useEffect(() => {
+    initializeGamification();
+  }, []);
+
   return (
     <Router>
       <ToastContainer />

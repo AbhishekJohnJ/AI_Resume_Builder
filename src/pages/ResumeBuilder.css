@@ -148,6 +148,15 @@
   box-shadow: 0 0 0 3px var(--accent-12);
 }
 
+/* No upload variant - cleaner padding without + button */
+.rb-bar-no-upload {
+  padding: 6px 8px;
+}
+
+.rb-bar-no-upload .rb-input {
+  padding: 6px 16px;
+}
+
 /* + button */
 .rb-plus-wrap { position: relative; flex-shrink: 0; align-self: flex-end; }
 
@@ -310,4 +319,24 @@
 .rb-help-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* Usage counter badge */
+.rb-uses-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, #ffd700, #ffb700);
+  color: #1a1a2e;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.rb-send-btn {
+  position: relative;
 }

@@ -624,6 +624,109 @@
   pointer-events: none;
 }
 
+/* Fullpage Quest Board */
+.qb-wrap.qb-fullpage {
+  min-height: calc(100vh - 200px);
+  padding: 2.5rem;
+  margin-bottom: 0;
+}
+
+.qb-wrap.qb-fullpage .qb-header {
+  margin-bottom: 2.5rem;
+}
+
+.qb-wrap.qb-fullpage .qb-title {
+  font-size: 1.8rem;
+}
+
+.qb-wrap.qb-fullpage .qb-crown {
+  font-size: 2rem;
+}
+
+.qb-wrap.qb-fullpage .qb-sub {
+  font-size: 0.95rem;
+}
+
+.qb-wrap.qb-fullpage .qb-xp-ring {
+  width: 70px;
+  height: 70px;
+}
+
+.qb-wrap.qb-fullpage .qb-ring-svg {
+  width: 70px;
+  height: 70px;
+}
+
+.qb-wrap.qb-fullpage .qb-ring-pct {
+  font-size: 0.85rem;
+}
+
+.qb-wrap.qb-fullpage .qb-xp-earned {
+  font-size: 1.8rem;
+}
+
+.qb-wrap.qb-fullpage .qb-xp-max {
+  font-size: 0.95rem;
+}
+
+.qb-wrap.qb-fullpage .qb-xp-label {
+  font-size: 0.85rem;
+}
+
+.qb-wrap.qb-fullpage .qb-grid {
+  gap: 20px;
+}
+
+.qb-wrap.qb-fullpage .qb-card {
+  min-height: 240px;
+}
+
+.qb-wrap.qb-fullpage .qb-card-inner {
+  padding: 24px;
+  gap: 12px;
+}
+
+.qb-wrap.qb-fullpage .qb-card-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.qb-wrap.qb-fullpage .qb-card-title {
+  font-size: 1.2rem;
+  margin-top: 8px;
+}
+
+.qb-wrap.qb-fullpage .qb-card-desc {
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
+.qb-wrap.qb-fullpage .qb-rarity-pill {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+}
+
+.qb-wrap.qb-fullpage .qb-xp-pill {
+  font-size: 0.85rem;
+  padding: 4px 12px;
+}
+
+.qb-wrap.qb-fullpage .qb-go,
+.qb-wrap.qb-fullpage .qb-completed {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+@media (max-width: 960px) {
+  .qb-wrap.qb-fullpage {
+    padding: 2rem;
+  }
+  
+  .qb-wrap.qb-fullpage .qb-card {
+    min-height: 220px;
+  }
+}
+
 /* Header */
 .qb-header {
   display: flex;
@@ -815,6 +918,20 @@
   transition: opacity 0.15s, transform 0.1s;
 }
 .qb-go:hover { opacity: 0.85; transform: scale(1.04); }
+
+.qb-completed {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: not-allowed;
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+}
+
 .qb-mark {
   width: 26px; height: 26px;
   border-radius: 50%;
