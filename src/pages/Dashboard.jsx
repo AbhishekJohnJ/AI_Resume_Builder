@@ -347,11 +347,19 @@ function Dashboard() {
               placeholder="Ask me anything..."
               value={aiInput}
               onChange={(e) => setAiInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAiSend()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAiSend();
+                }
+              }}
             />
             <button
               className="ai-send-btn"
-              onClick={handleAiSend}
+              onClick={(e) => {
+                e.preventDefault();
+                handleAiSend();
+              }}
               disabled={aiLoading}
               type="button"
             >
