@@ -17,6 +17,13 @@ function Login() {
   useEffect(() => {
     const saved = localStorage.getItem('appTheme') || 'gold';
     document.body.setAttribute('data-theme', saved === 'gold' ? '' : saved);
+
+    // Auto-redirect if session still valid (within 1 hour)
+    const user = localStorage.getItem('currentUser');
+    const lastActive = localStorage.getItem('lastActiveTime');
+    if (user && lastActive && Date.now() - parseInt(lastActive, 10) < 60 * 60 * 1000) {
+      navigate('/dashboard', { replace: true });
+    }
   }, []);
 
   const handleSubmit = async (e) => {
@@ -37,6 +44,7 @@ function Login() {
       
       // Store user data in localStorage
       localStorage.setItem('currentUser', JSON.stringify(response.user));
+      localStorage.setItem('lastActiveTime', String(Date.now()));
       
       showToast('Login successful! Welcome back.', 'success');
       setTimeout(() => navigate('/dashboard'), 800);

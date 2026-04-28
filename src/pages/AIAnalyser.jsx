@@ -60,58 +60,40 @@ function AIAnalyser() {
     setError('');
     setResult(null);
 
-    console.log('🚀 [FRONTEND] Starting analysis...');
-    console.log('📄 [FRONTEND] File:', file?.name || 'None');
-    console.log('📝 [FRONTEND] Text length:', text.trim().length);
-
     try {
-      let response;
+      let resumeText = text.trim();
 
+      // If file uploaded, extract text first via generate-resume endpoint
       if (file) {
-        // Upload PDF
-        console.log('📤 [FRONTEND] Uploading PDF:', file.name);
         const formData = new FormData();
-        formData.append('file', file);
-
-        console.log('🔗 [FRONTEND] Calling: POST /api/ai/upload-and-predict');
-
-        response = await fetch('http://localhost:3001/api/ai/upload-and-predict', {
+        formData.append('files', file);
+        formData.append('prompt', 'extract resume content');
+        formData.append('templateId', '1');
+        const extractRes = await fetch('http://localhost:3001/api/ai/generate-resume', {
           method: 'POST',
-          body: formData
+          body: formData,
         });
-      } else {
-        // Analyze text
-        console.log('📝 [FRONTEND] Analyzing text');
-        console.log('🔗 [FRONTEND] Calling: POST /api/ai/predict-resume');
-
-        response = await fetch('http://localhost:3001/api/ai/predict-resume', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            resumeText: text.trim(),
-            targetRole: targetRole.trim() || undefined
-          })
-        });
+        const extractData = await extractRes.json();
+        if (extractData?.resumeData) {
+          resumeText = JSON.stringify(extractData.resumeData);
+        }
       }
 
-      console.log('📊 [FRONTEND] Response status:', response.status);
+      if (!resumeText) throw new Error('Could not extract text from file. Try pasting your resume text instead.');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Request failed: ${response.status}`);
-      }
+      const res = await fetch('http://localhost:3001/api/ai/analyze-resume-with-dataset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeText, targetRole: targetRole.trim() || undefined }),
+      });
 
-      const data = await response.json();
-      console.log('✅ [FRONTEND] Analysis complete');
-      console.log('🎯 [FRONTEND] Score:', data.resume_score);
-      console.log('📊 [FRONTEND] Level:', data.resume_level);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Analysis failed');
 
       setResult(data);
       localStorage.setItem('analyzedResumeScore', String(data.resume_score || 0));
       localStorage.setItem('analyzedResumeResult', JSON.stringify(data));
-
     } catch (err) {
-      console.error('❌ [FRONTEND] Error:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -141,7 +123,7 @@ function AIAnalyser() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf"
+                  accept=".pdf,.jpg,.jpeg,.png,.docx,.txt"
                   style={{ display: 'none' }}
                   onChange={handleFile}
                 />

@@ -147,6 +147,19 @@ app.delete("/api/portfolios/:id", async function(req, res) {
   catch (e) { res.status(500).json({ error: "Failed to delete portfolio" }); }
 });
 
+// AI: Gather Info (dynamic questions based on prompt)
+app.post("/api/ai/gather-info", async function(req, res) {
+  try {
+    const { prompt, type } = req.body;
+    if (!prompt) return res.json({ questions: [] });
+    const questions = await groqService.gatherMissingInfo(prompt, type || 'resume');
+    res.json({ questions });
+  } catch (e) {
+    console.error('Gather info error:', e.message);
+    res.json({ questions: [] }); // fail silently — just generate without questions
+  }
+});
+
 // AI: Chat
 app.post("/api/ai/chat", async function(req, res) {
   try {

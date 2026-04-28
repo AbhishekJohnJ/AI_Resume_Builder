@@ -97,90 +97,91 @@ async function generateResume(prompt, templateId, existingData = null) {
   const hint = TEMPLATE_HINTS[templateId] || 'Professional resume template.';
   const isEnhancement = !!existingData;
 
-  const system = `You are a world-class resume writer, career strategist, and HR consultant with 15+ years of experience helping candidates land jobs at top companies like Google, Amazon, Microsoft, and Fortune 500 firms.
-
-Your task: Generate a COMPLETE, HIGHLY DETAILED, ATS-optimized resume that will make any HR manager immediately want to interview the candidate.
+  const system = `You are a world-class resume writer who has helped thousands of candidates land jobs at Google, Amazon, Microsoft, Apple, Meta, NVIDIA, and Fortune 500 companies. You have deep knowledge of:
+- What hiring managers and HR directors look for in 2024-2025
+- ATS (Applicant Tracking System) optimization techniques
+- Industry-specific keywords and power phrases
+- How to quantify achievements to maximize impact
+- Current market trends and in-demand skills for every field
 
 Template: ${hint}
 
-STRICT REQUIREMENTS — every resume MUST have:
-1. NAME: Use the actual name from the prompt. If no name given, use "Alex Johnson" as placeholder but note it.
-2. SUMMARY: 3-4 powerful sentences with keywords, years of experience, key achievements, and value proposition.
-3. EXPERIENCE: Minimum 2-3 roles. Each role MUST have:
-   - 4-6 bullet points (not just 2-3)
-   - Quantified achievements: "Increased X by Y%", "Reduced Z by N hours", "Led team of N"
-   - Strong action verbs: Architected, Spearheaded, Engineered, Optimized, Delivered, Scaled
-   - Technologies and tools used
-4. SKILLS: 10-12 skills minimum, mix of technical and soft skills
-5. EDUCATION: Full details with GPA if mentioned, relevant coursework
-6. AWARDS/CERTIFICATIONS: At least 2-3 relevant certifications or achievements
-7. LANGUAGES: Include if mentioned, default English Native
+YOUR MISSION: Create a resume so impressive that any HR manager who reads it will immediately want to schedule an interview.
 
-ATS OPTIMIZATION:
-- Include industry-specific keywords throughout
-- Use standard section headings
-- Quantify every achievement possible
-- Match skills to current market demand for the role
+MANDATORY REQUIREMENTS:
+1. PROFESSIONAL SUMMARY: 3-4 sentences. Must include: years of experience, key technical expertise, biggest achievement with metric, and unique value proposition. Use power words like "Spearheaded", "Architected", "Pioneered", "Transformed".
 
-If the user only gave a job title or company (like "I work at NVIDIA as CUDA developer"), INFER and CREATE:
-- A compelling professional summary
-- Realistic, detailed work experience with metrics
-- Relevant technical skills for that role
-- Appropriate education
-- Industry certifications
+2. WORK EXPERIENCE: Each role MUST have 5-6 bullet points with:
+   - Strong action verbs (Engineered, Optimized, Delivered, Scaled, Automated, Reduced, Increased)
+   - Quantified results: "Reduced latency by 40%", "Served 2M+ users", "Saved $500K annually"
+   - Technologies used in context
+   - Business impact, not just tasks
+
+3. SKILLS: 12-15 skills. Mix technical skills (tools, languages, frameworks) with domain skills. Order by relevance to the role.
+
+4. EDUCATION: Include GPA if strong, relevant coursework, academic achievements.
+
+5. AWARDS/CERTIFICATIONS: Industry-recognized certifications, hackathon wins, publications, patents.
+
+6. Use industry-standard keywords that ATS systems scan for.
+
+7. Every bullet point must demonstrate VALUE, not just responsibility.
+
+BAD: "Worked on backend development"
+GOOD: "Engineered high-performance REST APIs using Node.js and Redis, reducing response time by 65% and supporting 500K daily requests"
 
 Return ONLY valid JSON — no markdown, no explanation:
 {
-  "name": "Full Name (use real name from prompt or Alex Johnson if not given)",
-  "title": "Specific Job Title",
+  "name": "Full Name",
+  "title": "Specific Senior Job Title",
   "email": "email@example.com",
   "phone": "+1 (555) 000-0000",
   "location": "City, Country",
   "linkedin": "linkedin.com/in/username",
-  "website": "www.portfolio.com",
-  "summary": "4-sentence powerful summary with keywords, experience years, key achievements, and unique value proposition that makes HR want to read more",
+  "website": "portfolio.dev",
+  "summary": "4-sentence executive summary packed with keywords, metrics, and value proposition that makes HR stop scrolling",
   "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10", "Skill 11", "Skill 12"],
   "experience": [
     {
-      "role": "Senior Job Title",
+      "role": "Senior/Lead Job Title",
       "company": "Company Name",
-      "period": "2021 – Present",
-      "desc": "One-line role overview",
+      "period": "2022 – Present",
+      "desc": "Brief role context",
       "bullets": [
-        "Spearheaded development of X system, reducing processing time by 40% and saving $200K annually",
-        "Architected and deployed Y solution serving 2M+ users with 99.9% uptime",
-        "Led cross-functional team of 8 engineers to deliver Z project 2 weeks ahead of schedule",
-        "Optimized database queries resulting in 60% performance improvement",
-        "Mentored 3 junior developers, improving team velocity by 25%",
-        "Collaborated with product and design teams to ship 12 features per quarter"
+        "Architected and deployed X system using Y technology, achieving Z% improvement in performance and saving $N annually",
+        "Led cross-functional team of N engineers to deliver mission-critical project 3 weeks ahead of schedule",
+        "Optimized database queries and caching strategy, reducing API response time by 60% for 1M+ daily users",
+        "Implemented automated CI/CD pipeline reducing deployment time from 2 hours to 8 minutes",
+        "Mentored 4 junior developers, improving team code quality score by 35% and reducing bug rate by 40%",
+        "Collaborated with product team to define technical roadmap, shipping 15+ features per quarter"
       ]
     },
     {
       "role": "Previous Job Title",
       "company": "Previous Company",
-      "period": "2019 – 2021",
-      "desc": "One-line role overview",
+      "period": "2020 – 2022",
+      "desc": "Brief role context",
       "bullets": [
-        "Built and maintained X application used by 500+ daily active users",
-        "Reduced bug count by 35% through implementation of comprehensive testing strategy",
-        "Integrated third-party APIs reducing manual work by 15 hours/week",
-        "Contributed to open-source projects with 200+ GitHub stars"
+        "Built scalable microservices architecture handling 500K+ daily transactions with 99.9% uptime",
+        "Reduced infrastructure costs by 30% through cloud optimization and resource right-sizing",
+        "Developed real-time data processing pipeline processing 10GB+ daily with sub-second latency",
+        "Contributed to open-source projects with 500+ GitHub stars, establishing technical credibility"
       ]
     }
   ],
   "education": [
     {
-      "degree": "Bachelor of Technology in Computer Science",
+      "degree": "Bachelor/Master of Technology in [Field]",
       "school": "University Name",
-      "year": "2019",
-      "details": "GPA: 3.8/4.0 | Relevant: Data Structures, Algorithms, OS, Networks"
+      "year": "2020",
+      "details": "GPA: 3.8/4.0 | Relevant: Algorithms, OS, Networks, ML"
     }
   ],
-  "languages": ["English – Native/Fluent", "Hindi – Native"],
+  "languages": ["English – Fluent", "Hindi – Native"],
   "awards": [
     "AWS Certified Solutions Architect – Professional (2023)",
-    "Employee of the Quarter – Q3 2022",
-    "Hackathon Winner – TechFest 2021 (1st place out of 200 teams)"
+    "Best Innovation Award – Company Hackathon 2022 (1st of 150 teams)",
+    "Dean's List – All 4 semesters"
   ],
   "sectionStyle": { "skills": "bars", "experience": "default" },
   "designStyle": { "button": "default", "card": "default", "background": "solid" }
@@ -188,9 +189,9 @@ Return ONLY valid JSON — no markdown, no explanation:
 
   const user = isEnhancement
     ? `Current resume:\n${JSON.stringify(existingData, null, 2)}\n\nApply this change: ${prompt}`
-    : `Create a top-tier resume for: ${prompt}\n\nMake it detailed, quantified, and impressive enough that any HR manager would immediately want to interview this person.`;
+    : `Create a world-class, HR-approved resume for this person: ${prompt}\n\nMake every bullet point quantified and impactful. Use industry-standard keywords. This resume must stand out from 500 other applicants.`;
 
-  const raw = await chat(system, user, 3000);
+  const raw = await chat(system, user, 3500);
   return extractJSON(raw);
 }
 
@@ -215,49 +216,54 @@ async function generatePortfolio(prompt, templateId, existingData = null) {
   const hint = PORTFOLIO_HINTS[templateId] || 'Professional portfolio template.';
   const isEnhancement = !!existingData;
 
-  const system = `You are an expert portfolio designer and content writer.
+  const system = `You are a world-class portfolio designer and content strategist who has built portfolios for engineers at Google, designers at Apple, and developers at top startups. You know exactly what makes a portfolio stand out to recruiters and clients.
 
-Template selected: ${hint}
-Tailor the content tone, tagline style, and project descriptions to match this template's personality.
+Template: ${hint}
 
-Return ONLY valid JSON with this exact structure (no markdown, no extra text):
+YOUR MISSION: Create a portfolio so compelling that any recruiter or client will immediately want to reach out.
+
+REQUIREMENTS:
+1. TAGLINE: Punchy, memorable, 6-10 words. Capture personality + expertise.
+   BAD: "I build websites"  GOOD: "Turning complex problems into elegant digital experiences"
+
+2. ABOUT: 3 sentences. Who you are + years of experience. What you specialize in + key achievement. What drives you.
+
+3. PROJECTS: Each project MUST have a compelling name, 2-3 sentence description with tech used and impact/scale, real tech stack, quantified impact where possible.
+
+4. EXPERIENCE: Achievement-focused with metrics.
+
+5. SKILLS: 8-10 most relevant, market-demanded skills.
+
+Return ONLY valid JSON — no markdown, no explanation:
 {
   "name": "Full Name",
   "initials": "AB",
-  "title": "Job Title",
-  "tagline": "A short inspiring tagline that fits the template style",
+  "title": "Specific Professional Title",
+  "tagline": "Punchy memorable tagline that captures expertise",
   "email": "email@example.com",
   "phone": "+1 (555) 000-0000",
   "location": "City, Country",
   "github": "github.com/username",
   "linkedin": "linkedin.com/in/username",
-  "website": "www.website.com",
-  "about": "2-3 sentence compelling personal bio",
+  "website": "www.portfolio.dev",
+  "about": "3-sentence compelling bio with experience, specialization, achievement, and passion",
   "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
   "projects": [
-    {
-      "name": "Project Name",
-      "desc": "Detailed description highlighting impact, tech used, and outcomes.",
-      "tech": ["Tech1", "Tech2", "Tech3"],
-      "link": "#"
-    }
+    { "name": "Project Name", "desc": "2-3 sentence description with impact metrics and tech context.", "tech": ["Tech1", "Tech2", "Tech3"], "link": "#" },
+    { "name": "Project 2", "desc": "Compelling description with impact metrics.", "tech": ["Tech1", "Tech2"], "link": "#" },
+    { "name": "Project 3", "desc": "Compelling description with impact metrics.", "tech": ["Tech1", "Tech2"], "link": "#" }
   ],
   "experience": [
-    {
-      "role": "Job Title",
-      "company": "Company Name",
-      "period": "2021 – Present",
-      "desc": "Achievement-focused description."
-    }
+    { "role": "Job Title", "company": "Company", "period": "2022 – Present", "desc": "Achievement-focused: Led X, built Y, resulting in Z% improvement." }
   ],
   "designStyle": { "button": "default", "card": "default", "background": "solid" }
 }`;
 
   const user = isEnhancement
     ? `Current portfolio:\n${JSON.stringify(existingData, null, 2)}\n\nApply this change: ${prompt}`
-    : `Build a portfolio for: ${prompt}`;
+    : `Create a world-class portfolio for: ${prompt}\n\nMake the tagline memorable, projects impactful, and bio compelling. This portfolio must make recruiters want to reach out immediately.`;
 
-  const raw = await chat(system, user, 2048);
+  const raw = await chat(system, user, 2500);
   return extractJSON(raw);
 }
 
@@ -272,4 +278,59 @@ Keep responses short, friendly, and practical. Use bullet points when listing mu
   return await chat(system, message, 400);
 }
 
-module.exports = { analyzeResume, generateResume, generatePortfolio, aiChat };
+/* ─────────────────────────────────────────
+   5. GATHER MISSING INFO (dynamic, domain-aware)
+───────────────────────────────────────── */
+async function gatherMissingInfo(prompt, type) {
+  const system = `You are an expert career coach AI. Analyze the user's prompt and identify ONLY the information that is genuinely missing.
+
+CRITICAL RULES:
+- Read the prompt carefully. If name is mentioned, do NOT ask for name.
+- If role/title is mentioned, do NOT ask for role.
+- If experience years are mentioned, do NOT ask for experience.
+- ONLY ask about information that is completely absent.
+- Be DOMAIN-AWARE: questions must match the user's field.
+
+DOMAIN EXAMPLES:
+- Software/Tech: ask about programming languages, frameworks, GitHub, tech stack, projects
+- Doctor/Medical: ask about specialization, hospital/clinic, medical certifications, patient volume, research
+- Designer: ask about design tools (Figma, Adobe), portfolio link, design specialization, clients
+- Finance/Banking: ask about certifications (CFA, CPA), financial tools, assets managed
+- Teacher/Education: ask about subjects taught, grade levels, curriculum, student count
+- Marketing: ask about campaigns, tools (Google Ads, SEO), metrics, budget managed
+- Fresher/Student: ask about projects, internships, academic achievements, certifications
+
+For a ${type}, key fields are:
+- ALWAYS check: full name, job title/role
+- Domain-specific: skills, tools, certifications, achievements, education details
+- Contact: email, location (optional)
+
+Return ONLY a JSON array. Each object:
+{
+  "key": "unique_key",
+  "question": "Natural conversational question",
+  "placeholder": "Example answer",
+  "required": true/false,
+  "hint": "Short tip or null",
+  "label": "Short label for prompt building"
+}
+
+Return [] if the prompt already has enough info to build a great ${type}.
+Return ONLY valid JSON array — no markdown, no text outside.`;
+
+  const user = `User's prompt: "${prompt}"\n\nWhat key information is missing? Return JSON array of questions only for what's missing.`;
+
+  try {
+    const raw = await chat(system, user, 700);
+    const str = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const start = str.indexOf('[');
+    const end = str.lastIndexOf(']');
+    if (start === -1 || end === -1) return [];
+    const parsed = JSON.parse(str.slice(start, end + 1));
+    return Array.isArray(parsed) ? parsed.slice(0, 6) : [];
+  } catch {
+    return [];
+  }
+}
+
+module.exports = { analyzeResume, generateResume, generatePortfolio, aiChat, gatherMissingInfo };

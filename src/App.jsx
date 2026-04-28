@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
@@ -10,15 +11,45 @@ import About from './pages/About';
 import AIAnalyser from './pages/AIAnalyser';
 import { ToastContainer } from './components/Toast';
 
-function ProtectedRoute({ children }) {
+const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in ms
+
+function isSessionValid() {
   const user = localStorage.getItem('currentUser');
-  return user ? children : <Navigate to="/" replace />;
+  const lastActive = localStorage.getItem('lastActiveTime');
+  if (!user || !lastActive) return false;
+  return Date.now() - parseInt(lastActive, 10) < SESSION_TIMEOUT;
+}
+
+function updateActivity() {
+  localStorage.setItem('lastActiveTime', String(Date.now()));
+}
+
+// Tracks activity on every route change
+function ActivityTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    if (localStorage.getItem('currentUser')) {
+      updateActivity();
+    }
+  }, [location]);
+  return null;
+}
+
+function ProtectedRoute({ children }) {
+  if (!isSessionValid()) {
+    // Clear expired session
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('lastActiveTime');
+    return <Navigate to="/" replace />;
+  }
+  return children;
 }
 
 function App() {
   return (
     <Router>
       <ToastContainer />
+      <ActivityTracker />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

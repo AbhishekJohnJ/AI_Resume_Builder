@@ -5,6 +5,7 @@ import { User, Menu, Plus, Send, FileText, Image, X, Code, RefreshCw, Copy, Chec
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import GeneratedPortfolio from '../components/GeneratedPortfolio';
+import InfoGatherer from '../components/InfoGatherer';
 import { parseThemeColor, isColorChangeOnly, parseColorReplace } from '../utils/parseThemeColor';
 import './Dashboard.css';
 import './Portfolio.css';
@@ -679,6 +680,7 @@ function Portfolio() {
   const [error, setError] = useState('');
   const [portfolioData, setPortfolioData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
+  const [showGatherer, setShowGatherer] = useState(false);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const outputRef = useRef(null);
@@ -690,43 +692,26 @@ function Portfolio() {
   };
   const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() && files.length === 0) return;
-    if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+  const generateWithPrompt = async (finalPrompt) => {
     setError('');
-
-    // Parse theme color from prompt
-    const detectedColor = parseThemeColor(prompt);
-    const replaceColor = parseColorReplace(prompt, selectedTemplate);
-    // Merge: replace-mode overrides take priority over single/multi-target
-    const mergedColor = (detectedColor || replaceColor)
-      ? { ...(detectedColor || {}), ...(replaceColor || {}) }
-      : null;
+    const detectedColor = parseThemeColor(finalPrompt);
+    const replaceColor = parseColorReplace(finalPrompt, selectedTemplate);
+    const mergedColor = (detectedColor || replaceColor) ? { ...(detectedColor || {}), ...(replaceColor || {}) } : null;
     if (mergedColor) setThemeColor(mergedColor);
-
-    // If it's only a color-change request, just recolor — no AI call needed
-    if (isColorChangeOnly(prompt)) {
+    if (isColorChangeOnly(finalPrompt)) {
       if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
       return;
     }
-
     setLoading(true);
-    if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
       const res = await fetch('http://localhost:3001/api/ai/generate-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt,
-          templateId: selectedTemplate,
-          existingData: portfolioData || null,
-        }),
+        body: JSON.stringify({ prompt: finalPrompt, templateId: selectedTemplate, existingData: portfolioData || null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate portfolio');
       setPortfolioData(data.portfolioData);
-
-      // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
         await fetch('http://localhost:3001/api/portfolios', {
@@ -735,7 +720,6 @@ function Portfolio() {
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: mergedColor || null }),
         });
       }
-
       setTimeout(() => outputRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message);
@@ -744,6 +728,17 @@ function Portfolio() {
     }
   };
 
+  const handleGenerate = async () => {
+    if (!prompt.trim() && files.length === 0) return;
+    if (!selectedTemplate) { setError('Please select a template above before generating.'); return; }
+    setError('');
+
+    // If enhancement or color change, skip gatherer
+    if (portfolioData) { await generateWithPrompt(prompt); return; }
+
+    // First generation — show info gatherer
+    setShowGatherer(true);
+  };
   const handleExportCode = () => setShowCode(true);
 
   /** Serialize all active themeColor vars into a CSS block */
@@ -818,8 +813,25 @@ ${markup}
   return (
     <div className="dashboard-page">
       <TopBar />
-
       <Sidebar />
+
+      {/* AI Info Gatherer */}
+      {showGatherer && (
+        <InfoGatherer
+          type="portfolio"
+          onComplete={(builtPrompt) => {
+            setShowGatherer(false);
+            const finalPrompt = prompt.trim()
+              ? `${builtPrompt} Additional context: ${prompt}`
+              : builtPrompt;
+            generateWithPrompt(finalPrompt);
+          }}
+          onSkip={() => {
+            setShowGatherer(false);
+            generateWithPrompt(prompt);
+          }}
+        />
+      )}
 
       <div className="dashboard-container">
         <main className="dashboard-content">

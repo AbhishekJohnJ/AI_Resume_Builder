@@ -291,7 +291,11 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
           </button>
 
           <button
-            onClick={() => navigate('/')}
+            onClick={() => {
+              localStorage.removeItem('currentUser');
+              localStorage.removeItem('lastActiveTime');
+              navigate('/');
+            }}
             style={{
               background: 'transparent',
               border: '1px solid var(--accent, #ffd700)',

@@ -1,0 +1,240 @@
+/* ── Info Gatherer Modal ── */
+.ig-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: igFadeIn 0.2s ease;
+}
+
+@keyframes igFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ig-modal {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  animation: igSlideUp 0.25s ease;
+}
+
+@keyframes igSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Header */
+.ig-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+.ig-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ig-icon { font-size: 1.6rem; }
+.ig-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+.ig-subtitle {
+  font-size: 0.75rem;
+  color: #555;
+}
+.ig-skip-all {
+  background: transparent;
+  border: 1px solid #333;
+  color: #666;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ig-skip-all:hover { border-color: #555; color: #aaa; }
+
+/* Progress */
+.ig-progress-bar {
+  height: 3px;
+  background: #1e1e1e;
+  border-radius: 2px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.ig-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, #ffd700), var(--accent-alt, #ffa500));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.ig-step-count {
+  font-size: 0.72rem;
+  color: #444;
+  margin-bottom: 1.4rem;
+  text-align: right;
+}
+
+/* Question */
+.ig-question {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.ig-q-num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent, #ffd700);
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+.ig-q-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e5e5e5;
+  line-height: 1.4;
+}
+.ig-required {
+  color: #ef4444;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Input */
+.ig-input,
+.ig-textarea {
+  width: 100%;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #e5e5e5;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 1.2rem;
+}
+.ig-textarea { resize: none; line-height: 1.5; }
+.ig-input:focus,
+.ig-textarea:focus {
+  border-color: var(--accent, #ffd700);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+}
+.ig-input::placeholder,
+.ig-textarea::placeholder { color: #444; }
+
+/* Actions */
+.ig-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.ig-actions-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.ig-btn-back {
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  color: #666;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ig-btn-back:hover { border-color: #444; color: #aaa; }
+
+.ig-btn-skip {
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.ig-btn-skip:hover { color: #888; }
+
+.ig-btn-next {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  color: #666;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.2s;
+}
+.ig-btn-next.active {
+  background: var(--accent, #ffd700);
+  border-color: var(--accent, #ffd700);
+  color: #111;
+  cursor: pointer;
+}
+.ig-btn-next.active:hover { opacity: 0.88; transform: scale(1.02); }
+
+/* Hint */
+.ig-hint {
+  font-size: 0.72rem;
+  color: #333;
+  text-align: center;
+  margin: 1rem 0 0;
+}
+
+/* Loading state */
+.ig-loading-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 2.5rem;
+}
+.ig-loading-icon { font-size: 2.5rem; }
+.ig-loading-text { font-size: 0.95rem; color: #aaa; }
+.ig-loading-dots {
+  display: flex;
+  gap: 6px;
+}
+.ig-loading-dots span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent, #ffd700);
+  animation: igDot 1.2s ease-in-out infinite;
+}
+.ig-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ig-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes igDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Question hint */
+.ig-q-hint {
+  font-size: 0.78rem;
+  color: #555;
+  margin: -8px 0 10px;
+  font-style: italic;
+}
