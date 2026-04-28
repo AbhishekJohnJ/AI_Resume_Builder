@@ -22,41 +22,51 @@ function ResumeBuilder() {
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
+  const [missingInfo, setMissingInfo] = useState(null);
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
 
-  const handleLogout = () => navigate('/');
-
   const handleFileChange = (e) => {
-    const picked = Array.from(e.target.files);
-    setFiles(prev => [...prev, ...picked]);
+    setFiles(prev => [...prev, ...Array.from(e.target.files)]);
     e.target.value = '';
     setShowUploadMenu(false);
   };
 
   const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
-  const handleSubmit = async () => {
-    if (!prompt.trim() && files.length === 0) return;
-    if (!selectedTemplate) {
-      setError('Please select a template first.');
-      return;
-    }
-    setError('');
+  const getMissingFields = (text) => {
+    const missing = [];
+    const lower = text.toLowerCase();
+    const hasName = /\b(i am|my name is|name:|i'm)\s+\w+/i.test(text) || /^[A-Z][a-z]+ [A-Z][a-z]+/.test(text);
+    if (!hasName) missing.push('your full name (e.g. "I am John Smith")');
+    if (!lower.includes('year') && !lower.includes('experience') && !/\d+\s*(year|yr)/.test(lower) && lower.split(' ').length < 12)
+      missing.push('years of experience (e.g. "3 years experience")');
+    return missing;
+  };
 
-    // Parse theme color from prompt
+  const handleSubmit = async (skipCheck = false) => {
+    if (!prompt.trim() && files.length === 0) return;
+    if (!selectedTemplate) { setError('Please select a template first.'); return; }
+
+    setError('');
+    setMissingInfo(null);
+
     const detectedColor = parseThemeColor(prompt);
     if (detectedColor) setThemeColor(detectedColor);
 
-    // If it's only a color-change request, just recolor — no AI call needed
     if (isColorChangeOnly(prompt)) {
       if (!resumeData) setError('Generate a resume first, then change the colour.');
       return;
     }
 
+    // Ask for missing info on first generation only
+    if (!skipCheck && !resumeData && files.length === 0) {
+      const missing = getMissingFields(prompt);
+      if (missing.length > 0) { setMissingInfo(missing); return; }
+    }
+
     setLoading(true);
-    if (!resumeData) setResumeData(null); // only clear on fresh generation
     try {
       const formData = new FormData();
       formData.append('prompt', prompt);
@@ -72,7 +82,6 @@ function ResumeBuilder() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
 
-      // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
         await fetch('http://localhost:3001/api/resumes', {
@@ -81,7 +90,6 @@ function ResumeBuilder() {
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData, themeColor: detectedColor || null }),
         });
       }
-
       setTimeout(() => resumeRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message);
@@ -98,33 +106,28 @@ function ResumeBuilder() {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const imgW = canvas.width;
-    const imgH = canvas.height;
-    const ratio = Math.min(pageW / imgW, pageH / imgH);
-    pdf.addImage(imgData, 'PNG', 0, 0, imgW * ratio, imgH * ratio);
+    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * ratio, canvas.height * ratio);
     pdf.save(`${resumeData?.name?.replace(/\s+/g, '_') || 'resume'}.pdf`);
   };
 
   return (
     <div className="dashboard-page resume-builder-page">
       <TopBar />
-
       <Sidebar />
-
       <div className="dashboard-container">
         <main className="dashboard-content">
           <div className="page-header">
             <h1 className="page-title">Resume Builder</h1>
-            <p className="page-subtitle">Pick a professionally designed template to build your resume</p>
+            <p className="page-subtitle">Pick a template, describe yourself, and let AI build your resume</p>
           </div>
 
           <div className="resume-builder-content">
             <TemplatePickerCard selected={selectedTemplate} onSelect={setSelectedTemplate} />
 
-            {/* ── AI Prompt Box ── */}
             <div className="rb-prompt-section">
               <h3 className="rb-prompt-title">Describe your resume or upload your existing one</h3>
-              <p className="rb-prompt-sub">Tell the AI about your experience, skills, and the job you're targeting — or upload a file to get started.</p>
+              <p className="rb-prompt-sub">Tell the AI your name, role, experience, and skills — the more detail, the better the resume.</p>
 
               <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
               <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xlsx,.xls,.csv" multiple style={{ display: 'none' }} onChange={handleFileChange} />
@@ -140,8 +143,6 @@ function ResumeBuilder() {
                   ))}
                 </div>
               )}
-
-
 
               <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
                 <div className="rb-plus-wrap">
@@ -161,22 +162,23 @@ function ResumeBuilder() {
                 </div>
                 <textarea
                   className="rb-input"
-                  placeholder={resumeData ? 'e.g. Make my summary more impactful, add Docker to skills, improve job descriptions...' : 'e.g. Full Stack Developer, React...'}
+                  placeholder={resumeData
+                    ? 'e.g. Make my summary more impactful, add Docker to skills...'
+                    : 'e.g. I am Mithun, CUDA Developer at NVIDIA with 2 years experience, BTech from Karunya University...'}
                   value={prompt}
                   rows={2}
                   onChange={e => {
                     setPrompt(e.target.value);
                     const el = e.target;
                     el.style.height = 'auto';
-                    const maxH = 300;
-                    el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
-                    el.style.overflowY = el.scrollHeight > maxH ? 'auto' : 'hidden';
+                    el.style.height = Math.min(el.scrollHeight, 300) + 'px';
+                    el.style.overflowY = el.scrollHeight > 300 ? 'auto' : 'hidden';
                   }}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                 />
                 <button
                   className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit()}
                   disabled={loading || (!prompt.trim() && files.length === 0)}
                 >
                   {loading ? <span className="rb-spinner" /> : <Send size={16} />}
@@ -185,15 +187,26 @@ function ResumeBuilder() {
 
               {error && <div className="gr-error">{error}</div>}
 
+              {missingInfo && (
+                <div className="rb-missing-info">
+                  <p className="rb-missing-title">⚠️ To generate a great resume, please include:</p>
+                  <ul className="rb-missing-list">
+                    {missingInfo.map((item, i) => <li key={i}>• {item}</li>)}
+                  </ul>
+                  <p className="rb-missing-hint">Add the missing details above, or generate anyway with what you have.</p>
+                  <button className="rb-missing-skip" onClick={() => handleSubmit(true)}>
+                    Generate anyway →
+                  </button>
+                </div>
+              )}
+
               <div className="rb-help-row">
                 <button className="rb-help-btn" onClick={() => navigate('/about')}>
-                  <HelpCircle size={15} />
-                  Need any help?
+                  <HelpCircle size={15} /> Need any help?
                 </button>
               </div>
             </div>
 
-            {/* ── Loading ── */}
             {loading && (
               <div className="gr-loading">
                 <div className="gr-spinner" />
@@ -201,13 +214,12 @@ function ResumeBuilder() {
               </div>
             )}
 
-            {/* ── Generated Resume Output ── */}
             {resumeData && !loading && (
               <div className="gr-output" ref={resumeRef}>
                 <div className="gr-output-header">
                   <h3 className="gr-output-title">Your Generated Resume</h3>
                   <div className="gr-actions">
-                    <button className="gr-btn gr-btn-regenerate" onClick={handleSubmit}>
+                    <button className="gr-btn gr-btn-regenerate" onClick={() => handleSubmit()}>
                       <RefreshCw size={14} /> Regenerate
                     </button>
                     <button className="gr-btn gr-btn-download" onClick={handleDownload}>

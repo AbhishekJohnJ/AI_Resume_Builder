@@ -311,3 +311,44 @@
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* Missing info prompt */
+.rb-missing-info {
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-top: 10px;
+}
+.rb-missing-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffc107;
+  margin: 0 0 8px;
+}
+.rb-missing-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+}
+.rb-missing-list li {
+  font-size: 0.82rem;
+  color: #e5e5e5;
+  margin-bottom: 4px;
+}
+.rb-missing-hint {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0 0 10px;
+}
+.rb-missing-skip {
+  background: transparent;
+  border: 1px solid #ffc107;
+  color: #ffc107;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rb-missing-skip:hover { background: #ffc107; color: #111; }

@@ -8,7 +8,7 @@ function getGroq() {
   if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   return _groq;
 }
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'llama-3.1-8b-instant';
 
 async function chat(systemPrompt, userMessage, maxTokens = 2048) {
   const res = await getGroq().chat.completions.create({
@@ -97,52 +97,100 @@ async function generateResume(prompt, templateId, existingData = null) {
   const hint = TEMPLATE_HINTS[templateId] || 'Professional resume template.';
   const isEnhancement = !!existingData;
 
-  const system = `You are an expert resume writer and career coach. Generate a complete, professional resume as a JSON object.
+  const system = `You are a world-class resume writer, career strategist, and HR consultant with 15+ years of experience helping candidates land jobs at top companies like Google, Amazon, Microsoft, and Fortune 500 firms.
 
-Template selected: ${hint}
-Tailor the content style, tone, and language to match this template's personality.
+Your task: Generate a COMPLETE, HIGHLY DETAILED, ATS-optimized resume that will make any HR manager immediately want to interview the candidate.
 
-Focus on:
-- Quantifiable achievements (numbers, percentages, impact)
-- Strong action verbs
-- Current in-demand skills for the role
-- ATS-friendly keywords
-- Clear, concise descriptions
+Template: ${hint}
 
-Return ONLY valid JSON with this exact structure (no markdown, no extra text):
+STRICT REQUIREMENTS — every resume MUST have:
+1. NAME: Use the actual name from the prompt. If no name given, use "Alex Johnson" as placeholder but note it.
+2. SUMMARY: 3-4 powerful sentences with keywords, years of experience, key achievements, and value proposition.
+3. EXPERIENCE: Minimum 2-3 roles. Each role MUST have:
+   - 4-6 bullet points (not just 2-3)
+   - Quantified achievements: "Increased X by Y%", "Reduced Z by N hours", "Led team of N"
+   - Strong action verbs: Architected, Spearheaded, Engineered, Optimized, Delivered, Scaled
+   - Technologies and tools used
+4. SKILLS: 10-12 skills minimum, mix of technical and soft skills
+5. EDUCATION: Full details with GPA if mentioned, relevant coursework
+6. AWARDS/CERTIFICATIONS: At least 2-3 relevant certifications or achievements
+7. LANGUAGES: Include if mentioned, default English Native
+
+ATS OPTIMIZATION:
+- Include industry-specific keywords throughout
+- Use standard section headings
+- Quantify every achievement possible
+- Match skills to current market demand for the role
+
+If the user only gave a job title or company (like "I work at NVIDIA as CUDA developer"), INFER and CREATE:
+- A compelling professional summary
+- Realistic, detailed work experience with metrics
+- Relevant technical skills for that role
+- Appropriate education
+- Industry certifications
+
+Return ONLY valid JSON — no markdown, no explanation:
 {
-  "name": "Full Name",
-  "title": "Job Title",
+  "name": "Full Name (use real name from prompt or Alex Johnson if not given)",
+  "title": "Specific Job Title",
   "email": "email@example.com",
   "phone": "+1 (555) 000-0000",
   "location": "City, Country",
   "linkedin": "linkedin.com/in/username",
-  "website": "www.website.com",
-  "summary": "2-3 sentence powerful professional summary with keywords",
-  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8"],
+  "website": "www.portfolio.com",
+  "summary": "4-sentence powerful summary with keywords, experience years, key achievements, and unique value proposition that makes HR want to read more",
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10", "Skill 11", "Skill 12"],
   "experience": [
     {
-      "role": "Job Title",
+      "role": "Senior Job Title",
       "company": "Company Name",
       "period": "2021 – Present",
-      "desc": "Achievement-focused description with metrics.",
-      "bullets": ["Achieved X resulting in Y% improvement", "Led team of N to deliver Z"]
+      "desc": "One-line role overview",
+      "bullets": [
+        "Spearheaded development of X system, reducing processing time by 40% and saving $200K annually",
+        "Architected and deployed Y solution serving 2M+ users with 99.9% uptime",
+        "Led cross-functional team of 8 engineers to deliver Z project 2 weeks ahead of schedule",
+        "Optimized database queries resulting in 60% performance improvement",
+        "Mentored 3 junior developers, improving team velocity by 25%",
+        "Collaborated with product and design teams to ship 12 features per quarter"
+      ]
+    },
+    {
+      "role": "Previous Job Title",
+      "company": "Previous Company",
+      "period": "2019 – 2021",
+      "desc": "One-line role overview",
+      "bullets": [
+        "Built and maintained X application used by 500+ daily active users",
+        "Reduced bug count by 35% through implementation of comprehensive testing strategy",
+        "Integrated third-party APIs reducing manual work by 15 hours/week",
+        "Contributed to open-source projects with 200+ GitHub stars"
+      ]
     }
   ],
   "education": [
-    { "degree": "Degree Name", "school": "University Name", "year": "2020" }
+    {
+      "degree": "Bachelor of Technology in Computer Science",
+      "school": "University Name",
+      "year": "2019",
+      "details": "GPA: 3.8/4.0 | Relevant: Data Structures, Algorithms, OS, Networks"
+    }
   ],
-  "languages": ["English – Native"],
-  "awards": ["Award or certification"],
+  "languages": ["English – Native/Fluent", "Hindi – Native"],
+  "awards": [
+    "AWS Certified Solutions Architect – Professional (2023)",
+    "Employee of the Quarter – Q3 2022",
+    "Hackathon Winner – TechFest 2021 (1st place out of 200 teams)"
+  ],
   "sectionStyle": { "skills": "bars", "experience": "default" },
   "designStyle": { "button": "default", "card": "default", "background": "solid" }
 }`;
 
   const user = isEnhancement
-    ? `Current resume data:\n${JSON.stringify(existingData, null, 2)}\n\nApply this change: ${prompt}`
-    : `Build a resume for: ${prompt}`;
+    ? `Current resume:\n${JSON.stringify(existingData, null, 2)}\n\nApply this change: ${prompt}`
+    : `Create a top-tier resume for: ${prompt}\n\nMake it detailed, quantified, and impressive enough that any HR manager would immediately want to interview this person.`;
 
-  const raw = await chat(system, user, 2048);
+  const raw = await chat(system, user, 3000);
   return extractJSON(raw);
 }
 
