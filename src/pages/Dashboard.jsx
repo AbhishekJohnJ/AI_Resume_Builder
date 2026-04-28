@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, User2 } from 'lucide-react';
+import { Send, User2, Target, Building2, FileText, Map, TrendingUp, Briefcase } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
 import chatbotIcon from '../assets/chatbot.jpg';
@@ -77,12 +77,12 @@ function Dashboard() {
   }, []);
 
   const QUESTS = [
-    { id: 1, icon: '🎯', title: 'Resume Sniper',      desc: 'Analyse your resume with AI and score above 70.',           xp: 50, rarity: 'epic',   action: () => navigate('/ai-analyser') },
-    { id: 2, icon: '🏗️', title: 'Portfolio Architect', desc: 'Generate a portfolio using any template.',                  xp: 40, rarity: 'rare',   action: () => navigate('/portfolio') },
-    { id: 3, icon: '📄', title: 'Resume Crafter',      desc: 'Build a resume using the Resume Builder.',                  xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 4, icon: '🗺️', title: 'Template Explorer',   desc: 'Preview at least 5 different resume templates.',            xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
-    { id: 5, icon: '📈', title: 'Score Chaser',        desc: 'Re-analyse your resume after edits to improve your score.', xp: 60, rarity: 'epic',   action: () => navigate('/ai-analyser') },
-    { id: 6, icon: '💼', title: 'Portfolio Pro',       desc: 'Save and view your generated portfolio.',                   xp: 35, rarity: 'rare',   action: () => navigate('/my-portfolios') },
+    { id: 2, icon: Building2, title: 'Portfolio Architect', desc: 'Generate a portfolio using any template.',                  xp: 40, rarity: 'rare',   action: () => navigate('/portfolio') },
+    { id: 3, icon: FileText, title: 'Resume Crafter',      desc: 'Build a resume using the Resume Builder.',                  xp: 30, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 4, icon: Map, title: 'Template Explorer',   desc: 'Preview at least 5 different resume templates.',            xp: 20, rarity: 'common', action: () => navigate('/resume-builder') },
+    { id: 5, icon: TrendingUp, title: 'Score Chaser',        desc: 'Re-analyse your resume after edits to improve your score.', xp: 60, rarity: 'epic',   action: () => navigate('/ai-analyser') },
+    { id: 6, icon: Briefcase, title: 'Portfolio Pro',       desc: 'Save and view your generated portfolio.',                   xp: 35, rarity: 'rare',   action: () => navigate('/my-portfolios') },
+    { id: 1, icon: Target, title: 'Resume Sniper',      desc: 'Analyse your resume with AI and score above 70.',           xp: 50, rarity: 'epic',   action: () => navigate('/ai-analyser') },
   ];
 
   const [completedQuests, setCompletedQuests] = useState(
@@ -205,66 +205,6 @@ function Dashboard() {
           <main className="dashboard-content">
             <h1 className="dashboard-title">Dashboard</h1>
 
-            <div className="summary-cards-grid">
-              <div className="summary-card">
-                <h3 className="summary-card-title">Resume Score</h3>
-                {resumeScore > 0 ? (
-                  <p className="summary-card-value">{resumeScore} <span className="value-suffix">/ 100</span></p>
-                ) : (
-                  <p className="summary-card-empty">Analyse your resume to see your score</p>
-                )}
-              </div>
-              <div className="summary-card">
-                <h3 className="summary-card-title">Resume Level</h3>
-                {analysis?.resumeLevel ? (
-                  <p className="summary-card-value" style={{ fontSize: '1.1rem' }}>{analysis.resumeLevel}</p>
-                ) : (
-                  <p className="summary-card-empty">No analysis yet</p>
-                )}
-              </div>
-              <div className="summary-card">
-                <h3 className="summary-card-title">Strengths Found</h3>
-                {analysis?.strengths?.length > 0 ? (
-                  <p className="summary-card-value">{analysis.strengths.length} <span className="value-suffix">areas</span></p>
-                ) : (
-                  <p className="summary-card-empty">Run AI Analyser first</p>
-                )}
-              </div>
-              <div className="summary-card">
-                <h3 className="summary-card-title">Improvements</h3>
-                {analysis?.weakAreas?.length > 0 ? (
-                  <p className="summary-card-value">{analysis.weakAreas.length} <span className="value-suffix">to fix</span></p>
-                ) : (
-                  <p className="summary-card-empty">No analysis yet</p>
-                )}
-              </div>
-            </div>
-
-            <div className="progress-area">
-              <h2 className="progress-area-title">Profile Strength</h2>
-              {analysis ? (
-                <div className="progress-bars">
-                  {progressBars.map((b) => (
-                    <div key={b.cls} className="progress-item">
-                      <div className="progress-label">
-                        <span className="progress-name">{b.label}</span>
-                        <span className="progress-value">{b.val}%</span>
-                      </div>
-                      <div className="progress-track">
-                        <div className={`progress-fill ${b.cls}`} style={{ width: `${b.val}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="dashboard-empty-state">
-                  <span>📊</span>
-                  <p>"Your profile strength will appear here after you analyse your resume in the AI Analyser."</p>
-                  <button className="dashboard-cta-btn" onClick={() => navigate('/ai-analyser')}>Go to AI Analyser →</button>
-                </div>
-              )}
-            </div>
-
             {/* ── Career Quest Board ── */}
             <div className="qb-wrap">
               {/* Header */}
@@ -299,12 +239,13 @@ function Dashboard() {
               <div className="qb-grid">
                 {QUESTS.map(q => {
                   const done = completedQuests.includes(q.id);
+                  const IconComponent = q.icon;
                   return (
                     <div key={q.id} className={`qb-card qb-${q.rarity} ${done ? 'qb-done' : ''}`}>
                       <div className="qb-card-glow"/>
                       <div className="qb-card-inner">
                         <div className="qb-card-top">
-                          <span className="qb-card-icon">{q.icon}</span>
+                          <span className="qb-card-icon"><IconComponent size={28} strokeWidth={2} /></span>
                           <span className="qb-rarity-pill">{q.rarity}</span>
                         </div>
                         <div className="qb-card-title">{q.title}</div>
