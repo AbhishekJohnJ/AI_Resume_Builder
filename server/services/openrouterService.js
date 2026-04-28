@@ -1,25 +1,25 @@
 /**
- * OpenRouter Service for Resume Analysis
- * Uses OpenRouter API with fallback to local analysis
+ * GROQ Service for Resume Analysis
+ * Uses GROQ API with fallback to local analysis
  */
 const axios = require('axios');
 const localAnalyzer = require('./localAnalysisService');
 const cacheService = require('./cacheService');
 
-class OpenRouterService {
+class GroqService {
   constructor() {
-    this.apiKey = process.env.OPENROUTER_API_KEY;
-    this.apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+    this.apiKey = process.env.GROQ_API_KEY;
+    this.apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
     
     if (!this.apiKey) {
-      console.warn('⚠️  OPENROUTER_API_KEY not set - using local analyzer');
+      console.warn('⚠️  GROQ_API_KEY not set - using local analyzer');
     } else {
-      console.log('✅ OpenRouter API key configured');
+      console.log('✅ GROQ API key configured');
     }
   }
 
   /**
-   * Analyze resume using OpenRouter or fallback to local analyzer
+   * Analyze resume using GROQ or fallback to local analyzer
    */
   async analyzeResume(resumeText, targetRole = '') {
     try {
@@ -40,9 +40,9 @@ class OpenRouterService {
         return localAnalyzer.analyzeResume(resumeText, targetRole);
       }
       
-      // Try OpenRouter API
+      // Try GROQ API
       try {
-        const result = await this._analyzeWithOpenRouter(resumeText, targetRole);
+        const result = await this._analyzeWithGroq(resumeText, targetRole);
         
         // Store in cache for future use
         console.log('\n💾 [ANALYZER] Storing result in cache...');
@@ -50,7 +50,7 @@ class OpenRouterService {
         
         return result;
       } catch (apiError) {
-        console.warn('⚠️  OpenRouter API failed, falling back to local analyzer');
+        console.warn('⚠️  GROQ API failed, falling back to local analyzer');
         console.warn(`   Error: ${apiError.message}`);
         return localAnalyzer.analyzeResume(resumeText, targetRole);
       }
@@ -62,17 +62,17 @@ class OpenRouterService {
   }
 
   /**
-   * Analyze resume using OpenRouter API
+   * Analyze resume using GROQ API
    */
-  async _analyzeWithOpenRouter(resumeText, targetRole = '') {
-    console.log('🤖 [OPENROUTER] Calling OpenRouter API');
+  async _analyzeWithGroq(resumeText, targetRole = '') {
+    console.log('🤖 [GROQ] Calling GROQ API');
     
     const prompt = this._buildAnalysisPrompt(resumeText, targetRole);
     
     const response = await axios.post(
       this.apiUrl,
       {
-        model: 'deepseek/deepseek-chat',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
@@ -84,24 +84,22 @@ class OpenRouterService {
           }
         ],
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: 4000
       },
       {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://localhost:3000',
-          'X-Title': 'Resume Analyzer'
+          'Content-Type': 'application/json'
         }
       }
     );
 
-    console.log('✅ OpenRouter response received');
+    console.log('✅ GROQ response received');
     
     const content = response.data.choices[0].message.content;
     const analysis = this._parseResponse(content);
     
-    console.log(`✅ Analysis complete (OpenRouter)`);
+    console.log(`✅ Analysis complete (GROQ)`);
     console.log(`   Score: ${analysis.resume_score}/100`);
     console.log(`   Level: ${analysis.resume_level}`);
     
@@ -406,7 +404,7 @@ Respond with ONLY a valid JSON array of strings (no markdown, no extra text):
       const response = await axios.post(
         this.apiUrl,
         {
-          model: 'deepseek/deepseek-chat',
+          model: 'llama-3.3-70b-versatile',
           messages: [
             {
               role: 'user',
@@ -419,9 +417,7 @@ Respond with ONLY a valid JSON array of strings (no markdown, no extra text):
         {
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'http://localhost:3000',
-            'X-Title': 'Resume Analyzer'
+            'Content-Type': 'application/json'
           }
         }
       );
@@ -479,4 +475,4 @@ Respond with ONLY a valid JSON array of strings (no markdown, no extra text):
   }
 }
 
-module.exports = new OpenRouterService();
+module.exports = new GroqService();

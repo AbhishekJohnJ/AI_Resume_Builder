@@ -1,12 +1,12 @@
 /**
  * AI Resume Analyzer Routes
- * Handles PDF upload and resume text analysis using OpenRouter API
+ * Handles PDF upload and resume text analysis using GROQ API
  */
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const openrouterService = require('../services/openrouterService');
+const groqService = require('../services/openrouterService'); // Still named openrouterService but now uses GROQ
 const PDFExtractor = require('../utils/pdfExtractor');
 
 const router = express.Router();
@@ -79,9 +79,9 @@ router.post('/upload-and-predict', upload.single('file'), async (req, res) => {
       });
     }
 
-    // Analyze with OpenRouter
-    console.log('\n🤖 [AI ROUTE] Analyzing with OpenRouter API...');
-    const analysis = await openrouterService.analyzeResume(resumeText);
+    // Analyze with GROQ
+    console.log('\n🤖 [AI ROUTE] Analyzing with GROQ API...');
+    const analysis = await groqService.analyzeResume(resumeText);
 
     console.log(`✅ [AI ROUTE] Analysis complete`);
     console.log(`   Score: ${analysis.resume_score}/100`);
@@ -136,9 +136,9 @@ router.post('/predict-resume', async (req, res) => {
     console.log(`📏 [AI ROUTE] Text length: ${trimmedText.length} characters`);
     console.log(`🎯 [AI ROUTE] Target role: ${targetRole || 'Not specified'}`);
 
-    // Analyze with OpenRouter
-    console.log('\n🤖 [AI ROUTE] Analyzing with OpenRouter API...');
-    const analysis = await openrouterService.analyzeResume(trimmedText, targetRole);
+    // Analyze with GROQ
+    console.log('\n🤖 [AI ROUTE] Analyzing with GROQ API...');
+    const analysis = await groqService.analyzeResume(trimmedText, targetRole);
 
     console.log(`✅ [AI ROUTE] Analysis complete`);
     console.log(`   Score: ${analysis.resume_score}/100`);
@@ -162,13 +162,13 @@ router.post('/predict-resume', async (req, res) => {
  * Check if AI module is ready
  */
 router.get('/health', (req, res) => {
-  const isConfigured = openrouterService.isConfigured();
+  const isConfigured = groqService.isConfigured();
 
   res.json({
     status: isConfigured ? 'ready' : 'not_ready',
     api_configured: isConfigured,
-    service: 'OpenRouter',
-    message: isConfigured ? 'AI module ready for predictions' : 'OpenRouter API key not configured'
+    service: 'GROQ',
+    message: isConfigured ? 'AI module ready for predictions' : 'GROQ API key not configured'
   });
 });
 
@@ -177,7 +177,7 @@ router.get('/health', (req, res) => {
  * Get cache statistics
  */
 router.get('/cache/stats', (req, res) => {
-  const stats = openrouterService.getCacheStats();
+  const stats = groqService.getCacheStats();
   res.json({
     status: 'success',
     cache: stats,
@@ -190,7 +190,7 @@ router.get('/cache/stats', (req, res) => {
  * Clear all cached analyses
  */
 router.post('/cache/clear', (req, res) => {
-  openrouterService.clearCache();
+  groqService.clearCache();
   res.json({
     status: 'success',
     message: 'Cache cleared successfully'

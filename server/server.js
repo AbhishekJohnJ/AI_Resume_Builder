@@ -7,7 +7,6 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const XLSX = require("xlsx");
 const { createWorker } = require("tesseract.js");
-const groqService = require("./services/groqService");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
@@ -16,9 +15,8 @@ async function extractTextFromFile(file) {
   const { mimetype, originalname, buffer } = file;
   const ext = path.extname(originalname).toLowerCase();
   if (mimetype === "application/pdf" || ext === ".pdf") {
-    const { PDFParse } = require("pdf-parse");
-    const parser = new PDFParse({ data: buffer, verbosity: 0 });
-    const result = await parser.getText();
+    const pdfParse = require("pdf-parse");
+    const result = await pdfParse(buffer);
     return (result && result.text ? result.text : "").trim();
   }
   if (mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || ext === ".docx") {
@@ -71,6 +69,54 @@ const Portfolio = mongoose.model("Portfolio", portfolioSchema);
 
 // Health
 app.get("/api/health", function(req, res) { res.json({ status: "OK" }); });
+
+// Test GROQ API
+app.get("/api/test-groq", async function(req, res) {
+  try {
+    const axios = require('axios');
+    const apiKey = process.env.GROQ_API_KEY;
+    
+    if (!apiKey) {
+      return res.json({ 
+        status: 'error',
+        message: 'GROQ_API_KEY not set in .env file'
+      });
+    }
+
+    console.log('Testing GROQ API...');
+    console.log('API Key:', apiKey.substring(0, 20) + '...');
+
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: 'Say "API is working" if you can read this.' }],
+        max_tokens: 50
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    res.json({
+      status: 'success',
+      message: 'GROQ API is working!',
+      response: response.data.choices[0].message.content,
+      model: response.data.model
+    });
+  } catch (e) {
+    console.error('GROQ test failed:', e.response?.data || e.message);
+    res.json({
+      status: 'error',
+      message: e.message,
+      details: e.response?.data || 'No additional details',
+      apiKeyPresent: !!process.env.GROQ_API_KEY
+    });
+  }
+});
 
 // Register
 app.post("/api/auth/register", async function(req, res) {
@@ -147,55 +193,244 @@ app.delete("/api/portfolios/:id", async function(req, res) {
   catch (e) { res.status(500).json({ error: "Failed to delete portfolio" }); }
 });
 
-// AI: Chat
-app.post("/api/ai/chat", async function(req, res) {
+// AI Routes
+const aiRoutes = require('./routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
+
+// AI Chat endpoint
+app.post('/api/ai/chat', async function(req, res) {
   try {
     const { message } = req.body;
-    if (!message) return res.status(400).json({ error: "Message is required" });
-    const reply = await groqService.aiChat(message);
-    res.json({ reply });
-  } catch (e) { res.status(500).json({ error: "Failed to get AI response" }); }
-});
+    if (!message) return res.status(400).json({ error: 'Message is required' });
+    
+    const prompt = `You are a friendly career advisor assistant. The user asked: "${message}". 
+Provide a helpful, concise response (2-3 sentences) about career advice, resume tips, or portfolio building.`;
 
-// AI: Analyse Resume
-app.post("/api/ai/analyze-resume-with-dataset", async function(req, res) {
-  try {
-    const { resumeText, targetRole } = req.body;
-    if (!resumeText) return res.status(400).json({ error: "Resume text is required" });
-    const result = await groqService.analyzeResume(resumeText, targetRole || "");
-    res.json(result);
-  } catch (e) { res.status(500).json({ error: "Failed to analyse resume: " + e.message }); }
-});
-
-// AI: Generate Portfolio
-app.post("/api/ai/generate-portfolio", async function(req, res) {
-  try {
-    const { prompt, templateId, existingData } = req.body;
-    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
-    const portfolioData = await groqService.generatePortfolio(prompt, parseInt(templateId) || 1, existingData || null);
-    res.json({ portfolioData });
-  } catch (e) { res.status(500).json({ error: "Failed to generate portfolio: " + e.message }); }
-});
-
-// AI: Generate Resume
-app.post("/api/ai/generate-resume", upload.array("files", 5), async function(req, res) {
-  try {
-    const { prompt, templateId } = req.body;
-    const existingData = req.body.existingData ? JSON.parse(req.body.existingData) : null;
-    const uploadedFiles = req.files || [];
-    if (!prompt && uploadedFiles.length === 0) return res.status(400).json({ error: "Prompt or file is required" });
-
-    let extractedContent = "";
-    if (uploadedFiles.length > 0) {
-      const texts = await Promise.all(uploadedFiles.map(function(f) { return extractTextFromFile(f).catch(function() { return ""; }); }));
-      extractedContent = texts.filter(Boolean).join("\n\n");
+    const axios = require('axios');
+    const apiKey = process.env.GROQ_API_KEY;
+    
+    if (!apiKey) {
+      return res.json({ 
+        reply: "I'm here to help with career advice! However, the AI service isn't configured yet. Please check the server configuration." 
+      });
     }
 
-    const fullPrompt = [prompt, extractedContent].filter(Boolean).join("\n\nExtracted from uploaded file:\n");
-    const resumeData = await groqService.generateResume(fullPrompt, parseInt(templateId) || 1, existingData);
-    res.json({ resumeData, filesProcessed: uploadedFiles.length });
-  } catch (e) { res.status(500).json({ error: "Failed to generate resume: " + e.message }); }
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 200
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const reply = response.data.choices[0].message.content;
+    res.json({ reply });
+  } catch (e) {
+    console.error('Chat error:', e.response?.data || e.message);
+    res.json({ reply: "I'm having trouble connecting right now. Please try again in a moment." });
+  }
+});
+
+// AI Generate Resume endpoint
+app.post('/api/ai/generate-resume', upload.array('files'), async function(req, res) {
+  try {
+    const { prompt, templateId, existingData } = req.body;
+    const files = req.files || [];
+    
+    let context = prompt || '';
+    
+    // Extract text from uploaded files
+    for (const file of files) {
+      const text = await extractTextFromFile(file);
+      context += '\n\n' + text;
+    }
+    
+    if (!context.trim()) {
+      return res.status(400).json({ error: 'Please provide a prompt or upload files' });
+    }
+
+    const axios = require('axios');
+    const apiKey = process.env.GROQ_API_KEY;
+    
+    if (!apiKey) {
+      return res.status(500).json({ error: 'AI service not configured' });
+    }
+
+    const aiPrompt = `Generate resume data in JSON format based on this information:
+${context}
+
+Return ONLY valid JSON (no markdown, no extra text) with this structure:
+{
+  "name": "Full Name",
+  "title": "Professional Title",
+  "email": "email@example.com",
+  "phone": "+1234567890",
+  "location": "City, Country",
+  "summary": "Professional summary",
+  "experience": [{"company": "Company", "position": "Position", "duration": "2020-2023", "description": "Description"}],
+  "education": [{"institution": "University", "degree": "Degree", "year": "2020", "gpa": "3.8"}],
+  "skills": ["Skill1", "Skill2"],
+  "projects": [{"name": "Project", "description": "Description", "technologies": ["Tech1"]}],
+  "certifications": ["Cert1"],
+  "languages": ["English"]
+}`;
+
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: aiPrompt }],
+        temperature: 0.7,
+        max_tokens: 2000
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const content = response.data.choices[0].message.content;
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const resumeData = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+    
+    res.json({ resumeData });
+  } catch (e) {
+    console.error('Resume generation error:', e.response?.data || e.message);
+    res.status(500).json({ error: 'Failed to generate resume', message: e.message });
+  }
+});
+
+// AI Generate Portfolio endpoint
+app.post('/api/ai/generate-portfolio', async function(req, res) {
+  try {
+    const { prompt, templateId, existingData } = req.body;
+    
+    if (!prompt || !prompt.trim()) {
+      return res.status(400).json({ error: 'Please provide a description' });
+    }
+
+    const axios = require('axios');
+    const apiKey = process.env.GROQ_API_KEY;
+    
+    if (!apiKey) {
+      return res.status(500).json({ error: 'AI service not configured' });
+    }
+
+    const aiPrompt = `Generate portfolio data in JSON format based on this description:
+${prompt}
+
+IMPORTANT: Return ONLY valid JSON (no markdown, no code blocks, no extra text) with this EXACT structure:
+{
+  "name": "Full Name",
+  "initials": "FN",
+  "title": "Professional Title",
+  "tagline": "A catchy tagline",
+  "bio": "Short bio",
+  "email": "email@example.com",
+  "phone": "+1234567890",
+  "location": "City, Country",
+  "github": "github.com/username",
+  "linkedin": "linkedin.com/in/username",
+  "website": "website.com",
+  "about": "Detailed about section (2-3 sentences)",
+  "skills": ["Skill1", "Skill2", "Skill3", "Skill4", "Skill5"],
+  "projects": [
+    {
+      "name": "Project Name",
+      "desc": "Project description",
+      "tech": ["Tech1", "Tech2"],
+      "link": "#",
+      "github": "#"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Job Title",
+      "company": "Company Name",
+      "period": "2020 - 2023",
+      "desc": "Job description"
+    }
+  ]
+}
+
+Make sure to include at least 3 projects and 2 experiences. Use realistic data based on the prompt.`;
+
+    console.log('Calling GROQ API for portfolio generation...');
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a portfolio data generator. Always respond with ONLY valid JSON, no markdown, no code blocks, no explanations.'
+          },
+          {
+            role: 'user',
+            content: aiPrompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const content = response.data.choices[0].message.content;
+    console.log('GROQ Response:', content.substring(0, 200));
+    
+    // Remove markdown code blocks if present
+    let cleanContent = content.trim();
+    if (cleanContent.startsWith('```')) {
+      cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    }
+    
+    const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No JSON found in response');
+      return res.status(500).json({ error: 'Failed to parse AI response' });
+    }
+    
+    const portfolioData = JSON.parse(jsonMatch[0]);
+    
+    // Ensure required fields exist
+    if (!portfolioData.name || !portfolioData.skills || !portfolioData.projects) {
+      console.error('Missing required fields in portfolio data');
+      return res.status(500).json({ error: 'Invalid portfolio data structure' });
+    }
+    
+    // Add initials if missing
+    if (!portfolioData.initials && portfolioData.name) {
+      portfolioData.initials = portfolioData.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    }
+    
+    console.log('Portfolio data generated successfully');
+    res.json({ portfolioData });
+  } catch (e) {
+    console.error('Portfolio generation error:', e.response?.data || e.message);
+    res.status(500).json({ 
+      error: 'Failed to generate portfolio', 
+      message: e.message,
+      details: e.response?.data?.error?.message || 'Unknown error'
+    });
+  }
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, function() { console.log("Server running on port " + PORT); });
+
