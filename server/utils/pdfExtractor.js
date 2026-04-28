@@ -1,7 +1,7 @@
 /**
  * PDF Text Extractor — pure Node.js using pdf-parse (no Python required)
  */
-const { PDFParse } = require('pdf-parse');
+const pdfParse = require('pdf-parse');
 
 class PDFExtractor {
   static async extractText(file) {
@@ -9,13 +9,12 @@ class PDFExtractor {
 
     console.log(`\n📄 [PDF EXTRACTOR] Processing: ${file.originalname} (${file.buffer.length} bytes)`);
 
-    const parser = new PDFParse({ data: file.buffer, verbosity: 0 });
-    const result = await parser.getText();
+    const result = await pdfParse(file.buffer);
 
     const text = (result?.text || '').trim();
     if (!text) throw new Error('Extracted text is empty — PDF may be image-based or locked');
 
-    const pages = result?.pages?.length || 0;
+    const pages = result?.numpages || 0;
     console.log(`✅ [PDF EXTRACTOR] Success — ${text.length} chars, ${pages} pages`);
 
     return {

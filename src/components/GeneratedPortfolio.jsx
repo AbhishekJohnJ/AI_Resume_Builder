@@ -399,6 +399,56 @@ function T8({ d, themeColor }) {
 const templates = { 1: T1, 2: T2, 3: T3, 4: T4, 5: T5, 6: T6, 7: T7, 8: T8 };
 
 export default function GeneratedPortfolio({ data, templateId, themeColor }) {
+  // Validate data
+  if (!data || typeof data !== 'object') {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', color: '#ff6b6b' }}>
+        <p>Error: Invalid portfolio data</p>
+      </div>
+    );
+  }
+
+  // Ensure required fields exist with defaults
+  const safeData = {
+    name: data.name || 'Your Name',
+    initials: data.initials || data.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'YN',
+    title: data.title || 'Professional Title',
+    tagline: data.tagline || 'Your tagline here',
+    email: data.email || 'email@example.com',
+    phone: data.phone || '',
+    location: data.location || 'Location',
+    github: data.github || 'github.com/username',
+    linkedin: data.linkedin || '',
+    website: data.website || '',
+    about: data.about || 'About section',
+    skills: Array.isArray(data.skills) ? data.skills : [],
+    projects: Array.isArray(data.projects) ? data.projects.map(p => ({
+      name: p.name || 'Project',
+      desc: p.desc || p.description || 'Project description',
+      tech: Array.isArray(p.tech) ? p.tech : (Array.isArray(p.technologies) ? p.technologies : []),
+      link: p.link || '#',
+      github: p.github || '#'
+    })) : [],
+    experience: Array.isArray(data.experience) ? data.experience.map(e => ({
+      role: e.role || e.position || 'Role',
+      company: e.company || 'Company',
+      period: e.period || e.duration || '2020-2023',
+      desc: e.desc || e.description || 'Description'
+    })) : [],
+    designStyle: data.designStyle || {}
+  };
+
   const Component = templates[templateId] || T1;
-  return <Component d={data} themeColor={themeColor} />;
+  
+  try {
+    return <Component d={safeData} themeColor={themeColor} />;
+  } catch (error) {
+    console.error('Portfolio render error:', error);
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', color: '#ff6b6b' }}>
+        <p>Error rendering portfolio template</p>
+        <p style={{ fontSize: '0.9rem', color: '#999' }}>{error.message}</p>
+      </div>
+    );
+  }
 }
