@@ -64,7 +64,7 @@ function ResumeBuilder() {
       if (resumeData) formData.append('existingData', JSON.stringify(resumeData));
       files.forEach(f => formData.append('files', f));
 
-      const res = await fetch('http://localhost:5000/api/ai/generate-resume', {
+      const res = await fetch('http://localhost:3001/api/ai/generate-resume', {
         method: 'POST',
         body: formData,
       });
@@ -75,7 +75,7 @@ function ResumeBuilder() {
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
-        await fetch('http://localhost:5000/api/resumes', {
+        await fetch('http://localhost:3001/api/resumes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData, themeColor: detectedColor || null }),

@@ -75,7 +75,7 @@ function AIAnalyser() {
 
         console.log('🔗 [FRONTEND] Calling: POST /api/ai/upload-and-predict');
 
-        response = await fetch('http://localhost:5000/api/ai/upload-and-predict', {
+        response = await fetch('http://localhost:3001/api/ai/upload-and-predict', {
           method: 'POST',
           body: formData
         });
@@ -84,7 +84,7 @@ function AIAnalyser() {
         console.log('📝 [FRONTEND] Analyzing text');
         console.log('🔗 [FRONTEND] Calling: POST /api/ai/predict-resume');
 
-        response = await fetch('http://localhost:5000/api/ai/predict-resume', {
+        response = await fetch('http://localhost:3001/api/ai/predict-resume', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

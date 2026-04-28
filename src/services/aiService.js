@@ -1,6 +1,6 @@
 // AI Service for interacting with Google AI API
 
-const AI_API_ENDPOINT = 'http://localhost:5000/api/ai';
+const AI_API_ENDPOINT = 'http://localhost:3001/api/ai';
 
 export const aiService = {
   // Analyze resume content

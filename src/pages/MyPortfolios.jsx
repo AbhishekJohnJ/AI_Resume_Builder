@@ -22,14 +22,14 @@ function MyPortfolios() {
 
   useEffect(() => {
     if (!user?.id) { setLoading(false); return; }
-    fetch(`http://localhost:5000/api/portfolios/${user.id}`)
+    fetch(`http://localhost:3001/api/portfolios/${user.id}`)
       .then(r => r.json())
       .then(data => { setPortfolios(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/portfolios/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:3001/api/portfolios/${id}`, { method: 'DELETE' });
     setPortfolios(prev => prev.filter(p => p._id !== id));
   };
 

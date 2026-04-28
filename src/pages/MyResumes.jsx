@@ -26,14 +26,14 @@ function MyResumes() {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch(`http://localhost:5000/api/resumes/${user.id}`)
+    fetch(`http://localhost:3001/api/resumes/${user.id}`)
       .then(r => r.json())
       .then(data => { setResumes(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/resumes/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:3001/api/resumes/${id}`, { method: 'DELETE' });
     setResumes(prev => prev.filter(r => r._id !== id));
   };
 

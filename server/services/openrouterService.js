@@ -72,7 +72,7 @@ class OpenRouterService {
     const response = await axios.post(
       this.apiUrl,
       {
-        model: 'gpt-3.5-turbo',
+        model: 'deepseek/deepseek-chat',
         messages: [
           {
             role: 'system',
@@ -406,7 +406,7 @@ Respond with ONLY a valid JSON array of strings (no markdown, no extra text):
       const response = await axios.post(
         this.apiUrl,
         {
-          model: 'gpt-3.5-turbo',
+          model: 'deepseek/deepseek-chat',
           messages: [
             {
               role: 'user',

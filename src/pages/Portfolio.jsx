@@ -713,7 +713,7 @@ function Portfolio() {
     setLoading(true);
     if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
-      const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
+      const res = await fetch('http://localhost:3001/api/ai/generate-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -729,7 +729,7 @@ function Portfolio() {
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
-        await fetch('http://localhost:5000/api/portfolios', {
+        await fetch('http://localhost:3001/api/portfolios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: mergedColor || null }),
