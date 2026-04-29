@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
@@ -24,132 +24,172 @@ function ResumeBuilder() {
   const [resumeData, setResumeData] = useState(null);
   const [themeColor, setThemeColor] = useState(null);
   const [remainingUses, setRemainingUses] = useState('...');
+
+  // Inline chatbot state
+  const [chatMode, setChatMode] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [pendingQuestions, setPendingQuestions] = useState([]);
+  const [collectedAnswers, setCollectedAnswers] = useState({});
+  const [originalPrompt, setOriginalPrompt] = useState('');
+  const [fetchingQuestions, setFetchingQuestions] = useState(false);
+  const questionsRef = useRef([]);
+  const chatEndRef = useRef(null);
+
   const fileInputRef = useRef(null);
   const docInputRef = useRef(null);
   const resumeRef = useRef(null);
 
-  // Load remaining uses on mount and when gamification updates
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, fetchingQuestions]);
+
   useEffect(() => {
     const loadRemainingUses = async () => {
       try {
-        const data = await getGamificationData();
         const uses = await getRemainingUses('resume');
         const locked = await isFeatureLocked('resume');
-        
-        console.log('Resume Builder - Loaded uses:', uses, 'Locked:', locked);
-        
-        // Show actual number of uses, or XP cost if locked
-        if (uses > 0) {
-          setRemainingUses(uses);
-        } else if (locked) {
-          setRemainingUses('20 XP');
-        } else {
-          setRemainingUses(0);
-        }
-      } catch (error) {
-        console.error('Error loading gamification status:', error);
-        setRemainingUses('...'); // Show loading state on error
-      }
+        if (uses > 0) setRemainingUses(uses);
+        else if (locked) setRemainingUses('20 XP');
+        else setRemainingUses(0);
+      } catch { setRemainingUses('...'); }
     };
     loadRemainingUses();
-    
-    const handleUpdate = () => loadRemainingUses();
-    window.addEventListener('gamificationUpdate', handleUpdate);
-    return () => window.removeEventListener('gamificationUpdate', handleUpdate);
+    window.addEventListener('gamificationUpdate', loadRemainingUses);
+    return () => window.removeEventListener('gamificationUpdate', loadRemainingUses);
   }, []);
 
-  const handleLogout = () => navigate('/');
-
-  const handleTemplateSelect = (templateId) => {
-    setSelectedTemplate(templateId);
-  };
-
+  const handleTemplateSelect = (templateId) => setSelectedTemplate(templateId);
   const handleFileChange = (e) => {
-    const picked = Array.from(e.target.files);
-    setFiles(prev => [...prev, ...picked]);
+    setFiles(prev => [...prev, ...Array.from(e.target.files)]);
     e.target.value = '';
     setShowUploadMenu(false);
   };
-
   const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
-  const handleSubmit = async () => {
-    if (!prompt.trim() && files.length === 0) return;
-    if (!selectedTemplate) {
-      setError('Please select a template first.');
-      return;
-    }
-
+  const generateWithPrompt = async (finalPrompt) => {
     setError('');
-
-    // Parse theme color from prompt
-    const detectedColor = parseThemeColor(prompt);
-    if (detectedColor) setThemeColor(detectedColor);
-
-    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
-    if (isColorChangeOnly(prompt)) {
-      if (!resumeData) setError('Generate a resume first, then change the colour.');
-      return;
-    }
-
-    // Check if feature is locked (no uses left) - ONLY for actual generation
-    const locked = await isFeatureLocked('resume');
-    if (locked) {
-      // Try to auto-unlock with XP
-      const unlockResult = await unlockFeature('resume');
-      if (!unlockResult.success) {
-        setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
-        return;
-      }
-      // Successfully unlocked! Update UI and continue
-      const uses = await getRemainingUses('resume');
-      setRemainingUses(uses);
-    }
-
     setLoading(true);
-    const isNewResume = !resumeData;
-    if (!resumeData) setResumeData(null); // only clear on fresh generation
+    const detectedColor = parseThemeColor(finalPrompt);
+    if (detectedColor) setThemeColor(detectedColor);
     try {
+      const locked = await isFeatureLocked('resume');
+      if (locked) {
+        const unlockResult = await unlockFeature('resume');
+        if (!unlockResult.success) {
+          setError(`Not enough XP! ${unlockResult.error}. Complete quests to earn more XP.`);
+          setLoading(false);
+          return;
+        }
+      }
       const formData = new FormData();
-      formData.append('prompt', prompt);
+      formData.append('prompt', finalPrompt);
       formData.append('templateId', selectedTemplate);
       if (resumeData) formData.append('existingData', JSON.stringify(resumeData));
       files.forEach(f => formData.append('files', f));
 
-      const res = await fetch('http://localhost:5000/api/ai/generate-resume', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch('http://localhost:3001/api/ai/generate-resume', { method: 'POST', body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate resume');
       setResumeData(data.resumeData);
+      setChatMessages(prev => [...prev, { role: 'bot', text: 'Your resume is ready! Scroll down to view it.' }]);
 
-      // Increment usage and auto-complete quest
-      await incrementFeatureUsage('resume', 3); // Quest ID 3: Resume Crafter
-
-      // Reload remaining uses to update UI
+      await incrementFeatureUsage('resume', 3);
       const newUses = await getRemainingUses('resume');
-      if (newUses === 0) {
-        setRemainingUses('20 XP');
-      } else {
-        setRemainingUses(newUses);
-      }
+      setRemainingUses(newUses === 0 ? '20 XP' : newUses);
 
-      // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
-        await fetch('http://localhost:5000/api/resumes', {
+        await fetch('http://localhost:3001/api/resumes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.resumeData, themeColor: detectedColor || null }),
-        });
+        }).catch(() => {});
       }
-
-      setTimeout(() => resumeRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+      setTimeout(() => resumeRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
     } catch (err) {
-      setError(err.message);
+      const msg = err.message.includes('fetch') ? 'Server connection failed. Make sure the server is running on port 3001.' : err.message;
+      setError(msg);
+      setChatMessages(prev => [...prev, { role: 'bot', text: msg }]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChatAnswer = async (answer) => {
+    if (!pendingQuestions.length) return;
+    const currentQ = pendingQuestions[0];
+    const newAnswers = { ...collectedAnswers, [currentQ.key]: answer };
+    setCollectedAnswers(newAnswers);
+    setChatMessages(prev => [...prev, { role: 'user', text: answer || '(skipped)' }]);
+    const remaining = pendingQuestions.slice(1);
+    setPendingQuestions(remaining);
+    if (remaining.length > 0) {
+      const next = remaining[0];
+      setChatMessages(prev => [...prev, { role: 'bot', text: next.question, hint: next.hint, placeholder: next.placeholder, required: next.required, isQuestion: true }]);
+    } else {
+      setChatMessages(prev => [...prev, { role: 'bot', text: 'Perfect! Generating your resume now...' }]);
+      setChatMode(false);
+      const parts = [originalPrompt];
+      questionsRef.current.forEach(q => {
+        const ans = newAnswers[q.key];
+        if (ans && ans.trim()) parts.push(`${q.label || q.question}: ${ans.trim()}`);
+      });
+      await generateWithPrompt(parts.join('. '));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!prompt.trim() && files.length === 0) return;
+    if (!selectedTemplate) { setError('Please select a template first.'); return; }
+    setError('');
+
+    if (isColorChangeOnly(prompt)) {
+      if (!resumeData) { setError('Generate a resume first, then change the colour.'); return; }
+      const c = parseThemeColor(prompt);
+      if (c) setThemeColor(c);
+      return;
+    }
+
+    if (resumeData || files.length > 0) {
+      await generateWithPrompt(prompt);
+      return;
+    }
+
+    const userPrompt = prompt.trim();
+    setOriginalPrompt(userPrompt);
+    setPrompt('');
+    setFetchingQuestions(true);
+    setChatMessages([{ role: 'user', text: userPrompt }]);
+    setChatMode(true);
+
+    try {
+      const res = await fetch('http://localhost:3001/api/ai/gather-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: userPrompt, type: 'resume' }),
+      });
+      const data = await res.json();
+      const questions = data.questions || [];
+      questionsRef.current = questions;
+
+      if (questions.length === 0) {
+        setChatMessages(prev => [...prev, { role: 'bot', text: 'Great, I have enough info! Generating your resume...' }]);
+        setChatMode(false);
+        await generateWithPrompt(userPrompt);
+      } else {
+        setPendingQuestions(questions);
+        setCollectedAnswers({});
+        const first = questions[0];
+        setChatMessages(prev => [...prev,
+          { role: 'bot', text: `I can build a great resume! Just ${questions.length} quick question${questions.length > 1 ? 's' : ''} first.` },
+          { role: 'bot', text: first.question, hint: first.hint, placeholder: first.placeholder, required: first.required, isQuestion: true },
+        ]);
+      }
+    } catch {
+      setChatMode(false);
+      await generateWithPrompt(userPrompt);
+    } finally {
+      setFetchingQuestions(false);
     }
   };
 
@@ -183,11 +223,36 @@ function ResumeBuilder() {
 
           <div className="resume-builder-content">
             <TemplatePickerCard selected={selectedTemplate} onSelect={handleTemplateSelect} />
-
-            {/* ── AI Prompt Box ── */}
+            {/* AI Prompt Box with inline chatbot */}
             <div className="rb-prompt-section">
-              <h3 className="rb-prompt-title">Describe your resume or upload your existing one</h3>
-              <p className="rb-prompt-sub">Tell the AI about your experience, skills, and the job you're targeting — or upload a file to get started.</p>
+              <h3 className="rb-prompt-title">
+                {chatMode ? 'AI Assistant' : 'Describe your resume or upload your existing one'}
+              </h3>
+              <p className="rb-prompt-sub">
+                {chatMode ? 'Answer the questions to help AI build the best resume for you' : 'Tell the AI your name, role, experience, and skills'}
+              </p>
+
+              {/* Chat history */}
+              {chatMessages.length > 0 && (
+                <div className="rb-chat-history">
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`rb-chat-msg rb-chat-${msg.role}`}>
+                      {msg.role === 'bot' && <div className="rb-chat-avatar">AI</div>}
+                      <div className="rb-chat-bubble">
+                        <p className="rb-chat-text">{msg.text}</p>
+                        {msg.hint && <p className="rb-chat-hint">{msg.hint}</p>}
+                      </div>
+                    </div>
+                  ))}
+                  {fetchingQuestions && (
+                    <div className="rb-chat-msg rb-chat-bot">
+                      <div className="rb-chat-avatar">AI</div>
+                      <div className="rb-chat-bubble rb-chat-typing"><span/><span/><span/></div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+              )}
 
               <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple style={{ display: 'none' }} onChange={handleFileChange} />
               <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xlsx,.xls,.csv" multiple style={{ display: 'none' }} onChange={handleFileChange} />
@@ -204,43 +269,67 @@ function ResumeBuilder() {
                 </div>
               )}
 
-
-
               <div className={`rb-bar${prompt.trim() || files.length ? ' rb-bar-active' : ''}`}>
-                <div className="rb-plus-wrap">
-                  <button className="rb-plus-btn" onClick={() => setShowUploadMenu(v => !v)}>
-                    <Plus size={18} />
-                  </button>
-                  {showUploadMenu && (
-                    <div className="rb-upload-menu">
-                      <button className="rb-upload-option" onClick={() => fileInputRef.current.click()}>
-                        <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
-                      </button>
-                      <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
-                        <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX, Excel</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {!chatMode && (
+                  <div className="rb-plus-wrap">
+                    <button className="rb-plus-btn" onClick={() => setShowUploadMenu(v => !v)}>
+                      <Plus size={18} />
+                    </button>
+                    {showUploadMenu && (
+                      <div className="rb-upload-menu">
+                        <button className="rb-upload-option" onClick={() => fileInputRef.current.click()}>
+                          <Image size={16} /><span>Upload Image</span><span className="rb-upload-hint">JPG, PNG</span>
+                        </button>
+                        <button className="rb-upload-option" onClick={() => docInputRef.current.click()}>
+                          <FileText size={16} /><span>Upload Document</span><span className="rb-upload-hint">PDF, DOCX, Excel</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <textarea
                   className="rb-input"
-                  placeholder={resumeData ? 'e.g. Make my summary more impactful, add Docker to skills, improve job descriptions...' : 'e.g. Full Stack Developer, React...'}
+                  placeholder={
+                    chatMode && pendingQuestions[0]
+                      ? pendingQuestions[0].placeholder || 'Type your answer...'
+                      : resumeData
+                        ? 'e.g. Make my summary more impactful, add Docker to skills...'
+                        : 'e.g. I am Mithun, Full Stack Developer at NVIDIA with 2 years experience...'
+                  }
                   value={prompt}
                   rows={2}
                   onChange={e => {
                     setPrompt(e.target.value);
                     const el = e.target;
                     el.style.height = 'auto';
-                    const maxH = 300;
-                    el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
-                    el.style.overflowY = el.scrollHeight > maxH ? 'auto' : 'hidden';
+                    el.style.height = Math.min(el.scrollHeight, 300) + 'px';
+                    el.style.overflowY = el.scrollHeight > 300 ? 'auto' : 'hidden';
                   }}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (chatMode && pendingQuestions.length > 0) {
+                        if (pendingQuestions[0].required && !prompt.trim()) return;
+                        handleChatAnswer(prompt.trim());
+                        setPrompt('');
+                      } else {
+                        handleSubmit();
+                      }
+                    }
+                  }}
                 />
                 <button
-                  className={`rb-send-btn${(prompt.trim() || files.length) && !loading ? ' rb-send-active' : ''}`}
-                  onClick={handleSubmit}
-                  disabled={loading || (!prompt.trim() && files.length === 0)}
+                  className={`rb-send-btn${(prompt.trim() || files.length || (chatMode && pendingQuestions[0] && !pendingQuestions[0].required)) && !loading ? ' rb-send-active' : ''}`}
+                  onClick={() => {
+                    if (chatMode && pendingQuestions.length > 0) {
+                      if (pendingQuestions[0].required && !prompt.trim()) return;
+                      handleChatAnswer(prompt.trim());
+                      setPrompt('');
+                    } else {
+                      handleSubmit();
+                    }
+                  }}
+                  disabled={loading || fetchingQuestions}
                   title={`${remainingUses} uses remaining`}
                 >
                   {loading ? <span className="rb-spinner" /> : <Send size={16} />}
@@ -248,17 +337,25 @@ function ResumeBuilder() {
                 </button>
               </div>
 
+              {chatMode && pendingQuestions[0] && !pendingQuestions[0].required && (
+                <button className="rb-skip-q" onClick={() => { handleChatAnswer(''); setPrompt(''); }}>
+                  Skip this question
+                </button>
+              )}
+
               {error && <div className="gr-error">{error}</div>}
 
-              <div className="rb-help-row">
-                <button className="rb-help-btn" onClick={() => navigate('/about')}>
-                  <HelpCircle size={15} />
-                  Need any help?
-                </button>
-              </div>
+              {!chatMode && (
+                <div className="rb-help-row">
+                  <button className="rb-help-btn" onClick={() => navigate('/about')}>
+                    <HelpCircle size={15} />
+                    Need any help?
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* ── Loading ── */}
+            {/* â”€â”€ Loading â”€â”€ */}
             {loading && (
               <div className="gr-loading">
                 <div className="gr-spinner" />
@@ -266,7 +363,7 @@ function ResumeBuilder() {
               </div>
             )}
 
-            {/* ── Generated Resume Output ── */}
+            {/* â”€â”€ Generated Resume Output â”€â”€ */}
             {resumeData && !loading && (
               <div className="gr-output" ref={resumeRef}>
                 <div className="gr-output-header">
@@ -295,3 +392,4 @@ function ResumeBuilder() {
 }
 
 export default ResumeBuilder;
+

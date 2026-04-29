@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { aiService } from '../services/aiService';
 
 function AITest() {
@@ -66,7 +66,7 @@ function AITest() {
           borderRadius: '8px',
           color: '#4ade80'
         }}>
-          <h3>✅ AI Integration Working!</h3>
+          <h3>âœ… AI Integration Working!</h3>
           <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
             {JSON.stringify(result, null, 2)}
           </pre>
@@ -77,3 +77,4 @@ function AITest() {
 }
 
 export default AITest;
+

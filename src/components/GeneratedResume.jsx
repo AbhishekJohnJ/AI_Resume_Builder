@@ -1,4 +1,4 @@
-import './TemplatePickerCard.css';
+﻿import './TemplatePickerCard.css';
 import './GeneratedResume.css';
 
 function GeneratedResume({ data, templateId, themeColor }) {
@@ -149,7 +149,7 @@ function ExperienceSection({ experience, style = 'default', periodClass, roleCla
         {experience.map((e, i) => (
           <div key={i} className="rv-exp-compact">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a', fontSize: 10 }}>{e.role} · {e.company}</strong>
+              <strong className={roleClass || 'rv1-text'} style={{ color: '#1a1a1a', fontSize: 10 }}>{e.role} Â· {e.company}</strong>
               <span className={periodClass || 'rv1-exp-period'}>{e.period}</span>
             </div>
             {renderDesc(e)}
@@ -176,7 +176,7 @@ function ExperienceSection({ experience, style = 'default', periodClass, roleCla
   );
 }
 
-/* ── T1: Blue Sidebar ── */
+/* â”€â”€ T1: Blue Sidebar â”€â”€ */
 function T1({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -187,11 +187,11 @@ function T1({ d, initials, themeColor, ds }) {
         <div className="rv1-title">{d.title}</div>
         <div className="rv1-divider" />
         <div className="rv1-sec-title">Contact</div>
-        <p className="rv1-text">📞 {d.phone}</p>
-        <p className="rv1-text">✉ {d.email}</p>
-        <p className="rv1-text">📍 {d.location}</p>
-        {d.linkedin && <p className="rv1-text">🔗 {d.linkedin}</p>}
-        {d.website && <p className="rv1-text">🌐 {d.website}</p>}
+        <p className="rv1-text">ðŸ“ž {d.phone}</p>
+        <p className="rv1-text">âœ‰ {d.email}</p>
+        <p className="rv1-text">ðŸ“ {d.location}</p>
+        {d.linkedin && <p className="rv1-text">ðŸ”— {d.linkedin}</p>}
+        {d.website && <p className="rv1-text">ðŸŒ {d.website}</p>}
         <div className="rv1-sec-title">Skills</div>
         <SkillsSection
           skills={d.skills}
@@ -207,7 +207,7 @@ function T1({ d, initials, themeColor, ds }) {
         </>}
         {d.awards?.length > 0 && <>
           <div className="rv1-sec-title">Awards</div>
-          {d.awards.map((a, i) => <p key={i} className="rv1-text">• {a}</p>)}
+          {d.awards.map((a, i) => <p key={i} className="rv1-text">â€¢ {a}</p>)}
         </>}
       </div>
       <div className="rv1-main">
@@ -237,7 +237,7 @@ function T1({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T2: Dark Header, Two-Column ── */
+/* â”€â”€ T2: Dark Header, Two-Column â”€â”€ */
 function T2({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -248,8 +248,8 @@ function T2({ d, initials, themeColor, ds }) {
           <div className="rv2-name">{d.name?.toUpperCase()}</div>
           <div className="rv2-title">{d.title}</div>
           <div className="rv2-contacts">
-            <span>📞 {d.phone}</span><span>✉ {d.email}</span><span>📍 {d.location}</span>
-            {d.linkedin && <span>🔗 {d.linkedin}</span>}
+            <span>ðŸ“ž {d.phone}</span><span>âœ‰ {d.email}</span><span>ðŸ“ {d.location}</span>
+            {d.linkedin && <span>ðŸ”— {d.linkedin}</span>}
           </div>
         </div>
       </div>
@@ -287,7 +287,7 @@ function T2({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T3: Teal Sidebar ── */
+/* â”€â”€ T3: Teal Sidebar â”€â”€ */
 function T3({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -297,10 +297,10 @@ function T3({ d, initials, themeColor, ds }) {
         <div className="rv3-name">{d.name?.toUpperCase()}</div>
         <div className="rv3-title">{d.title}</div>
         <div className="rv3-sec-title">Contact</div>
-        <p className="rv3-text">📞 {d.phone}</p>
-        <p className="rv3-text">✉ {d.email}</p>
-        <p className="rv3-text">📍 {d.location}</p>
-        {d.linkedin && <p className="rv3-text">🔗 {d.linkedin}</p>}
+        <p className="rv3-text">ðŸ“ž {d.phone}</p>
+        <p className="rv3-text">âœ‰ {d.email}</p>
+        <p className="rv3-text">ðŸ“ {d.location}</p>
+        {d.linkedin && <p className="rv3-text">ðŸ”— {d.linkedin}</p>}
         <div className="rv3-sec-title">Education</div>
         {d.education?.map((e, i) => (
           <div key={i} style={{ marginBottom: 8 }}>
@@ -312,7 +312,7 @@ function T3({ d, initials, themeColor, ds }) {
         <div className="rv3-sec-title">Skills</div>
         <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv3-text" />
         {d.languages?.length > 0 && <><div className="rv3-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv3-text">{l}</p>)}</>}
-        {d.awards?.length > 0 && <><div className="rv3-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv3-text">• {a}</p>)}</>}
+        {d.awards?.length > 0 && <><div className="rv3-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv3-text">â€¢ {a}</p>)}</>}
       </div>
       <div className="rv3-main">
         <div className="rv3-main-header">
@@ -328,7 +328,7 @@ function T3({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T4: Orange Header ── */
+/* â”€â”€ T4: Orange Header â”€â”€ */
 function T4({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -342,10 +342,10 @@ function T4({ d, initials, themeColor, ds }) {
           </div>
         </div>
         <div className="rv4-header-right">
-          <p className="rv4-contact">📞 {d.phone}</p>
-          <p className="rv4-contact">✉ {d.email}</p>
-          <p className="rv4-contact">📍 {d.location}</p>
-          {d.linkedin && <p className="rv4-contact">🔗 {d.linkedin}</p>}
+          <p className="rv4-contact">ðŸ“ž {d.phone}</p>
+          <p className="rv4-contact">âœ‰ {d.email}</p>
+          <p className="rv4-contact">ðŸ“ {d.location}</p>
+          {d.linkedin && <p className="rv4-contact">ðŸ”— {d.linkedin}</p>}
         </div>
       </div>
       <div className="rv4-body">
@@ -363,7 +363,7 @@ function T4({ d, initials, themeColor, ds }) {
           {d.education?.map((e, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <strong className="rv4-text" style={{ color: '#1a1a1a' }}>{e.degree}</strong>
-              <div className="rv4-company">{e.school} · {e.year}</div>
+              <div className="rv4-company">{e.school} Â· {e.year}</div>
             </div>
           ))}
           {d.languages?.length > 0 && <><div className="rv4-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv4-text">{l}</p>)}</>}
@@ -373,7 +373,7 @@ function T4({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T5: Grey Header, Two-Column ── */
+/* â”€â”€ T5: Grey Header, Two-Column â”€â”€ */
 function T5({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -412,7 +412,7 @@ function T5({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T6: Teal Header ── */
+/* â”€â”€ T6: Teal Header â”€â”€ */
 function T6({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -456,7 +456,7 @@ function T6({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T7: Dark Executive ── */
+/* â”€â”€ T7: Dark Executive â”€â”€ */
 function T7({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -467,8 +467,8 @@ function T7({ d, initials, themeColor, ds }) {
           <div className="rv7-name">{d.name}</div>
           <div className="rv7-title">{d.title}</div>
           <div className="rv7-contacts">
-            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
-            {d.linkedin && <span>🔗 {d.linkedin}</span>}
+            <span>âœ‰ {d.email}</span><span>ðŸ“ž {d.phone}</span><span>ðŸ“ {d.location}</span>
+            {d.linkedin && <span>ðŸ”— {d.linkedin}</span>}
           </div>
         </div>
       </div>
@@ -483,10 +483,10 @@ function T7({ d, initials, themeColor, ds }) {
             {d.education?.map((e, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <strong className="rv7-text">{e.degree}</strong>
-                <div className="rv7-company">{e.school} · {e.year}</div>
+                <div className="rv7-company">{e.school} Â· {e.year}</div>
               </div>
             ))}
-            {d.awards?.length > 0 && <><div className="rv7-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv7-text">• {a}</p>)}</>}
+            {d.awards?.length > 0 && <><div className="rv7-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv7-text">â€¢ {a}</p>)}</>}
           </div>
           <div>
             <div className="rv7-sec-title">Skills</div>
@@ -499,7 +499,7 @@ function T7({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T8: Purple Creative ── */
+/* â”€â”€ T8: Purple Creative â”€â”€ */
 function T8({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -510,14 +510,14 @@ function T8({ d, initials, themeColor, ds }) {
         <div className="rv8-title">{d.title}</div>
         <div className="rv8-divider" />
         <div className="rv8-sec-title">Contact</div>
-        <p className="rv8-text">✉ {d.email}</p>
-        <p className="rv8-text">📞 {d.phone}</p>
-        <p className="rv8-text">📍 {d.location}</p>
-        {d.linkedin && <p className="rv8-text">🔗 {d.linkedin}</p>}
+        <p className="rv8-text">âœ‰ {d.email}</p>
+        <p className="rv8-text">ðŸ“ž {d.phone}</p>
+        <p className="rv8-text">ðŸ“ {d.location}</p>
+        {d.linkedin && <p className="rv8-text">ðŸ”— {d.linkedin}</p>}
         <div className="rv8-sec-title">Skills</div>
         <SkillsSection skills={d.skills} style={ss.skills || 'dots'} textClass="rv8-text" />
         {d.languages?.length > 0 && <><div className="rv8-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv8-text">{l}</p>)}</>}
-        {d.awards?.length > 0 && <><div className="rv8-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv8-text">★ {a}</p>)}</>}
+        {d.awards?.length > 0 && <><div className="rv8-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv8-text">â˜… {a}</p>)}</>}
       </div>
       <div className="rv8-main">
         <div className="rv8-sec-title-main">About Me</div>
@@ -528,7 +528,7 @@ function T8({ d, initials, themeColor, ds }) {
         {d.education?.map((e, i) => (
           <div key={i} style={{ marginBottom: 8 }}>
             <strong className="rv8-main-text">{e.degree}</strong>
-            <div className="rv8-company">{e.school} · {e.year}</div>
+            <div className="rv8-company">{e.school} Â· {e.year}</div>
           </div>
         ))}
       </div>
@@ -536,7 +536,7 @@ function T8({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T9: Minimal White ── */
+/* â”€â”€ T9: Minimal White â”€â”€ */
 function T9({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -561,10 +561,10 @@ function T9({ d, initials, themeColor, ds }) {
             {d.education?.map((e, i) => (
               <div key={i} style={{ marginBottom: 6 }}>
                 <strong className="rv9-text">{e.degree}</strong>
-                <div className="rv9-muted">{e.school} · {e.year}</div>
+                <div className="rv9-muted">{e.school} Â· {e.year}</div>
               </div>
             ))}
-            {d.awards?.length > 0 && <><div className="rv9-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv9-text">• {a}</p>)}</>}
+            {d.awards?.length > 0 && <><div className="rv9-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv9-text">â€¢ {a}</p>)}</>}
           </div>
           <div>
             <div className="rv9-sec-title">Skills</div>
@@ -577,7 +577,7 @@ function T9({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T10: Red Accent ── */
+/* â”€â”€ T10: Red Accent â”€â”€ */
 function T10({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -587,10 +587,10 @@ function T10({ d, initials, themeColor, ds }) {
         <div className="rv10-name">{d.name}</div>
         <div className="rv10-title">{d.title}</div>
         <div className="rv10-sec-title">Contact</div>
-        <p className="rv10-text">✉ {d.email}</p>
-        <p className="rv10-text">📞 {d.phone}</p>
-        <p className="rv10-text">📍 {d.location}</p>
-        {d.linkedin && <p className="rv10-text">🔗 {d.linkedin}</p>}
+        <p className="rv10-text">âœ‰ {d.email}</p>
+        <p className="rv10-text">ðŸ“ž {d.phone}</p>
+        <p className="rv10-text">ðŸ“ {d.location}</p>
+        {d.linkedin && <p className="rv10-text">ðŸ”— {d.linkedin}</p>}
         <div className="rv10-sec-title">Skills</div>
         <SkillsSection skills={d.skills} style={ss.skills || 'bars'} barClass="rv10-skill-row" barFillClass="rv10-skill-fill" nameClass="rv10-text" textClass="rv10-text" />
         {d.languages?.length > 0 && <><div className="rv10-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv10-text">{l}</p>)}</>}
@@ -604,16 +604,16 @@ function T10({ d, initials, themeColor, ds }) {
         {d.education?.map((e, i) => (
           <div key={i} style={{ marginBottom: 8 }}>
             <strong className="rv10-main-text">{e.degree}</strong>
-            <div className="rv10-company">{e.school} · {e.year}</div>
+            <div className="rv10-company">{e.school} Â· {e.year}</div>
           </div>
         ))}
-        {d.awards?.length > 0 && <><div className="rv10-sec-title-main">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv10-main-text">• {a}</p>)}</>}
+        {d.awards?.length > 0 && <><div className="rv10-sec-title-main">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv10-main-text">â€¢ {a}</p>)}</>}
       </div>
     </div>
   );
 }
 
-/* ── T11: Green Nature ── */
+/* â”€â”€ T11: Green Nature â”€â”€ */
 function T11({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -625,10 +625,10 @@ function T11({ d, initials, themeColor, ds }) {
           <div className="rv11-title">{d.title}</div>
         </div>
         <div className="rv11-header-contact">
-          <p className="rv11-contact">✉ {d.email}</p>
-          <p className="rv11-contact">📞 {d.phone}</p>
-          <p className="rv11-contact">📍 {d.location}</p>
-          {d.linkedin && <p className="rv11-contact">🔗 {d.linkedin}</p>}
+          <p className="rv11-contact">âœ‰ {d.email}</p>
+          <p className="rv11-contact">ðŸ“ž {d.phone}</p>
+          <p className="rv11-contact">ðŸ“ {d.location}</p>
+          {d.linkedin && <p className="rv11-contact">ðŸ”— {d.linkedin}</p>}
         </div>
       </div>
       <div className="rv11-body">
@@ -638,7 +638,7 @@ function T11({ d, initials, themeColor, ds }) {
           <div className="rv11-sec-title">Skills</div>
           <SkillsSection skills={d.skills} style={ss.skills || 'badges'} textClass="rv11-text" />
           {d.languages?.length > 0 && <><div className="rv11-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv11-text">{l}</p>)}</>}
-          {d.awards?.length > 0 && <><div className="rv11-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv11-text">🏆 {a}</p>)}</>}
+          {d.awards?.length > 0 && <><div className="rv11-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv11-text">ðŸ† {a}</p>)}</>}
         </div>
         <div className="rv11-right">
           <div className="rv11-sec-title">Experience</div>
@@ -647,7 +647,7 @@ function T11({ d, initials, themeColor, ds }) {
           {d.education?.map((e, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <strong className="rv11-text">{e.degree}</strong>
-              <div className="rv11-company">{e.school} · {e.year}</div>
+              <div className="rv11-company">{e.school} Â· {e.year}</div>
             </div>
           ))}
         </div>
@@ -656,7 +656,7 @@ function T11({ d, initials, themeColor, ds }) {
   );
 }
 
-/* ── T12: Navy Classic ── */
+/* â”€â”€ T12: Navy Classic â”€â”€ */
 function T12({ d, initials, themeColor, ds }) {
   const ss = d.sectionStyle || {};
   return (
@@ -667,8 +667,8 @@ function T12({ d, initials, themeColor, ds }) {
           <div className="rv12-name">{d.name}</div>
           <div className="rv12-title">{d.title}</div>
           <div className="rv12-contacts">
-            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
-            {d.linkedin && <span>🔗 {d.linkedin}</span>}
+            <span>âœ‰ {d.email}</span><span>ðŸ“ž {d.phone}</span><span>ðŸ“ {d.location}</span>
+            {d.linkedin && <span>ðŸ”— {d.linkedin}</span>}
           </div>
         </div>
       </div>
@@ -680,11 +680,11 @@ function T12({ d, initials, themeColor, ds }) {
           {d.education?.map((e, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <strong className="rv12-text">{e.degree}</strong>
-              <div className="rv12-muted">{e.school} · {e.year}</div>
+              <div className="rv12-muted">{e.school} Â· {e.year}</div>
             </div>
           ))}
           {d.languages?.length > 0 && <><div className="rv12-sec-title">Languages</div>{d.languages.map((l, i) => <p key={i} className="rv12-text">{l}</p>)}</>}
-          {d.awards?.length > 0 && <><div className="rv12-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv12-text">• {a}</p>)}</>}
+          {d.awards?.length > 0 && <><div className="rv12-sec-title">Awards</div>{d.awards.map((a, i) => <p key={i} className="rv12-text">â€¢ {a}</p>)}</>}
         </div>
         <div className="rv12-right">
           <div className="rv12-sec-title">Experience</div>
@@ -698,3 +698,4 @@ function T12({ d, initials, themeColor, ds }) {
 }
 
 export default GeneratedResume;
+

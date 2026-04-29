@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Bot, Palette, Zap, FileText, Globe, Save, Share2, Layout, ChevronDown, ChevronUp, MousePointer, Type, Paperclip, Wand2, Download, RefreshCw, Target, TrendingUp } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
@@ -15,7 +15,7 @@ const resumeSteps = [
 ];
 
 const portfolioSteps = [
-  { icon: MousePointer, title: 'Choose a Template', desc: 'Browse 11 portfolio templates — Dark Hacker, Neon Cyberpunk, Glass Dark, Clean Minimal, and more. Click one to select it.' },
+  { icon: MousePointer, title: 'Choose a Template', desc: 'Browse 11 portfolio templates â€” Dark Hacker, Neon Cyberpunk, Glass Dark, Clean Minimal, and more. Click one to select it.' },
   { icon: Type,         title: 'Write Your Prompt', desc: 'Describe yourself: "UI/UX designer specializing in mobile apps" or "Full stack developer with React and Node.js experience." AI generates 4-6 projects, skills, and experience.' },
   { icon: Wand2,       title: 'Generate Portfolio', desc: 'Press send. AI populates your template with name, bio, skills (10-15), projects (with descriptions), and work experience.' },
   { icon: Palette,     title: 'Smart Design Control', desc: 'Type "pill buttons", "glass cards", or "gradient background" to change design styles. Or "change theme to purple" for color changes.' },
@@ -75,14 +75,14 @@ function About() {
               </div>
               <h1 className="about-title">ResumeCraft AI</h1>
               <p className="about-version">Version 2.0.0</p>
-              <p className="about-tagline">Your AI-powered resume & portfolio builder — from prompt to professional in seconds</p>
+              <p className="about-tagline">Your AI-powered resume & portfolio builder â€” from prompt to professional in seconds</p>
             </div>
 
             <div className="about-cards">
               <div className="about-card">
                 <Bot size={32} className="about-card-icon" />
                 <h3>AI-Powered Generation</h3>
-                <p>Generate professional resumes and portfolios using OpenRouter AI (GPT-3.5-turbo & DeepSeek). Describe yourself in plain text — AI fills in the rest.</p>
+                <p>Generate professional resumes and portfolios using OpenRouter AI (GPT-3.5-turbo & DeepSeek). Describe yourself in plain text â€” AI fills in the rest.</p>
               </div>
               <div className="about-card">
                 <Palette size={32} className="about-card-icon" />
@@ -101,9 +101,9 @@ function About() {
               <ul className="about-features">
                 <li><Bot size={16} /><span>Build resumes from text prompts or uploaded files (PDF, DOCX, images with OCR)</span></li>
                 <li><Globe size={16} /><span>Generate portfolios with 11 unique templates (Dark Hacker, Neon Cyberpunk, Glass Dark, etc.)</span></li>
-                <li><Target size={16} /><span>Analyze resumes with AI — get detailed feedback, score, and improvement suggestions</span></li>
+                <li><Target size={16} /><span>Analyze resumes with AI â€” get detailed feedback, score, and improvement suggestions</span></li>
                 <li><Zap size={16} /><span>Complete 6 daily quests to earn XP (225 XP total per day)</span></li>
-                <li><TrendingUp size={16} /><span>Level up from Rookie → Builder → Pro → Elite based on earned XP</span></li>
+                <li><TrendingUp size={16} /><span>Level up from Rookie â†’ Builder â†’ Pro â†’ Elite based on earned XP</span></li>
                 <li><Save size={16} /><span>Auto-save all resumes and portfolios to MongoDB database</span></li>
                 <li><Share2 size={16} /><span>Export to PDF or download HTML/CSS code for hosting</span></li>
                 <li><Layout size={16} /><span>Smart design control: change button styles, card designs, backgrounds by asking</span></li>
@@ -150,7 +150,7 @@ function About() {
                 ))}
               </div>
               <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888' }}>
-                AI Models: GPT-3.5-turbo (generation), DeepSeek (analysis) • ML: Gradient Boosting, Random Forest • Dataset: 500 resume profiles
+                AI Models: GPT-3.5-turbo (generation), DeepSeek (analysis) â€¢ ML: Gradient Boosting, Random Forest â€¢ Dataset: 500 resume profiles
               </p>
             </div>
 
@@ -162,3 +162,4 @@ function About() {
 }
 
 export default About;
+

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+﻿const API_BASE_URL = 'http://localhost:3001/api';
 
 export const authAPI = {
   // Register new user
@@ -63,3 +63,4 @@ export const authAPI = {
     }
   },
 };
+

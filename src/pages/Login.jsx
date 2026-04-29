@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaFileAlt, FaPalette, FaMagic, FaLayerGroup } from 'react-icons/fa';
@@ -61,7 +61,7 @@ function Login() {
                   : <span key={i} className="glow-letter" style={{ animationDelay: `${i * 0.15}s` }}>{char}</span>
               )}
             </h1>
-            <p className="showcase-subtitle">Your AI-powered resume & portfolio builder — from prompt to professional in seconds</p>
+            <p className="showcase-subtitle">Your AI-powered resume & portfolio builder â€” from prompt to professional in seconds</p>
             
             <div className="features-list">
               <div className="feature-item">
@@ -80,7 +80,7 @@ function Login() {
                 </div>
                 <div className="feature-text">
                   <h3>Portfolio Generator</h3>
-                  <p>Create stunning portfolios with multiple templates — AI generates projects, skills & experience</p>
+                  <p>Create stunning portfolios with multiple templates â€” AI generates projects, skills & experience</p>
                 </div>
               </div>
               

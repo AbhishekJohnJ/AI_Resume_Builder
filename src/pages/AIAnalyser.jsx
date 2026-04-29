@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ScanSearch, FileText, Zap, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
@@ -7,13 +7,13 @@ import './Dashboard.css';
 import './AIAnalyser.css';
 
 const SECTION_LABELS = {
-  career_objective: '🎯 Career Objective',
-  education: '🎓 Education',
-  experience: '💼 Experience',
-  skills: '⚡ Skills',
-  certifications: '📜 Certifications',
-  languages: '🌐 Languages',
-  extracurriculars: '🏆 Extracurriculars',
+  career_objective: 'ðŸŽ¯ Career Objective',
+  education: 'ðŸŽ“ Education',
+  experience: 'ðŸ’¼ Experience',
+  skills: 'âš¡ Skills',
+  certifications: 'ðŸ“œ Certifications',
+  languages: 'ðŸŒ Languages',
+  extracurriculars: 'ðŸ† Extracurriculars',
 };
 
 const qualityColor = { Poor: '#e94560', Fair: '#ffa116', Good: '#60a5fa', Excellent: '#00c896' };
@@ -110,31 +110,31 @@ function AIAnalyser() {
     setError('');
     setResult(null);
 
-    console.log('🚀 [FRONTEND] Starting analysis...');
-    console.log('📄 [FRONTEND] File:', file?.name || 'None');
-    console.log('📝 [FRONTEND] Text length:', text.trim().length);
+    console.log('ðŸš€ [FRONTEND] Starting analysis...');
+    console.log('ðŸ“„ [FRONTEND] File:', file?.name || 'None');
+    console.log('ðŸ“ [FRONTEND] Text length:', text.trim().length);
 
     try {
       let response;
 
       if (file) {
         // Upload PDF
-        console.log('📤 [FRONTEND] Uploading PDF:', file.name);
+        console.log('ðŸ“¤ [FRONTEND] Uploading PDF:', file.name);
         const formData = new FormData();
         formData.append('file', file);
 
-        console.log('🔗 [FRONTEND] Calling: POST /api/ai/upload-and-predict');
+        console.log('ðŸ”— [FRONTEND] Calling: POST /api/ai/upload-and-predict');
 
-        response = await fetch('http://localhost:5000/api/ai/upload-and-predict', {
+        response = await fetch('http://localhost:3001/api/ai/upload-and-predict', {
           method: 'POST',
           body: formData
         });
       } else {
         // Analyze text
-        console.log('📝 [FRONTEND] Analyzing text');
-        console.log('🔗 [FRONTEND] Calling: POST /api/ai/predict-resume');
+        console.log('ðŸ“ [FRONTEND] Analyzing text');
+        console.log('ðŸ”— [FRONTEND] Calling: POST /api/ai/predict-resume');
 
-        response = await fetch('http://localhost:5000/api/ai/predict-resume', {
+        response = await fetch('http://localhost:3001/api/ai/predict-resume', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -144,7 +144,7 @@ function AIAnalyser() {
         });
       }
 
-      console.log('📊 [FRONTEND] Response status:', response.status);
+      console.log('ðŸ“Š [FRONTEND] Response status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -152,9 +152,9 @@ function AIAnalyser() {
       }
 
       const data = await response.json();
-      console.log('✅ [FRONTEND] Analysis complete');
-      console.log('🎯 [FRONTEND] Score:', data.resume_score);
-      console.log('📊 [FRONTEND] Level:', data.resume_level);
+      console.log('âœ… [FRONTEND] Analysis complete');
+      console.log('ðŸŽ¯ [FRONTEND] Score:', data.resume_score);
+      console.log('ðŸ“Š [FRONTEND] Level:', data.resume_level);
 
       setResult(data);
       localStorage.setItem('analyzedResumeScore', String(data.resume_score || 0));
@@ -175,7 +175,7 @@ function AIAnalyser() {
       await trackQuestAction(5, { analysisCount: true });
 
     } catch (err) {
-      console.error('❌ [FRONTEND] Error:', err.message);
+      console.error('âŒ [FRONTEND] Error:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -192,7 +192,7 @@ function AIAnalyser() {
         <main className="dashboard-content">
           <div className="page-header">
             <h1 className="page-title" style={{ color: '#ffd700' }}>AI Analyser</h1>
-            <p className="page-subtitle">Analyze resumes · AI-powered insights · Personalized feedback</p>
+            <p className="page-subtitle">Analyze resumes Â· AI-powered insights Â· Personalized feedback</p>
           </div>
 
           <div className="analyser-layout">
@@ -245,7 +245,7 @@ function AIAnalyser() {
               <input
                 className="analyser-role-input"
                 type="text"
-                placeholder="Target role (optional) — e.g. Frontend Developer"
+                placeholder="Target role (optional) â€” e.g. Frontend Developer"
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
               />
@@ -269,7 +269,7 @@ function AIAnalyser() {
               </button>
 
               <p className="analyser-dataset-note">
-                📊 Powered by AI · Trained on 500 resume profiles
+                ðŸ“Š Powered by AI Â· Trained on 500 resume profiles
               </p>
             </div>
 
@@ -314,7 +314,7 @@ function AIAnalyser() {
                   {/* Score Explanation */}
                   {result.score_explanation && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🎯 Why This Score?</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>ðŸŽ¯ Why This Score?</h4>
                       {result.score_explanation.why_this_score && (
                         <div style={{ padding: '12px', background: 'rgba(255,161,22,0.08)', borderRadius: '6px', marginBottom: '12px' }}>
                           <p style={{ fontSize: '0.95em', color: '#ddd', lineHeight: '1.6' }}>
@@ -324,7 +324,7 @@ function AIAnalyser() {
                       )}
                       {result.score_explanation.unique_aspects?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>✨ What Makes Your Resume Unique:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>âœ¨ What Makes Your Resume Unique:</p>
                           <ul className="analyser-list">
                             {result.score_explanation.unique_aspects.map((aspect, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{aspect}</li>
@@ -338,7 +338,7 @@ function AIAnalyser() {
                   {/* Professional Comparison */}
                   {result.professional_comparison && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#60a5fa' }}>📈 Professional Comparison</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#60a5fa' }}>ðŸ“ˆ Professional Comparison</h4>
                       <p style={{ lineHeight: '1.6', color: '#ddd' }}>{result.professional_comparison}</p>
                     </div>
                   )}
@@ -346,10 +346,10 @@ function AIAnalyser() {
                   {/* LinkedIn Profile */}
                   {result.linkedin_profile && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#0077b5' }}>💼 LinkedIn Profile</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#0077b5' }}>ðŸ’¼ LinkedIn Profile</h4>
                       <div style={{ background: 'rgba(0,119,181,0.08)', padding: '12px', borderRadius: '6px', marginBottom: '10px' }}>
                         <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '8px' }}>
-                          <strong>Status:</strong> {result.linkedin_profile.has_linkedin ? '✅ Mentioned' : '❌ Not Mentioned'}
+                          <strong>Status:</strong> {result.linkedin_profile.has_linkedin ? 'âœ… Mentioned' : 'âŒ Not Mentioned'}
                         </p>
                         {result.linkedin_profile.current_status && (
                           <p style={{ fontSize: '0.9em', color: '#ddd', marginBottom: '8px' }}>
@@ -359,7 +359,7 @@ function AIAnalyser() {
                       </div>
                       {result.linkedin_profile.suggestions?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>📝 Suggestions:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>ðŸ“ Suggestions:</p>
                           <ul className="analyser-list">
                             {result.linkedin_profile.suggestions.map((s, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{s}</li>
@@ -369,7 +369,7 @@ function AIAnalyser() {
                       )}
                       {result.linkedin_profile.optimization_tips?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>💡 Optimization Tips:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸ’¡ Optimization Tips:</p>
                           <ul className="analyser-list">
                             {result.linkedin_profile.optimization_tips.map((t, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{t}</li>
@@ -383,10 +383,10 @@ function AIAnalyser() {
                   {/* GitHub Profile */}
                   {result.github_profile && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#333' }}>🐙 GitHub Profile</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#333' }}>ðŸ™ GitHub Profile</h4>
                       <div style={{ background: 'rgba(51,51,51,0.08)', padding: '12px', borderRadius: '6px', marginBottom: '10px' }}>
                         <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '8px' }}>
-                          <strong>Status:</strong> {result.github_profile.has_github ? '✅ Mentioned' : '❌ Not Mentioned'}
+                          <strong>Status:</strong> {result.github_profile.has_github ? 'âœ… Mentioned' : 'âŒ Not Mentioned'}
                         </p>
                         {result.github_profile.current_status && (
                           <p style={{ fontSize: '0.9em', color: '#ddd', marginBottom: '8px' }}>
@@ -396,7 +396,7 @@ function AIAnalyser() {
                       </div>
                       {result.github_profile.project_suggestions?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>🚀 Project Ideas:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>ðŸš€ Project Ideas:</p>
                           <ul className="analyser-list">
                             {result.github_profile.project_suggestions.map((p, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{p}</li>
@@ -406,7 +406,7 @@ function AIAnalyser() {
                       )}
                       {result.github_profile.portfolio_tips?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>💡 Portfolio Tips:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸ’¡ Portfolio Tips:</p>
                           <ul className="analyser-list">
                             {result.github_profile.portfolio_tips.map((t, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{t}</li>
@@ -420,13 +420,13 @@ function AIAnalyser() {
                   {/* Other Profiles */}
                   {result.other_profiles?.mentioned_sites?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🌐 Other Online Profiles</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>ðŸŒ Other Online Profiles</h4>
                       <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '8px' }}>
                         <strong>Mentioned Sites:</strong> {result.other_profiles.mentioned_sites.join(', ')}
                       </p>
                       {result.other_profiles.recommendations?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>📝 Recommendations:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>ðŸ“ Recommendations:</p>
                           <ul className="analyser-list">
                             {result.other_profiles.recommendations.map((r, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{r}</li>
@@ -440,7 +440,7 @@ function AIAnalyser() {
                   {/* Professional Standards */}
                   {result.professional_standards && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>✅ Professional Standards Assessment</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>âœ… Professional Standards Assessment</h4>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                         {Object.entries(result.professional_standards).map(([key, value]) => (
                           <div key={key} style={{ padding: '10px', background: 'rgba(0,200,150,0.08)', borderRadius: '6px' }}>
@@ -457,7 +457,7 @@ function AIAnalyser() {
                   {/* Student Specific */}
                   {result.student_specific && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>🎓 Student-Specific Assessment</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>ðŸŽ“ Student-Specific Assessment</h4>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
                         {Object.entries(result.student_specific).filter(([k]) => k !== 'recommendations').map(([key, value]) => (
                           <div key={key} style={{ padding: '10px', background: 'rgba(167,139,250,0.08)', borderRadius: '6px' }}>
@@ -470,7 +470,7 @@ function AIAnalyser() {
                       </div>
                       {result.student_specific.recommendations?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>📝 Recommendations:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px' }}>ðŸ“ Recommendations:</p>
                           <ul className="analyser-list">
                             {result.student_specific.recommendations.map((r, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{r}</li>
@@ -484,12 +484,12 @@ function AIAnalyser() {
                   {/* How to Prepare Resume - Field Specific */}
                   {result.how_to_prepare_resume && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffd700' }}>📚 How to Prepare Your Resume</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#ffd700' }}>ðŸ“š How to Prepare Your Resume</h4>
                       
                       {result.identified_field && (
                         <div style={{ padding: '10px', background: 'rgba(255,215,0,0.08)', borderRadius: '6px', marginBottom: '12px' }}>
                           <p style={{ fontSize: '0.9em', color: '#ffd700', fontWeight: 'bold' }}>
-                            🎯 Field: {result.identified_field}
+                            ðŸŽ¯ Field: {result.identified_field}
                           </p>
                           <p style={{ fontSize: '0.85em', color: '#aaa', marginTop: '4px' }}>
                             Tailored recommendations for your field of study
@@ -499,7 +499,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_skills?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>⚡ Field-Specific Skills to Add:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>âš¡ Field-Specific Skills to Add:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_skills.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -510,7 +510,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_projects?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>🚀 Field-Specific Projects to Build:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸš€ Field-Specific Projects to Build:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_projects.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -521,7 +521,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_certifications?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>📜 Field-Specific Certifications:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸ“œ Field-Specific Certifications:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_certifications.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -532,7 +532,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_platforms?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>🌐 Field-Specific Platforms:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸŒ Field-Specific Platforms:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_platforms.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -543,7 +543,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_keywords?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>🔑 Field-Specific Keywords:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸ”‘ Field-Specific Keywords:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_keywords.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -554,7 +554,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.field_specific_experiences?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>💼 Field-Specific Experiences to Pursue:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸ’¼ Field-Specific Experiences to Pursue:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.field_specific_experiences.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -565,7 +565,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.formatting_tips?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>🎨 Formatting Tips:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>ðŸŽ¨ Formatting Tips:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.formatting_tips.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -576,7 +576,7 @@ function AIAnalyser() {
 
                       {result.how_to_prepare_resume.content_tips?.length > 0 && (
                         <>
-                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>✍️ Content Tips:</p>
+                          <p style={{ fontSize: '0.9em', color: '#aaa', marginBottom: '6px', marginTop: '10px' }}>âœï¸ Content Tips:</p>
                           <ul className="analyser-list">
                             {result.how_to_prepare_resume.content_tips.map((item, i) => (
                               <li key={i} style={{ fontSize: '0.9em' }}>{item}</li>
@@ -590,7 +590,7 @@ function AIAnalyser() {
                   {/* Strengths */}
                   {result.strengths?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>💪 Strengths</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>ðŸ’ª Strengths</h4>
                       <ul className="analyser-list">
                         {result.strengths.map((strength, i) => (
                           <li key={i}>{strength}</li>
@@ -602,7 +602,7 @@ function AIAnalyser() {
                   {/* Weak Areas */}
                   {result.weak_areas?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#e94560' }}>💡 Areas to Improve</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#e94560' }}>ðŸ’¡ Areas to Improve</h4>
                       <ul className="analyser-list">
                         {result.weak_areas.map((area, i) => (
                           <li key={i}>{area}</li>
@@ -614,7 +614,7 @@ function AIAnalyser() {
                   {/* Suggestions */}
                   {result.suggestions?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>🎯 Suggestions</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#ffa116' }}>ðŸŽ¯ Suggestions</h4>
                       <ul className="analyser-list">
                         {result.suggestions.map((suggestion, i) => (
                           <li key={i}>{suggestion}</li>
@@ -626,7 +626,7 @@ function AIAnalyser() {
                   {/* Recommended Tasks */}
                   {result.recommended_tasks?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>📋 Next Steps</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#00c896' }}>ðŸ“‹ Next Steps</h4>
                       <ul className="analyser-list">
                         {result.recommended_tasks.map((task, i) => (
                           <li key={i}>{task}</li>
@@ -638,7 +638,7 @@ function AIAnalyser() {
                   {/* Key Insights */}
                   {result.key_insights?.length > 0 && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#60a5fa' }}>💡 Key Insights</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#60a5fa' }}>ðŸ’¡ Key Insights</h4>
                       <ul className="analyser-list">
                         {result.key_insights.map((insight, i) => (
                           <li key={i}>{insight}</li>
@@ -650,13 +650,13 @@ function AIAnalyser() {
                   {/* ATS Score */}
                   {result.ats_score && (
                     <div className="analyser-section">
-                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>🤖 ATS Compatibility Score</h4>
+                      <h4 className="analyser-section-title" style={{ color: '#a78bfa' }}>ðŸ¤– ATS Compatibility Score</h4>
                       <div style={{ padding: '12px', background: 'rgba(167,139,250,0.08)', borderRadius: '6px' }}>
                         <div style={{ fontSize: '2em', fontWeight: 'bold', color: '#a78bfa' }}>
                           {Math.round(result.ats_score)}%
                         </div>
                         <p style={{ fontSize: '0.9em', color: '#aaa', marginTop: '6px' }}>
-                          {result.ats_score >= 80 ? '✅ Excellent ATS compatibility' : result.ats_score >= 60 ? '⚠️ Good ATS compatibility' : '❌ Needs ATS optimization'}
+                          {result.ats_score >= 80 ? 'âœ… Excellent ATS compatibility' : result.ats_score >= 60 ? 'âš ï¸ Good ATS compatibility' : 'âŒ Needs ATS optimization'}
                         </p>
                       </div>
                     </div>
@@ -672,3 +672,4 @@ function AIAnalyser() {
 }
 
 export default AIAnalyser;
+

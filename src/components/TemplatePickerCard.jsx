@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { trackQuestAction } from '../utils/gamification';
 import './TemplatePickerCard.css';
 
@@ -67,21 +67,21 @@ const d = {
   summary: 'Experienced graphics designer with 5+ years creating compelling visual identities, marketing materials, and digital content. Passionate about clean design and brand storytelling.',
   skills: ['Adobe Photoshop', 'Illustrator', 'Figma', 'Branding', 'UI Design', 'Typography', 'Motion Graphics'],
   experience: [
-    { role: 'Senior Graphic Designer', company: 'Dreyard International Co.', period: '2020 – 2024', desc: 'Led visual design for global campaigns, managed brand guidelines, and mentored junior designers.' },
-    { role: 'Graphic Designer', company: 'Animated Industries', period: '2017 – 2019', desc: 'Created marketing collateral, social media assets, and product packaging for 30+ clients.' },
-    { role: 'Junior Designer', company: 'Pixel Studio', period: '2015 – 2017', desc: 'Assisted senior designers with layout, typography, and digital illustration projects.' },
+    { role: 'Senior Graphic Designer', company: 'Dreyard International Co.', period: '2020 â€“ 2024', desc: 'Led visual design for global campaigns, managed brand guidelines, and mentored junior designers.' },
+    { role: 'Graphic Designer', company: 'Animated Industries', period: '2017 â€“ 2019', desc: 'Created marketing collateral, social media assets, and product packaging for 30+ clients.' },
+    { role: 'Junior Designer', company: 'Pixel Studio', period: '2015 â€“ 2017', desc: 'Assisted senior designers with layout, typography, and digital illustration projects.' },
   ],
   education: [
     { degree: 'Bachelor of Design', school: 'Meadows University', year: '2015' },
     { degree: 'Bachelor of Design', school: 'Animated Industries', year: '2013' },
   ],
-  languages: ['English – Native', 'French – Intermediate'],
+  languages: ['English â€“ Native', 'French â€“ Intermediate'],
   awards: ['Best Designer Award 2022', 'Creative Excellence 2021'],
 };
 
-/* ══════════════════════════════════════
-   T1 — Modern Minimalist (Blue accent, photo top-left)
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T1 â€” Modern Minimalist (Blue accent, photo top-left)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template1() {
   return (
     <div className="rv rv1">
@@ -93,9 +93,9 @@ function Template1() {
         <div className="rv1-sec-title">About Me</div>
         <p className="rv1-text">{d.summary}</p>
         <div className="rv1-sec-title">Contact</div>
-        <p className="rv1-text">📞 {d.phone}</p>
-        <p className="rv1-text">✉ {d.email}</p>
-        <p className="rv1-text">📍 {d.location}</p>
+        <p className="rv1-text">ðŸ“ž {d.phone}</p>
+        <p className="rv1-text">âœ‰ {d.email}</p>
+        <p className="rv1-text">ðŸ“ {d.location}</p>
         <div className="rv1-sec-title">Skills</div>
         {d.skills.map((s,i) => (
           <div key={i} className="rv1-skill-row">
@@ -108,7 +108,7 @@ function Template1() {
       </div>
       <div className="rv1-main">
         <div className="rv1-main-header">
-          <div className="rv1-edu-icon">🎓</div>
+          <div className="rv1-edu-icon">ðŸŽ“</div>
           <div className="rv1-main-sec-title">Education</div>
         </div>
         {d.education.map((e,i) => (
@@ -140,9 +140,9 @@ function Template1() {
   );
 }
 
-/* ══════════════════════════════════════
-   T2 — Professional Modern CV (Dark header, 2-col)
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T2 â€” Professional Modern CV (Dark header, 2-col)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template2() {
   return (
     <div className="rv rv2">
@@ -152,7 +152,7 @@ function Template2() {
           <div className="rv2-name">LORNA ALVARADO</div>
           <div className="rv2-title">Marketing Manager</div>
           <div className="rv2-contacts">
-            <span>📞 {d.phone}</span><span>✉ {d.email}</span><span>📍 {d.location}</span>
+            <span>ðŸ“ž {d.phone}</span><span>âœ‰ {d.email}</span><span>ðŸ“ {d.location}</span>
           </div>
         </div>
       </div>
@@ -204,9 +204,9 @@ function Template2() {
   );
 }
 
-/* ══════════════════════════════════════
-   T3 — White Simple Student CV (Teal sidebar)
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T3 â€” White Simple Student CV (Teal sidebar)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template3() {
   return (
     <div className="rv rv3">
@@ -227,7 +227,7 @@ function Template3() {
         <div className="rv3-sec-title">LANGUAGE</div>
         {d.languages.map((l,i) => <p key={i} className="rv3-text">{l}</p>)}
         <div className="rv3-sec-title">COMPUTER SKILLS</div>
-        {d.skills.slice(0,4).map((s,i) => <p key={i} className="rv3-text">• {s}</p>)}
+        {d.skills.slice(0,4).map((s,i) => <p key={i} className="rv3-text">â€¢ {s}</p>)}
       </div>
       <div className="rv3-main">
         <div className="rv3-main-header">
@@ -238,14 +238,14 @@ function Template3() {
         {d.experience.map((e,i) => (
           <div key={i} className="rv3-exp">
             <strong className="rv3-main-text">{e.role}</strong>
-            <div className="rv3-company">{e.company} · {e.period}</div>
+            <div className="rv3-company">{e.company} Â· {e.period}</div>
             <p className="rv3-main-text">{e.desc}</p>
           </div>
         ))}
         <div className="rv3-sec-title-main">CONTACT ME</div>
-        <p className="rv3-main-text">📞 {d.phone}</p>
-        <p className="rv3-main-text">✉ {d.email}</p>
-        <p className="rv3-main-text">📍 {d.location}</p>
+        <p className="rv3-main-text">ðŸ“ž {d.phone}</p>
+        <p className="rv3-main-text">âœ‰ {d.email}</p>
+        <p className="rv3-main-text">ðŸ“ {d.location}</p>
         <div className="rv3-sec-title-main">SKILLS</div>
         {d.skills.map((s,i) => (
           <div key={i} style={{display:'flex', alignItems:'center', gap:6, marginBottom:5}}>
@@ -264,9 +264,9 @@ function Template3() {
   );
 }
 
-/* ══════════════════════════════════════
-   T4 — Orange White Graphic Designer
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T4 â€” Orange White Graphic Designer
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template4() {
   return (
     <div className="rv rv4">
@@ -279,9 +279,9 @@ function Template4() {
           </div>
         </div>
         <div className="rv4-header-right">
-          <p className="rv4-contact">📞 {d.phone}</p>
-          <p className="rv4-contact">✉ {d.email}</p>
-          <p className="rv4-contact">📍 {d.location}</p>
+          <p className="rv4-contact">ðŸ“ž {d.phone}</p>
+          <p className="rv4-contact">âœ‰ {d.email}</p>
+          <p className="rv4-contact">ðŸ“ {d.location}</p>
         </div>
       </div>
       <div className="rv4-body">
@@ -302,18 +302,18 @@ function Template4() {
         </div>
         <div className="rv4-right">
           <div className="rv4-sec-title">Skills</div>
-          {d.skills.map((s,i) => <p key={i} className="rv4-text">• {s}</p>)}
+          {d.skills.map((s,i) => <p key={i} className="rv4-text">â€¢ {s}</p>)}
           <div className="rv4-sec-title">Education History</div>
           {d.education.map((e,i) => (
             <div key={i} style={{marginBottom:8}}>
               <strong className="rv4-text">{e.degree}</strong>
-              <div className="rv4-company">{e.school} · {e.year}</div>
+              <div className="rv4-company">{e.school} Â· {e.year}</div>
             </div>
           ))}
           <div className="rv4-sec-title">References</div>
           <div className="rv4-refs">
-            <div><strong className="rv4-text">Mari Zhang</strong><div className="rv4-company">Studio Studios · CEO</div></div>
-            <div><strong className="rv4-text">Jamie Chastain</strong><div className="rv4-company">Warner & Spencer · CFO</div></div>
+            <div><strong className="rv4-text">Mari Zhang</strong><div className="rv4-company">Studio Studios Â· CEO</div></div>
+            <div><strong className="rv4-text">Jamie Chastain</strong><div className="rv4-company">Warner & Spencer Â· CFO</div></div>
           </div>
         </div>
       </div>
@@ -321,9 +321,9 @@ function Template4() {
   );
 }
 
-/* ══════════════════════════════════════
-   T5 — Olivia Wilson Style (Clean 2-col, grey accent)
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T5 â€” Olivia Wilson Style (Clean 2-col, grey accent)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template5() {
   return (
     <div className="rv rv5">
@@ -375,9 +375,9 @@ function Template5() {
   );
 }
 
-/* ══════════════════════════════════════
-   T6 — Connor Hamilton (Teal bold header, 2-col)
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T6 â€” Connor Hamilton (Teal bold header, 2-col)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template6() {
   return (
     <div className="rv rv6">
@@ -400,11 +400,11 @@ function Template6() {
           <div className="rv6-sec-title">LANGUAGE</div>
           {d.languages.map((l,i) => <p key={i} className="rv6-text">{l}</p>)}
           <div className="rv6-sec-title">CONTACT ME</div>
-          <p className="rv6-text">📞 {d.phone}</p>
-          <p className="rv6-text">✉ {d.email}</p>
-          <p className="rv6-text">📍 {d.location}</p>
+          <p className="rv6-text">ðŸ“ž {d.phone}</p>
+          <p className="rv6-text">âœ‰ {d.email}</p>
+          <p className="rv6-text">ðŸ“ {d.location}</p>
           <div className="rv6-sec-title">COMPUTER SKILLS</div>
-          {d.skills.slice(0,4).map((s,i) => <p key={i} className="rv6-text">• {s}</p>)}
+          {d.skills.slice(0,4).map((s,i) => <p key={i} className="rv6-text">â€¢ {s}</p>)}
         </div>
         <div className="rv6-right">
           <div className="rv6-sec-title">EDUCATION</div>
@@ -419,7 +419,7 @@ function Template6() {
           {d.experience.map((e,i) => (
             <div key={i} className="rv6-exp">
               <strong className="rv6-text">{e.role}</strong>
-              <div className="rv6-company">{e.company} · {e.period}</div>
+              <div className="rv6-company">{e.company} Â· {e.period}</div>
               <p className="rv6-text">{e.desc}</p>
             </div>
           ))}
@@ -429,9 +429,9 @@ function Template6() {
   );
 }
 
-/* ══════════════════════════════════════
-   T7 — Dark Executive
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T7 â€” Dark Executive
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template7() {
   return (
     <div className="rv rv7">
@@ -441,7 +441,7 @@ function Template7() {
           <div className="rv7-name">{d.name}</div>
           <div className="rv7-title">{d.title}</div>
           <div className="rv7-contacts">
-            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
+            <span>âœ‰ {d.email}</span><span>ðŸ“ž {d.phone}</span><span>ðŸ“ {d.location}</span>
           </div>
         </div>
       </div>
@@ -465,11 +465,11 @@ function Template7() {
             {d.education.map((e,i) => (
               <div key={i} style={{marginBottom:8}}>
                 <strong className="rv7-text">{e.degree}</strong>
-                <div className="rv7-company">{e.school} · {e.year}</div>
+                <div className="rv7-company">{e.school} Â· {e.year}</div>
               </div>
             ))}
             <div className="rv7-sec-title">AWARDS</div>
-            {d.awards.map((a,i) => <p key={i} className="rv7-text">• {a}</p>)}
+            {d.awards.map((a,i) => <p key={i} className="rv7-text">â€¢ {a}</p>)}
           </div>
           <div>
             <div className="rv7-sec-title">SKILLS</div>
@@ -490,9 +490,9 @@ function Template7() {
   );
 }
 
-/* ══════════════════════════════════════
-   T8 — Purple Creative
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T8 â€” Purple Creative
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template8() {
   return (
     <div className="rv rv8">
@@ -502,15 +502,15 @@ function Template8() {
         <div className="rv8-title">{d.title}</div>
         <div className="rv8-divider"/>
         <div className="rv8-sec-title">Contact</div>
-        <p className="rv8-text">✉ {d.email}</p>
-        <p className="rv8-text">📞 {d.phone}</p>
-        <p className="rv8-text">📍 {d.location}</p>
+        <p className="rv8-text">âœ‰ {d.email}</p>
+        <p className="rv8-text">ðŸ“ž {d.phone}</p>
+        <p className="rv8-text">ðŸ“ {d.location}</p>
         <div className="rv8-sec-title">Skills</div>
-        {d.skills.map((s,i) => <p key={i} className="rv8-text">▸ {s}</p>)}
+        {d.skills.map((s,i) => <p key={i} className="rv8-text">â–¸ {s}</p>)}
         <div className="rv8-sec-title">Languages</div>
         {d.languages.map((l,i) => <p key={i} className="rv8-text">{l}</p>)}
         <div className="rv8-sec-title">Awards</div>
-        {d.awards.map((a,i) => <p key={i} className="rv8-text">★ {a}</p>)}
+        {d.awards.map((a,i) => <p key={i} className="rv8-text">â˜… {a}</p>)}
       </div>
       <div className="rv8-main">
         <div className="rv8-sec-title-main">About Me</div>
@@ -528,7 +528,7 @@ function Template8() {
         {d.education.map((e,i) => (
           <div key={i} style={{marginBottom:8}}>
             <strong className="rv8-main-text">{e.degree}</strong>
-            <div className="rv8-company">{e.school} · {e.year}</div>
+            <div className="rv8-company">{e.school} Â· {e.year}</div>
           </div>
         ))}
       </div>
@@ -536,9 +536,9 @@ function Template8() {
   );
 }
 
-/* ══════════════════════════════════════
-   T9 — Minimal White
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T9 â€” Minimal White
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template9() {
   return (
     <div className="rv rv9">
@@ -557,7 +557,7 @@ function Template9() {
         {d.experience.map((e,i) => (
           <div key={i} className="rv9-exp">
             <div className="rv9-exp-header">
-              <strong className="rv9-text">{e.role} — {e.company}</strong>
+              <strong className="rv9-text">{e.role} â€” {e.company}</strong>
               <span className="rv9-period">{e.period}</span>
             </div>
             <p className="rv9-text">{e.desc}</p>
@@ -569,11 +569,11 @@ function Template9() {
             {d.education.map((e,i) => (
               <div key={i} style={{marginBottom:6}}>
                 <strong className="rv9-text">{e.degree}</strong>
-                <div className="rv9-muted">{e.school} · {e.year}</div>
+                <div className="rv9-muted">{e.school} Â· {e.year}</div>
               </div>
             ))}
             <div className="rv9-sec-title">AWARDS</div>
-            {d.awards.map((a,i) => <p key={i} className="rv9-text">• {a}</p>)}
+            {d.awards.map((a,i) => <p key={i} className="rv9-text">â€¢ {a}</p>)}
           </div>
           <div>
             <div className="rv9-sec-title">SKILLS</div>
@@ -589,9 +589,9 @@ function Template9() {
   );
 }
 
-/* ══════════════════════════════════════
-   T10 — Red Accent
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T10 â€” Red Accent
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template10() {
   return (
     <div className="rv rv10">
@@ -600,9 +600,9 @@ function Template10() {
         <div className="rv10-name">{d.name}</div>
         <div className="rv10-title">{d.title}</div>
         <div className="rv10-sec-title">CONTACT</div>
-        <p className="rv10-text">✉ {d.email}</p>
-        <p className="rv10-text">📞 {d.phone}</p>
-        <p className="rv10-text">📍 {d.location}</p>
+        <p className="rv10-text">âœ‰ {d.email}</p>
+        <p className="rv10-text">ðŸ“ž {d.phone}</p>
+        <p className="rv10-text">ðŸ“ {d.location}</p>
         <div className="rv10-sec-title">SKILLS</div>
         {d.skills.map((s,i) => (
           <div key={i} style={{marginBottom:5}}>
@@ -631,19 +631,19 @@ function Template10() {
         {d.education.map((e,i) => (
           <div key={i} style={{marginBottom:8}}>
             <strong className="rv10-main-text">{e.degree}</strong>
-            <div className="rv10-company">{e.school} · {e.year}</div>
+            <div className="rv10-company">{e.school} Â· {e.year}</div>
           </div>
         ))}
         <div className="rv10-sec-title-main">AWARDS</div>
-        {d.awards.map((a,i) => <p key={i} className="rv10-main-text">• {a}</p>)}
+        {d.awards.map((a,i) => <p key={i} className="rv10-main-text">â€¢ {a}</p>)}
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════
-   T11 — Green Nature
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T11 â€” Green Nature
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template11() {
   return (
     <div className="rv rv11">
@@ -654,9 +654,9 @@ function Template11() {
           <div className="rv11-title">{d.title}</div>
         </div>
         <div className="rv11-header-contact">
-          <p className="rv11-contact">✉ {d.email}</p>
-          <p className="rv11-contact">📞 {d.phone}</p>
-          <p className="rv11-contact">📍 {d.location}</p>
+          <p className="rv11-contact">âœ‰ {d.email}</p>
+          <p className="rv11-contact">ðŸ“ž {d.phone}</p>
+          <p className="rv11-contact">ðŸ“ {d.location}</p>
         </div>
       </div>
       <div className="rv11-body">
@@ -668,7 +668,7 @@ function Template11() {
           <div className="rv11-sec-title">LANGUAGES</div>
           {d.languages.map((l,i) => <p key={i} className="rv11-text">{l}</p>)}
           <div className="rv11-sec-title">AWARDS</div>
-          {d.awards.map((a,i) => <p key={i} className="rv11-text">🏆 {a}</p>)}
+          {d.awards.map((a,i) => <p key={i} className="rv11-text">ðŸ† {a}</p>)}
         </div>
         <div className="rv11-right">
           <div className="rv11-sec-title">EXPERIENCE</div>
@@ -684,7 +684,7 @@ function Template11() {
           {d.education.map((e,i) => (
             <div key={i} style={{marginBottom:8}}>
               <strong className="rv11-text">{e.degree}</strong>
-              <div className="rv11-company">{e.school} · {e.year}</div>
+              <div className="rv11-company">{e.school} Â· {e.year}</div>
             </div>
           ))}
         </div>
@@ -693,9 +693,9 @@ function Template11() {
   );
 }
 
-/* ══════════════════════════════════════
-   T12 — Navy Classic
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T12 â€” Navy Classic
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template12() {
   return (
     <div className="rv rv12">
@@ -705,7 +705,7 @@ function Template12() {
           <div className="rv12-name">{d.name}</div>
           <div className="rv12-title">{d.title}</div>
           <div className="rv12-contacts">
-            <span>✉ {d.email}</span><span>📞 {d.phone}</span><span>📍 {d.location}</span>
+            <span>âœ‰ {d.email}</span><span>ðŸ“ž {d.phone}</span><span>ðŸ“ {d.location}</span>
           </div>
         </div>
       </div>
@@ -717,13 +717,13 @@ function Template12() {
           {d.education.map((e,i) => (
             <div key={i} style={{marginBottom:8}}>
               <strong className="rv12-text">{e.degree}</strong>
-              <div className="rv12-muted">{e.school} · {e.year}</div>
+              <div className="rv12-muted">{e.school} Â· {e.year}</div>
             </div>
           ))}
           <div className="rv12-sec-title">LANGUAGES</div>
           {d.languages.map((l,i) => <p key={i} className="rv12-text">{l}</p>)}
           <div className="rv12-sec-title">AWARDS</div>
-          {d.awards.map((a,i) => <p key={i} className="rv12-text">• {a}</p>)}
+          {d.awards.map((a,i) => <p key={i} className="rv12-text">â€¢ {a}</p>)}
         </div>
         <div className="rv12-right">
           <div className="rv12-sec-title">EXPERIENCE</div>
@@ -745,9 +745,9 @@ function Template12() {
   );
 }
 
-/* ══════════════════════════════════════
-   T13 — Cyan Tech
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T13 â€” Cyan Tech
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template13() {
   return (
     <div className="rv rv13">
@@ -760,9 +760,9 @@ function Template13() {
           </div>
         </div>
         <div className="rv13-header-right">
-          <span className="rv13-contact">✉ {d.email}</span>
-          <span className="rv13-contact">📞 {d.phone}</span>
-          <span className="rv13-contact">📍 {d.location}</span>
+          <span className="rv13-contact">âœ‰ {d.email}</span>
+          <span className="rv13-contact">ðŸ“ž {d.phone}</span>
+          <span className="rv13-contact">ðŸ“ {d.location}</span>
         </div>
       </div>
       <div className="rv13-body">
@@ -778,7 +778,7 @@ function Template13() {
           {d.education.map((e,i) => (
             <div key={i} style={{marginBottom:8}}>
               <strong className="rv13-text">{e.degree}</strong>
-              <div className="rv13-muted">{e.school} · {e.year}</div>
+              <div className="rv13-muted">{e.school} Â· {e.year}</div>
             </div>
           ))}
           <div className="rv13-sec-title">LANGUAGES</div>
@@ -799,16 +799,16 @@ function Template13() {
             </div>
           ))}
           <div className="rv13-sec-title">AWARDS</div>
-          {d.awards.map((a,i) => <p key={i} className="rv13-text">▸ {a}</p>)}
+          {d.awards.map((a,i) => <p key={i} className="rv13-text">â–¸ {a}</p>)}
         </div>
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════
-   T14 — Coral Modern
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T14 â€” Coral Modern
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template14() {
   return (
     <div className="rv rv14">
@@ -830,7 +830,7 @@ function Template14() {
           <div className="rv14-sec-title">Languages</div>
           {d.languages.map((l,i) => <p key={i} className="rv14-text">{l}</p>)}
           <div className="rv14-sec-title">Awards</div>
-          {d.awards.map((a,i) => <p key={i} className="rv14-text">🏆 {a}</p>)}
+          {d.awards.map((a,i) => <p key={i} className="rv14-text">ðŸ† {a}</p>)}
         </div>
         <div className="rv14-right">
           <div className="rv14-sec-title">Experience</div>
@@ -846,7 +846,7 @@ function Template14() {
           {d.education.map((e,i) => (
             <div key={i} style={{marginBottom:8}}>
               <strong className="rv14-text">{e.degree}</strong>
-              <div className="rv14-company">{e.school} · {e.year}</div>
+              <div className="rv14-company">{e.school} Â· {e.year}</div>
             </div>
           ))}
         </div>
@@ -855,9 +855,9 @@ function Template14() {
   );
 }
 
-/* ══════════════════════════════════════
-   T15 — Indigo Professional
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   T15 â€” Indigo Professional
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Template15() {
   return (
     <div className="rv rv15">
@@ -867,9 +867,9 @@ function Template15() {
         <div className="rv15-title">{d.title}</div>
         <div className="rv15-divider"/>
         <div className="rv15-sec-title">Contact</div>
-        <p className="rv15-text">✉ {d.email}</p>
-        <p className="rv15-text">📞 {d.phone}</p>
-        <p className="rv15-text">📍 {d.location}</p>
+        <p className="rv15-text">âœ‰ {d.email}</p>
+        <p className="rv15-text">ðŸ“ž {d.phone}</p>
+        <p className="rv15-text">ðŸ“ {d.location}</p>
         <div className="rv15-sec-title">Skills</div>
         {d.skills.map((s,i) => <span key={i} className="rv15-skill-tag">{s}</span>)}
         <div className="rv15-sec-title">Languages</div>
@@ -895,13 +895,13 @@ function Template15() {
             {d.education.map((e,i) => (
               <div key={i} style={{marginBottom:8}}>
                 <strong className="rv15-main-text">{e.degree}</strong>
-                <div className="rv15-company">{e.school} · {e.year}</div>
+                <div className="rv15-company">{e.school} Â· {e.year}</div>
               </div>
             ))}
           </div>
           <div>
             <div className="rv15-sec-title">Awards</div>
-            {d.awards.map((a,i) => <p key={i} className="rv15-main-text">★ {a}</p>)}
+            {d.awards.map((a,i) => <p key={i} className="rv15-main-text">â˜… {a}</p>)}
           </div>
         </div>
       </div>
@@ -983,7 +983,7 @@ function TemplatePickerCard({ onSelect, selected }) {
               <div className="tpl-card-footer">
                 <span className="tpl-card-name">{tpl.name}</span>
                 <button className="tpl-choose-btn" onClick={e => { e.stopPropagation(); onSelect(tpl.id); }}>
-                  {selected === tpl.id ? '✓ Selected' : 'Choose template'}
+                  {selected === tpl.id ? 'âœ“ Selected' : 'Choose template'}
                 </button>
               </div>
             </div>
@@ -998,7 +998,7 @@ function TemplatePickerCard({ onSelect, selected }) {
       {preview && (
         <div className="tpl-modal-overlay" onClick={() => setPreview(null)}>
           <div className="tpl-modal" onClick={e => e.stopPropagation()}>
-            <button className="tpl-modal-close" onClick={() => setPreview(null)}>✕</button>
+            <button className="tpl-modal-close" onClick={() => setPreview(null)}>âœ•</button>
             <ScaledPreview className="tpl-modal-preview">{preview.component}</ScaledPreview>
             <div className="tpl-modal-actions">
               <p className="tpl-modal-name">{preview.name}</p>
@@ -1036,3 +1036,4 @@ function TemplatePickerCard({ onSelect, selected }) {
 }
 
 export default TemplatePickerCard;
+

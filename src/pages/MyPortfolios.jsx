@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, Eye, X, Download, Code, Copy, Check } from 'lucide-react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -22,14 +22,14 @@ function MyPortfolios() {
 
   useEffect(() => {
     if (!user?.id) { setLoading(false); return; }
-    fetch(`http://localhost:5000/api/portfolios/${user.id}`)
+    fetch(`http://localhost:3001/api/portfolios/${user.id}`)
       .then(r => r.json())
       .then(data => { setPortfolios(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/portfolios/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:3001/api/portfolios/${id}`, { method: 'DELETE' });
     setPortfolios(prev => prev.filter(p => p._id !== id));
   };
 
@@ -118,7 +118,7 @@ function MyPortfolios() {
             <div className="mr-empty">
               <p>No portfolios yet.</p>
               <button className="btn-build-now portfolio" onClick={() => navigate('/portfolio')}>
-                Build one now →
+                Build one now â†’
               </button>
             </div>
           ) : (
@@ -181,3 +181,4 @@ function MyPortfolios() {
 }
 
 export default MyPortfolios;
+

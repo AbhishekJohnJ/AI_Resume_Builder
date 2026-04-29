@@ -1,6 +1,6 @@
-import '../pages/Portfolio.css';
+﻿import '../pages/Portfolio.css';
 
-/* ── Template renderers using AI-generated data ── */
+/* â”€â”€ Template renderers using AI-generated data â”€â”€ */
 
 /** Build CSS variable overrides from a themeColor palette */
 function themeVars(themeColor) {
@@ -62,7 +62,7 @@ function T1({ d, themeColor }) {
       </div>
       <div className="pt1-contact">
         <h2 className="pt1-section-title"><span className="pt1-accent">//</span> Contact</h2>
-        <p className="pt1-contact-text">{d.email} · {d.github}</p>
+        <p className="pt1-contact-text">{d.email} Â· {d.github}</p>
       </div>
     </div>
   );
@@ -77,9 +77,9 @@ function T2({ d, themeColor }) {
         <p className="pt2-title">{d.title}</p>
         <div className="pt2-divider" />
         <div className="pt2-contact-list">
-          <p className="pt2-contact-item">✉ {d.email}</p>
-          <p className="pt2-contact-item">📍 {d.location}</p>
-          <p className="pt2-contact-item">🔗 {d.github}</p>
+          <p className="pt2-contact-item">âœ‰ {d.email}</p>
+          <p className="pt2-contact-item">ðŸ“ {d.location}</p>
+          <p className="pt2-contact-item">ðŸ”— {d.github}</p>
         </div>
         <div className="pt2-divider" />
         <p className="pt2-label">Skills</p>
@@ -140,7 +140,7 @@ function T3({ d, themeColor }) {
         <h2 className="pt3-section-title">Tech Stack</h2>
         <div className="pt3-skills-grid">
           {d.skills.map((s, i) => (
-            <div key={i} className="pt3-skill-card"><span className="pt3-skill-icon">⚡</span><span className="pt3-skill-name">{s}</span></div>
+            <div key={i} className="pt3-skill-card"><span className="pt3-skill-icon">âš¡</span><span className="pt3-skill-name">{s}</span></div>
           ))}
         </div>
       </div>
@@ -178,7 +178,7 @@ function T4({ d, themeColor }) {
             <h1 className="pt4-name">{d.name}</h1>
             <p className="pt4-title">{d.title}</p>
             <div className="pt4-contacts">
-              <span>{d.email}</span><span>·</span><span>{d.location}</span><span>·</span><span>{d.github}</span>
+              <span>{d.email}</span><span>Â·</span><span>{d.location}</span><span>Â·</span><span>{d.github}</span>
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ function T6({ d, themeColor }) {
         </div>
         <div className="pt6-cards-row">
           {d.skills.slice(0, 4).map((s, i) => (
-            <div key={i} className="pt6-skill-card"><span className="pt6-skill-icon">◈</span>{s}</div>
+            <div key={i} className="pt6-skill-card"><span className="pt6-skill-icon">â—ˆ</span>{s}</div>
           ))}
         </div>
         <div className="pt6-projects">
@@ -297,7 +297,7 @@ function T6({ d, themeColor }) {
           </div>
         </div>
         <div className="pt6-footer">
-          <span>{d.email}</span><span>·</span><span>{d.github}</span><span>·</span><span>{d.location}</span>
+          <span>{d.email}</span><span>Â·</span><span>{d.github}</span><span>Â·</span><span>{d.location}</span>
         </div>
       </div>
     </div>
@@ -316,7 +316,7 @@ function T7({ d, themeColor }) {
           </div>
         </div>
         <div className="pt7-contacts">
-          <span>{d.email}</span><span>·</span><span>{d.location}</span>
+          <span>{d.email}</span><span>Â·</span><span>{d.location}</span>
         </div>
       </div>
       <div className="pt7-body">
@@ -364,10 +364,10 @@ function T8({ d, themeColor }) {
         <div className="pt8-title">{d.title}</div>
         <div className="pt8-divider" />
         <div className="pt8-sec-title">Contact</div>
-        <p className="pt8-text">✉ {d.email}</p>
-        {d.phone && <p className="pt8-text">📞 {d.phone}</p>}
-        {d.location && <p className="pt8-text">📍 {d.location}</p>}
-        {d.github && <p className="pt8-text">🔗 {d.github}</p>}
+        <p className="pt8-text">âœ‰ {d.email}</p>
+        {d.phone && <p className="pt8-text">ðŸ“ž {d.phone}</p>}
+        {d.location && <p className="pt8-text">ðŸ“ {d.location}</p>}
+        {d.github && <p className="pt8-text">ðŸ”— {d.github}</p>}
         <div className="pt8-sec-title">Skills</div>
         {d.skills?.map((s, i) => <span key={i} className="pt8-skill-tag">{s}</span>)}
       </div>
@@ -402,3 +402,4 @@ export default function GeneratedPortfolio({ data, templateId, themeColor }) {
   const Component = templates[templateId] || T1;
   return <Component d={data} themeColor={themeColor} />;
 }
+

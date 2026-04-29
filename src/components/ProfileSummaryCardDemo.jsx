@@ -1,4 +1,4 @@
-import ProfileSummaryCard from './ProfileSummaryCard';
+﻿import ProfileSummaryCard from './ProfileSummaryCard';
 
 function ProfileSummaryCardDemo() {
   return (
@@ -16,3 +16,4 @@ function ProfileSummaryCardDemo() {
 }
 
 export default ProfileSummaryCardDemo;
+

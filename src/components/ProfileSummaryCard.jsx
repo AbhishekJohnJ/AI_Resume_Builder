@@ -1,4 +1,4 @@
-import { Trophy, Award } from 'lucide-react';
+﻿import { Trophy, Award } from 'lucide-react';
 import './ProfileSummaryCard.css';
 
 function ProfileSummaryCard({
@@ -65,3 +65,4 @@ function ProfileSummaryCard({
 }
 
 export default ProfileSummaryCard;
+

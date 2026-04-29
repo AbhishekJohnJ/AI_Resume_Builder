@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import './Toast.css';
 
 export function Toast({ message, type = 'success', onDone }) {
@@ -13,7 +13,7 @@ export function Toast({ message, type = 'success', onDone }) {
 
   return (
     <div className={`toast-notification toast-${type}${visible ? ' toast-visible' : ''}`}>
-      <span className="toast-icon">{type === 'success' ? '✓' : '✕'}</span>
+      <span className="toast-icon">{type === 'success' ? 'âœ“' : 'âœ•'}</span>
       {message}
     </div>
   );
@@ -37,3 +37,4 @@ export function ToastContainer() {
 export function showToast(message, type = 'success') {
   _setToasts?.(p => [...p, { id: Date.now(), message, type }]);
 }
+

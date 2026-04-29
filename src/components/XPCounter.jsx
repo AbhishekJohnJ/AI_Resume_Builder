@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Trophy } from 'lucide-react';
 import { getGamificationData } from '../utils/gamification';
 import './XPCounter.css';
@@ -31,3 +31,4 @@ function XPCounter() {
 }
 
 export default XPCounter;
+

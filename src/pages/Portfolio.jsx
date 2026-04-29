@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useNavigate } from 'react-router-dom';
 import { User, Menu, Send, Code, RefreshCw, Copy, Check, HelpCircle } from 'lucide-react';
@@ -11,7 +11,7 @@ import './Dashboard.css';
 import './Portfolio.css';
 import './ResumeBuilder.css';
 
-/* ── Sample portfolio data ── */
+/* â”€â”€ Sample portfolio data â”€â”€ */
 const pd = {
   name: 'Alex Morgan',
   title: 'Full Stack Developer',
@@ -30,14 +30,14 @@ const pd = {
     { name: 'DevOps Dashboard', desc: 'Monitoring dashboard for microservices with live metrics, alerts, and deployment pipelines.', tech: ['React', 'Docker', 'AWS'], link: '#' },
   ],
   experience: [
-    { role: 'Senior Developer', company: 'TechCorp Inc.', period: '2021 – Present', desc: 'Led a team of 5 engineers building cloud-native applications.' },
-    { role: 'Full Stack Developer', company: 'StartupXYZ', period: '2019 – 2021', desc: 'Built and shipped 3 SaaS products from scratch.' },
+    { role: 'Senior Developer', company: 'TechCorp Inc.', period: '2021 â€“ Present', desc: 'Led a team of 5 engineers building cloud-native applications.' },
+    { role: 'Full Stack Developer', company: 'StartupXYZ', period: '2019 â€“ 2021', desc: 'Built and shipped 3 SaaS products from scratch.' },
   ],
 };
 
-/* ══════════════════════════════════════
-   Template 1 — Dark Hacker Theme
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 1 â€” Dark Hacker Theme
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate1() {
   return (
     <div className="pt pt1">
@@ -77,15 +77,15 @@ function PortfolioTemplate1() {
       </div>
       <div className="pt1-contact">
         <h2 className="pt1-section-title"><span className="pt1-accent">//</span> Contact</h2>
-        <p className="pt1-contact-text">{pd.email} · {pd.github}</p>
+        <p className="pt1-contact-text">{pd.email} Â· {pd.github}</p>
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════
-   Template 2 — Clean Minimal Light
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 2 â€” Clean Minimal Light
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate2() {
   return (
     <div className="pt pt2">
@@ -95,9 +95,9 @@ function PortfolioTemplate2() {
         <p className="pt2-title">{pd.title}</p>
         <div className="pt2-divider" />
         <div className="pt2-contact-list">
-          <p className="pt2-contact-item">✉ {pd.email}</p>
-          <p className="pt2-contact-item">📍 {pd.location}</p>
-          <p className="pt2-contact-item">🔗 {pd.github}</p>
+          <p className="pt2-contact-item">âœ‰ {pd.email}</p>
+          <p className="pt2-contact-item">ðŸ“ {pd.location}</p>
+          <p className="pt2-contact-item">ðŸ”— {pd.github}</p>
         </div>
         <div className="pt2-divider" />
         <p className="pt2-label">Skills</p>
@@ -142,9 +142,9 @@ function PortfolioTemplate2() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 3 — Vibrant Gradient Creative
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 3 â€” Vibrant Gradient Creative
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate3() {
   return (
     <div className="pt pt3">
@@ -166,7 +166,7 @@ function PortfolioTemplate3() {
         <div className="pt3-skills-grid">
           {pd.skills.map((s, i) => (
             <div key={i} className="pt3-skill-card">
-              <span className="pt3-skill-icon">⚡</span>
+              <span className="pt3-skill-icon">âš¡</span>
               <span className="pt3-skill-name">{s}</span>
             </div>
           ))}
@@ -198,9 +198,9 @@ function PortfolioTemplate3() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 4 — Navy Executive
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 4 â€” Navy Executive
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate4() {
   return (
     <div className="pt pt4">
@@ -211,7 +211,7 @@ function PortfolioTemplate4() {
             <h1 className="pt4-name">{pd.name}</h1>
             <p className="pt4-title">{pd.title}</p>
             <div className="pt4-contacts">
-              <span>{pd.email}</span><span>·</span><span>{pd.location}</span><span>·</span><span>{pd.github}</span>
+              <span>{pd.email}</span><span>Â·</span><span>{pd.location}</span><span>Â·</span><span>{pd.github}</span>
             </div>
           </div>
         </div>
@@ -257,9 +257,9 @@ function PortfolioTemplate4() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 5 — Sunset Bold
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 5 â€” Sunset Bold
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate5() {
   return (
     <div className="pt pt5">
@@ -301,9 +301,9 @@ function PortfolioTemplate5() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 6 — Glass Dark
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 6 â€” Glass Dark
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate6() {
   return (
     <div className="pt pt6">
@@ -323,7 +323,7 @@ function PortfolioTemplate6() {
         </div>
         <div className="pt6-cards-row">
           {pd.skills.slice(0, 4).map((s, i) => (
-            <div key={i} className="pt6-skill-card"><span className="pt6-skill-icon">◈</span>{s}</div>
+            <div key={i} className="pt6-skill-card"><span className="pt6-skill-icon">â—ˆ</span>{s}</div>
           ))}
         </div>
         <div className="pt6-projects">
@@ -340,15 +340,15 @@ function PortfolioTemplate6() {
           </div>
         </div>
         <div className="pt6-footer">
-          <span>{pd.email}</span><span>·</span><span>{pd.github}</span><span>·</span><span>{pd.location}</span>
+          <span>{pd.email}</span><span>Â·</span><span>{pd.github}</span><span>Â·</span><span>{pd.location}</span>
         </div>
       </div>
     </div>
   );
 }
-/* ══════════════════════════════════════
-   Template 7 — Rose Minimal
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 7 â€” Rose Minimal
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate7() {
   return (
     <div className="pt pt7">
@@ -361,7 +361,7 @@ function PortfolioTemplate7() {
           </div>
         </div>
         <div className="pt7-contacts">
-          <span>{pd.email}</span><span>·</span><span>{pd.location}</span>
+          <span>{pd.email}</span><span>Â·</span><span>{pd.location}</span>
         </div>
       </div>
       <div className="pt7-body">
@@ -400,9 +400,9 @@ function PortfolioTemplate7() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 8 — Emerald Split
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 8 â€” Emerald Split
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate8() {
   return (
     <div className="pt pt8">
@@ -412,10 +412,10 @@ function PortfolioTemplate8() {
         <div className="pt8-title">{pd.title}</div>
         <div className="pt8-divider" />
         <div className="pt8-sec-title">Contact</div>
-        <p className="pt8-text">✉ {pd.email}</p>
-        <p className="pt8-text">📞 {pd.phone}</p>
-        <p className="pt8-text">📍 {pd.location}</p>
-        <p className="pt8-text">🔗 {pd.github}</p>
+        <p className="pt8-text">âœ‰ {pd.email}</p>
+        <p className="pt8-text">ðŸ“ž {pd.phone}</p>
+        <p className="pt8-text">ðŸ“ {pd.location}</p>
+        <p className="pt8-text">ðŸ”— {pd.github}</p>
         <div className="pt8-sec-title">Skills</div>
         {pd.skills.map((s, i) => <span key={i} className="pt8-skill-tag">{s}</span>)}
       </div>
@@ -444,9 +444,9 @@ function PortfolioTemplate8() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 9 — Amber Warm
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 9 â€” Amber Warm
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate9() {
   return (
     <div className="pt pt9">
@@ -498,9 +498,9 @@ function PortfolioTemplate9() {
   );
 }
 
-/* ══════════════════════════════════════
-   Template 10 — Slate Professional
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 10 â€” Slate Professional
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate10() {
   return (
     <div className="pt pt10">
@@ -541,15 +541,15 @@ function PortfolioTemplate10() {
         </div>
       </div>
       <div className="pt10-footer">
-        <span>{pd.email}</span><span>·</span><span>{pd.github}</span><span>·</span><span>{pd.location}</span>
+        <span>{pd.email}</span><span>Â·</span><span>{pd.github}</span><span>Â·</span><span>{pd.location}</span>
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════
-   Template 11 — Neon Cyberpunk
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Template 11 â€” Neon Cyberpunk
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function PortfolioTemplate11() {
   return (
     <div className="pt pt11">
@@ -597,9 +597,9 @@ function ScaledModalPreview({ children }) {
   );
 } 
 
-/* ══════════════════════════════════════
-   Scaled preview — fills container width, clips height
-══════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Scaled preview â€” fills container width, clips height
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ScaledPortfolioPreview({ children }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(0.85);
@@ -627,9 +627,9 @@ function ScaledPortfolioPreview({ children }) {
   );
 }
 
-/* ══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Template definitions
-══════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const portfolioTemplates = [
   { id: 1, name: 'Dark Hacker',     tag: 'Developer',    component: <PortfolioTemplate1 />, recommended: true  },
   { id: 2, name: 'Clean Minimal',   tag: 'Professional', component: <PortfolioTemplate2 />, recommended: false },
@@ -644,9 +644,9 @@ const portfolioTemplates = [
   { id: 11, name: 'Neon Cyberpunk', tag: 'Futuristic',   component: <PortfolioTemplate11 />, recommended: false },
 ];
 
-/* ══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Scaled preview helper
-══════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ScaledPreview({ children, width = 900 }) {
   return (
     <div className="pt-preview-outer">
@@ -660,9 +660,9 @@ function ScaledPreview({ children, width = 900 }) {
   );
 }
 
-/* ══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Portfolio Page
-══════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function Portfolio() {
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -731,7 +731,7 @@ function Portfolio() {
       : null;
     if (mergedColor) setThemeColor(mergedColor);
 
-    // If it's only a color-change request, just recolor — no AI call needed (FREE!)
+    // If it's only a color-change request, just recolor â€” no AI call needed (FREE!)
     if (isColorChangeOnly(prompt)) {
       if (!portfolioData) setError('Generate a portfolio first, then change the colour.');
       return;
@@ -757,7 +757,7 @@ function Portfolio() {
     const isNewPortfolio = !portfolioData;
     if (!portfolioData) setPortfolioData(null); // only clear on fresh generation
     try {
-      const res = await fetch('http://localhost:5000/api/ai/generate-portfolio', {
+      const res = await fetch('http://localhost:3001/api/ai/generate-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -784,7 +784,7 @@ function Portfolio() {
       // Save to database
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
       if (user?.id) {
-        await fetch('http://localhost:5000/api/portfolios', {
+        await fetch('http://localhost:3001/api/portfolios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, templateId: selectedTemplate, data: data.portfolioData, themeColor: mergedColor || null }),
@@ -837,7 +837,7 @@ ${markup}
   const getExportedCSS = () => {
     const tplId = selectedTemplate;
     try {
-      let css = '/* Portfolio CSS — generated by AI Portfolio Builder */\n\n';
+      let css = '/* Portfolio CSS â€” generated by AI Portfolio Builder */\n\n';
       const block = buildThemeVarBlock(themeColor, `.pt${tplId}`);
       if (block) css += `/* Theme color overrides */\n${block}\n\n`;
       for (const sheet of document.styleSheets) {
@@ -858,7 +858,7 @@ ${markup}
       }
       return css;
     } catch {
-      return '/* Could not extract CSS — copy from Portfolio.css */';
+      return '/* Could not extract CSS â€” copy from Portfolio.css */';
     }
   };
 
@@ -933,7 +933,7 @@ ${markup}
                                   className={`pf-btn-select ${selectedTemplate === tpl.id ? 'pf-btn-selected' : ''}`}
                                   onClick={e => { e.stopPropagation(); setSelectedTemplate(tpl.id); }}
                                 >
-                                  {selectedTemplate === tpl.id ? '✓ Selected' : 'Use Template'}
+                                  {selectedTemplate === tpl.id ? 'âœ“ Selected' : 'Use Template'}
                                 </button>
                               </div>
                             </div>
@@ -959,7 +959,7 @@ ${markup}
             );
           })()}
 
-          {/* ── Portfolio Prompt Section ── */}
+          {/* â”€â”€ Portfolio Prompt Section â”€â”€ */}
           <div className="rb-prompt-section">
             <h3 className="rb-prompt-title">Describe your portfolio</h3>
             <p className="rb-prompt-sub">Tell the AI about your projects, skills, and the role you're targeting.</p>
@@ -1001,7 +1001,7 @@ ${markup}
             </div>
           </div>
 
-          {/* ── Loading ── */}
+          {/* â”€â”€ Loading â”€â”€ */}
           {loading && (
             <div className="gr-loading">
               <div className="gr-spinner" />
@@ -1009,7 +1009,7 @@ ${markup}
             </div>
           )}
 
-          {/* ── Generated Portfolio Output ── */}
+          {/* â”€â”€ Generated Portfolio Output â”€â”€ */}
           {portfolioData && !loading && (
             <div className="gr-output" ref={outputRef}>
               <div className="gr-output-header">
@@ -1038,12 +1038,12 @@ ${markup}
         <div className="pf-modal-overlay" onClick={() => setShowCode(false)}>
           <div className="pf-code-modal" onClick={e => e.stopPropagation()}>
             <div className="pf-modal-header">
-              <span className="pf-modal-title">Export Code — {portfolioData.name}</span>
+              <span className="pf-modal-title">Export Code â€” {portfolioData.name}</span>
               <div className="pf-modal-actions">
                 <button className={`pf-code-copy-btn${copied ? ' pf-code-copied' : ''}`} onClick={handleCopy}>
                   {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                 </button>
-                <button className="pf-modal-close" onClick={() => setShowCode(false)}>✕</button>
+                <button className="pf-modal-close" onClick={() => setShowCode(false)}>âœ•</button>
               </div>
             </div>
             <div className="pf-code-tabs">
@@ -1068,9 +1068,9 @@ ${markup}
                   className={`pf-btn-select ${selectedTemplate === previewTemplate.id ? 'pf-btn-selected' : ''}`}
                   onClick={() => { setSelectedTemplate(previewTemplate.id); setPreviewTemplate(null); }}
                 >
-                  {selectedTemplate === previewTemplate.id ? '✓ Selected' : 'Use Template'}
+                  {selectedTemplate === previewTemplate.id ? 'âœ“ Selected' : 'Use Template'}
                 </button>
-                <button className="pf-modal-close" onClick={() => setPreviewTemplate(null)}>✕</button>
+                <button className="pf-modal-close" onClick={() => setPreviewTemplate(null)}>âœ•</button>
               </div>
             </div>
             <div className="pf-modal-body">
@@ -1086,3 +1086,4 @@ ${markup}
 }
 
 export default Portfolio;
+

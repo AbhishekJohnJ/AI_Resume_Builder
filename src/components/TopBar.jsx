@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Bot } from 'lucide-react';
 import ProfileSummaryCard from './ProfileSummaryCard';
@@ -112,7 +112,7 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
             />
           </div>
           <span style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '0.05em' }}>
-            𝐑𝐞𝐬𝐮𝐦𝐞<span className="brand-craft">𝐂𝐫𝐚𝐟𝐭</span>
+            Resume<span className="brand-craft">Craft</span>
           </span>
         </div>
 
@@ -223,3 +223,4 @@ function TopBar({ centerContent = null, onAiToggle = null, aiOpen = false }) {
 }
 
 export default TopBar;
+

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FeatureLockModal from './FeatureLockModal';
 import { isFeatureLocked } from '../utils/gamification';
@@ -51,3 +51,4 @@ function ProtectedFeature({ featureName, children }) {
 }
 
 export default ProtectedFeature;
+

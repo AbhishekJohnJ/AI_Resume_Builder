@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { X, Lock, Trophy, Zap } from 'lucide-react';
 import { getFeatureInfo, unlockFeature, getGamificationData } from '../utils/gamification';
 import { showToast } from './Toast';
@@ -30,7 +30,7 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
   const handleUnlock = async () => {
     const result = await unlockFeature(featureName);
     if (result.success) {
-      showToast(`Unlocked 1 more use! 🎉`, 'success');
+      showToast(`Unlocked 1 more use! ðŸŽ‰`, 'success');
       onUnlock?.();
       onClose();
     } else {
@@ -85,12 +85,12 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
               </p>
               <p className="unlock-hint">
                 Complete daily quests to earn XP:
-                <br />• Resume Sniper (+50 XP)
-                <br />• Score Chaser (+60 XP)
-                <br />• Portfolio Architect (+40 XP)
-                <br />• Resume Crafter (+30 XP)
-                <br />• Portfolio Explorer (+25 XP)
-                <br />• Template Explorer (+20 XP)
+                <br />â€¢ Resume Sniper (+50 XP)
+                <br />â€¢ Score Chaser (+60 XP)
+                <br />â€¢ Portfolio Architect (+40 XP)
+                <br />â€¢ Resume Crafter (+30 XP)
+                <br />â€¢ Portfolio Explorer (+25 XP)
+                <br />â€¢ Template Explorer (+20 XP)
               </p>
             </div>
           )}
@@ -101,3 +101,4 @@ function FeatureLockModal({ featureName, onClose, onUnlock }) {
 }
 
 export default FeatureLockModal;
+

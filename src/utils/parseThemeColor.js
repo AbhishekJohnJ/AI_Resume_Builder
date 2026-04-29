@@ -1,14 +1,14 @@
-/**
- * Theme color parser — supports two modes:
+﻿/**
+ * Theme color parser â€” supports two modes:
  *
  * 1. Single-color:  "change theme to red"
  *                   "make the template blue"
- *    → sets --tc, --tc-dark, --tc-light, --tc-accent
+ *    â†’ sets --tc, --tc-dark, --tc-light, --tc-accent
  *
  * 2. Multi-target:  "instead of black background make it white, instead of green text make it red"
  *                   "make background white and text red"
  *                   "change the header to navy, text to white"
- *    → sets specific CSS vars: --bg, --bg-2, --text, --text-muted, --tc, etc.
+ *    â†’ sets specific CSS vars: --bg, --bg-2, --text, --text-muted, --tc, etc.
  *
  * CSS vars used in Portfolio.css:
  *   --tc          primary accent (logo, buttons, borders, skill tags, section titles)
@@ -21,7 +21,7 @@
  *   --text-muted  muted / secondary text
  */
 
-// ── Color name → hex ──────────────────────────────────────────────────────────
+// â”€â”€ Color name â†’ hex â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const COLOR_HEX = {
   green:   '#16a34a', emerald: '#059669', teal:    '#0d9488', lime:    '#65a30d',
   blue:    '#2563eb', navy:    '#1e3a5f', sky:     '#0284c7', indigo:  '#4338ca',
@@ -33,7 +33,7 @@ const COLOR_HEX = {
   brown:   '#92400e', maroon:  '#7f1d1d', cyan:    '#0891b2',
 };
 
-// ── Full palette for single-color mode ────────────────────────────────────────
+// â”€â”€ Full palette for single-color mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const COLOR_MAP = {
   green:   { main: '#16a34a', dark: '#14532d', light: '#dcfce7', accent: '#4ade80' },
   emerald: { main: '#059669', dark: '#064e3b', light: '#d1fae5', accent: '#34d399' },
@@ -63,7 +63,7 @@ const COLOR_MAP = {
   cyan:    { main: '#0891b2', dark: '#164e63', light: '#cffafe', accent: '#22d3ee' },
 };
 
-// ── Target keyword groups → CSS vars ─────────────────────────────────────────
+// â”€â”€ Target keyword groups â†’ CSS vars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Order matters: more specific entries first
 const TARGET_MAP = [
   { words: ['sidebar background', 'sidebar bg', 'header background', 'header bg',
@@ -97,8 +97,8 @@ const TARGET_MAP = [
 
 const COLOR_NAMES = Object.keys(COLOR_HEX);
 
-// ── Template default color roles ──────────────────────────────────────────────
-// Maps template ID → color family → which CSS vars use that color by default
+// â”€â”€ Template default color roles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Maps template ID â†’ color family â†’ which CSS vars use that color by default
 const TEMPLATE_COLOR_ROLES = {
   1: { // Dark Hacker: green accent, black/dark bg, light text
     green:   ['--tc', '--tc-accent', '--tc-light'],
@@ -159,7 +159,7 @@ const TEMPLATE_COLOR_ROLES = {
   },
 };
 
-// Color family aliases — maps any color name to a "family" key used in TEMPLATE_COLOR_ROLES
+// Color family aliases â€” maps any color name to a "family" key used in TEMPLATE_COLOR_ROLES
 const COLOR_FAMILY = {
   green: 'green', lime: 'green', emerald: 'emerald', teal: 'teal',
   blue: 'blue', sky: 'blue', navy: 'navy', indigo: 'indigo',
@@ -178,7 +178,7 @@ const INTENT_KEYWORDS = [
   'colour', 'color', 'theme', 'instead', 'replace', 'turn', 'convert',
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function hexToRgb(hex) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -243,7 +243,7 @@ function parseClause(clause) {
   const targetVars = findTarget(clause);
 
   // "instead of X <target> make it Y" or "instead of X <target> use Y"
-  // → X is old (ignore), Y is new color
+  // â†’ X is old (ignore), Y is new color
   const insteadMatch = clause.match(/instead\s+of\s+\w+\s+([\w\s]+?)\s+(?:make\s+it|use|to|with)\s+(\w+)/);
   if (insteadMatch) {
     const targetWord = insteadMatch[1].trim();
@@ -256,7 +256,7 @@ function parseClause(clause) {
     }
   }
 
-  // "X to Y" or "X into Y" pattern — last color is the new one
+  // "X to Y" or "X into Y" pattern â€” last color is the new one
   if (colors.length >= 2) {
     // The LAST color mentioned is the new value
     const newColor = colors[colors.length - 1];
@@ -276,7 +276,7 @@ function parseClause(clause) {
   return null;
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// â”€â”€ Public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Returns true if the prompt is purely a color-change command (no resume/portfolio content).
@@ -294,7 +294,7 @@ export function isColorChangeOnly(prompt) {
  * Returns a themeColor-compatible object with CSS var overrides, or null.
  *
  * @param {string} prompt
- * @param {number} templateId  — 1-8, used to look up which vars map to which color family
+ * @param {number} templateId  â€” 1-8, used to look up which vars map to which color family
  */
 export function parseColorReplace(prompt, templateId) {
   if (!prompt) return null;
@@ -359,7 +359,7 @@ export function parseThemeColor(prompt) {
   const hasIntent = INTENT_KEYWORDS.some(kw => lower.includes(kw));
   if (!hasIntent) return null;
 
-  // ── Multi-target parsing ──────────────────────────────────────────────────
+  // â”€â”€ Multi-target parsing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Split on commas, semicolons, "and", "also", "but"
   const clauses = lower.split(/,|;|\band\b|\balso\b|\bbut\b/);
   const overrides = {};
@@ -391,8 +391,9 @@ export function parseThemeColor(prompt) {
     };
   }
 
-  // ── Single-color fallback ─────────────────────────────────────────────────
+  // â”€â”€ Single-color fallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const colors = findAllColors(lower);
   if (colors.length === 0) return null;
   return buildPalette(colors[0].name);
 }
+

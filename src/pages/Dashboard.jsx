@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, User2, Target, Building2, FileText, Map, TrendingUp, Briefcase } from 'lucide-react';
 import TopBar from '../components/TopBar';
@@ -37,10 +37,10 @@ function Dashboard() {
       return q === 'Excellent' ? 95 : q === 'Good' ? 75 : q === 'Fair' ? 50 : 25;
     };
     return [
-      { name: '📄 Resume Completion', val: resumeScore, cls: 'resume' },
-      { name: '⚡ Skills Section',    val: toVal('skills'),     cls: 'skill' },
-      { name: '💼 Experience',        val: toVal('experience'), cls: 'github' },
-      { name: '🎓 Education',         val: toVal('education'),  cls: 'linkedin' },
+      { name: 'ðŸ“„ Resume Completion', val: resumeScore, cls: 'resume' },
+      { name: 'âš¡ Skills Section',    val: toVal('skills'),     cls: 'skill' },
+      { name: 'ðŸ’¼ Experience',        val: toVal('experience'), cls: 'github' },
+      { name: 'ðŸŽ“ Education',         val: toVal('education'),  cls: 'linkedin' },
     ];
   };
 
@@ -97,7 +97,7 @@ function Dashboard() {
       
       // Show toast if quest was just completed
       if (e?.detail) {
-        showToast(`Quest completed! +${e.detail.xp} XP 🎉`, 'success');
+        showToast(`Quest completed! +${e.detail.xp} XP ðŸŽ‰`, 'success');
       }
     };
     
@@ -127,14 +127,14 @@ function Dashboard() {
   }, []);
   
   const maxXP = QUESTS.reduce((s, q) => s + q.xp, 0);
-  const xpPct = Math.round((totalEarnedXP / maxXP) * 100);  // Use totalEarnedXP for percentage
+  const xpPct = Math.min(100, Math.round((totalEarnedXP / maxXP) * 100));  // Cap at 100%
   const careerLevel = totalEarnedXP < 50 ? 'Rookie' : totalEarnedXP < 120 ? 'Builder' : totalEarnedXP < 200 ? 'Pro' : 'Elite';
 
   const [aiOpen, setAiOpen] = useState(false);
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'ai',
-      text: `Hi ${userName}! 👋 I'm your AI career assistant. Ask me anything about your resume, portfolio, or career growth.`
+      text: `Hi ${userName}! ðŸ‘‹ I'm your AI career assistant. Ask me anything about your resume, portfolio, or career growth.`
     }
   ]);
   const [aiInput, setAiInput] = useState('');
@@ -154,7 +154,7 @@ function Dashboard() {
     setAiLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/ai/chat', {
+      const res = await fetch('http://localhost:3001/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg })
@@ -235,13 +235,13 @@ function Dashboard() {
           <main className="dashboard-content">
             <h1 className="dashboard-title">Dashboard</h1>
 
-            {/* ── Career Quest Board ── */}
+            {/* →â”€ Career Quest Board →â”€ */}
             <div className="qb-wrap qb-fullpage">
               {/* Header */}
               <div className="qb-header">
                 <div className="qb-header-left">
                   <div className="qb-title-row">
-                    <span className="qb-crown">⚔️</span>
+                    <span className="qb-crown">âš”ï¸</span>
                     <h2 className="qb-title">Career Quest Board</h2>
                     <span className="qb-level-badge">{careerLevel}</span>
                   </div>
@@ -257,10 +257,10 @@ function Dashboard() {
                         strokeLinecap="round"
                         style={{transition:'stroke-dashoffset 0.6s ease', transform: 'rotate(-90deg)', transformOrigin: '50% 50%'}}/>
                     </svg>
-                    <span className="qb-ring-pct">{xpPct}%</span>
+                    <span className="qb-ring-pct">{xpPct >= 100 ? "MAX" : xpPct + "%"}</span>
                   </div>
                   <div>
-                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalEarnedXP}</span><span className="qb-xp-max">/{maxXP} XP</span></div>
+                    <div className="qb-xp-nums"><span className="qb-xp-earned">{totalEarnedXP}</span><span className="qb-xp-max"> XP</span></div>
                     <div className="qb-xp-label">{completedQuests.length}/{QUESTS.length} quests done</div>
                   </div>
                 </div>
